@@ -4,12 +4,14 @@ import MuzusiLogo from "../../assets/MuzusiLogo.png";
 const SignInForm = () => {
   return (
     <SignInFormContainer>
-      <SignInFormLogo
-        alt="무주시"
-        loading="lazy"
-        decoding="async"
-        src={MuzusiLogo}
-      />
+      <SignInFormLogo href="/">
+        <SignInFormLogoImg
+          alt="무주시"
+          loading="lazy"
+          decoding="async"
+          src={MuzusiLogo}
+        />
+      </SignInFormLogo>
       <SignInText>무자본으로 시작하는 주식 시뮬레이션</SignInText>
       <LoginBtns>
         <KaKaoLoginBtn>
@@ -77,12 +79,15 @@ const SignInText = styled.div`
   margin: 0 auto;
 `;
 
-const SignInFormLogo = styled.img`
+const SignInFormLogo = styled.a`
+  margin: 0 auto;
+`;
+
+const SignInFormLogoImg = styled.img`
   width: 200px;
   height: auto;
   border: none;
   background: none;
-  margin: 0 auto;
 `;
 
 const LoginBtns = styled.div`
