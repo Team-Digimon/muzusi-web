@@ -6,6 +6,8 @@ import Home from "./pages/Home";
 import Asset from "./pages/Asset";
 import Transactions from "./pages/Transactions";
 import GlobalStyles from "./GlobalStyles";
+import KakaoRedirect from "./components/sign-in/KakaoRedirect";
+import NaverRedirect from "./components/sign-in/NaverRedirect";
 
 const App = () => {
   return (
@@ -15,6 +17,8 @@ const App = () => {
         <Routes>
           {/* Layout이 적용되지 않는 경로 */}
           <Route path="/signin" element={<SignIn />} />
+          <Route path="/login/oauth2/code/kakao" element={<KakaoRedirect />} />
+          <Route path="/login/oauth2/code/naver" element={<NaverRedirect />} />
 
           {/* Layout이 적용되는 경로 */}
           <Route path="/" element={<Layout />}>
