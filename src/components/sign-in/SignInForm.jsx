@@ -2,6 +2,14 @@ import styled from "styled-components";
 import MuzusiLogo from "../../assets/MuzusiLogo.png";
 
 const SignInForm = () => {
+  const KAKAO_CLIENT_ID = import.meta.env.VITE_KAKAO_REST_API_KEY;
+  const KAKAO_REDIRECT_URI = import.meta.env.VITE_KAKAO_REDIRECT_URI;
+  const NAVER_CLIENT_ID = import.meta.env.VITE_NAVER_REST_API_KEY;
+  const NAVER_REDIRECT_URI = import.meta.env.VITE_NAVER_REDIRECT_URI;
+
+  const kakaoLoginUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${KAKAO_CLIENT_ID}&redirect_uri=${KAKAO_REDIRECT_URI}&response_type=code`;
+  const naverLoginUrl = `https://nid.naver.com/oauth2.0/authorize?client_id=${NAVER_CLIENT_ID}&redirect_uri=${NAVER_REDIRECT_URI}&response_type=code`;
+
   return (
     <SignInFormContainer>
       <SignInFormLogo href="/">
@@ -14,7 +22,7 @@ const SignInForm = () => {
       </SignInFormLogo>
       <SignInText>무자본으로 시작하는 주식 시뮬레이션</SignInText>
       <LoginBtns>
-        <KaKaoLoginBtn>
+        <KaKaoLoginBtn href={kakaoLoginUrl}>
           <Logo>
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -31,7 +39,7 @@ const SignInForm = () => {
           </Logo>
           <KakaoLoginText>카카오 로그인</KakaoLoginText>
         </KaKaoLoginBtn>
-        <NaverLoginBtn>
+        <NaverLoginBtn href={naverLoginUrl}>
           <Logo>
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -106,6 +114,7 @@ const LoginBtn = styled.a`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  text-decoration: none;
   cursor: pointer;
 `;
 
