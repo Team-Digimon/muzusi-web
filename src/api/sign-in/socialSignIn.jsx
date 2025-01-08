@@ -1,8 +1,8 @@
 import api from "../axios";
 
-const naverSignIn = async (code) => {
+const socialSignIn = async (platform, code) => {
   try {
-    const response = await api.post("auth/sign-in/NAVER", { code });
+    const response = await api.post(`auth/sign-in/${platform}`, { code });
     return response.data;
   } catch (error) {
     console.error("API 요청 중 오류 발생", error);
@@ -19,4 +19,4 @@ const naverSignIn = async (code) => {
   }
 };
 
-export default naverSignIn;
+export default socialSignIn;
