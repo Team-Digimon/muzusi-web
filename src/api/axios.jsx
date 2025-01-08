@@ -1,7 +1,8 @@
 import axios from "axios";
+import { baseUrl } from "../config/Env";
 
 const api = axios.create({
-  baseURL: "http://13.124.220.248:8080/",
+  baseURL: baseUrl,
   withCredentials: true,
 });
 
