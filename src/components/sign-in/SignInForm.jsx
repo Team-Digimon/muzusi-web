@@ -1,14 +1,15 @@
 import styled from "styled-components";
 import MuzusiLogo from "../../assets/MuzusiLogo.png";
+import {
+  kakaoClientId,
+  kakaoRedirectUri,
+  naverClientId,
+  naverRedirectUri,
+} from "../../config/Env";
 
 const SignInForm = () => {
-  const KAKAO_CLIENT_ID = import.meta.env.VITE_KAKAO_REST_API_KEY;
-  const KAKAO_REDIRECT_URI = import.meta.env.VITE_KAKAO_REDIRECT_URI;
-  const NAVER_CLIENT_ID = import.meta.env.VITE_NAVER_REST_API_KEY;
-  const NAVER_REDIRECT_URI = import.meta.env.VITE_NAVER_REDIRECT_URI;
-
-  const kakaoLoginUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${KAKAO_CLIENT_ID}&redirect_uri=${KAKAO_REDIRECT_URI}&response_type=code`;
-  const naverLoginUrl = `https://nid.naver.com/oauth2.0/authorize?client_id=${NAVER_CLIENT_ID}&redirect_uri=${NAVER_REDIRECT_URI}&response_type=code`;
+  const kakaoLoginUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${kakaoClientId}&redirect_uri=${kakaoRedirectUri}&response_type=code`;
+  const naverLoginUrl = `https://nid.naver.com/oauth2.0/authorize?client_id=${naverClientId}&redirect_uri=${naverRedirectUri}&response_type=code`;
 
   return (
     <SignInFormContainer>
