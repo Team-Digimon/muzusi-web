@@ -24,7 +24,7 @@ jobs:
       - name: Install dependencies and build
         run: |
           npm install
-          npm run build
+          npm run build -- --mode production
 
       # 4. 빌드 파일 전송 (배포 파일 업로드)
       - name: Copy build files
