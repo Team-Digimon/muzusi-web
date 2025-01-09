@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import socialSignIn from "../../api/sign-in/socialSignIn";
+import socialSignIn from "@/api/sign-in/socialSignIn";
 
 const NaverRedirect = () => {
   const location = useLocation();

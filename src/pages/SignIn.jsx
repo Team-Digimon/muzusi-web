@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import SignInForm from "../components/sign-in/SignInForm";
+import SignInForm from "@/components/sign-in/SignInForm";
 
 const SignIn = () => {
   return (

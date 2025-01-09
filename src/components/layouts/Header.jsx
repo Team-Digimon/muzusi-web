@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import MuzusiLogo from "../../assets/MuzusiLogo.png";
+import MuzusiLogo from "@/assets/MuzusiLogo.png";
 
 const Header = () => {
   return (

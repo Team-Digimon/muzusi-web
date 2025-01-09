@@ -1,6 +1,6 @@
 import styled from "styled-components";
-import MuzusiLogo from "../../assets/MuzusiLogo.png";
-import { kakaoLoginUrl, naverLoginUrl } from "../../config/Url";
+import MuzusiLogo from "@/assets/MuzusiLogo.png";
+import { kakaoLoginUrl, naverLoginUrl } from "@/config/Url";
 
 const SignInForm = () => {
   return (
