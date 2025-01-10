@@ -1,5 +1,6 @@
 import styled from "styled-components";
-import MuzusiLogo from "@/assets/MuzusiLogo.png";
+import MuzusiLogo from "@/assets/logo/MuzusiLogo.png";
+import SearchIcon from "@/assets/icon/SearchIcon.svg?react";
 
 const Header = () => {
   return (
@@ -22,23 +23,9 @@ const Header = () => {
               <GNBAnchor href="/">내 계좌</GNBAnchor>
             </GNBBtn>
             <SearchBtn>
-              <SearchIcon role="presentation">
-                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <g fill="none" stroke="#a5afb9" strokeMiterlimit="10">
-                    <circle
-                      cx="10.389"
-                      cy="10.388"
-                      r="7.395"
-                      strokeWidth="2.032"
-                    />
-                    <path
-                      d="m15.64 15.638 5.517 5.517"
-                      strokeLinecap="round"
-                      strokeWidth="2.001"
-                    />
-                  </g>
-                </svg>
-              </SearchIcon>
+              <SearchIconBox role="presentation">
+                <SearchIcon />
+              </SearchIconBox>
               <SearchText>이 곳을 눌러 검색하세요</SearchText>
             </SearchBtn>
           </GNBControl>
@@ -131,7 +118,7 @@ const SearchBtn = styled.button`
   cursor: pointer;
 `;
 
-const SearchIcon = styled.span`
+const SearchIconBox = styled.span`
   height: 16px;
   width: 16px;
   margin-left: 16px;
