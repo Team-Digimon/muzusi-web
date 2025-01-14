@@ -8,10 +8,12 @@ import Transactions from "@/pages/Transactions";
 import GlobalStyles from "@/GlobalStyles";
 import KakaoRedirect from "@/components/sign-in/KakaoRedirect";
 import NaverRedirect from "@/components/sign-in/NaverRedirect";
+import SignUp from "@/pages/SignUp";
+import { AuthProvider } from "@/contexts/AuthProvider";
 
 const App = () => {
   return (
-    <>
+    <AuthProvider>
       <GlobalStyles />
       <Router>
         <Routes>
@@ -19,6 +21,7 @@ const App = () => {
           <Route path="/signin" element={<SignIn />} />
           <Route path="/login/oauth2/code/kakao" element={<KakaoRedirect />} />
           <Route path="/login/oauth2/code/naver" element={<NaverRedirect />} />
+          <Route path="/signup" element={<SignUp />} />
 
           {/* Layout이 적용되는 경로 */}
           <Route path="/" element={<Layout />}>
@@ -36,7 +39,7 @@ const App = () => {
           </Route>
         </Routes>
       </Router>
-    </>
+    </AuthProvider>
   );
 };
 
