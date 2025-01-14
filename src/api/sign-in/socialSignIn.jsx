@@ -1,8 +1,8 @@
-import api from "../axios";
+import noAuthapi from "@/api/noAuthApi";
 
 const socialSignIn = async (platform, code) => {
   try {
-    const response = await api.post(`auth/sign-in/${platform}`, { code });
+    const response = await noAuthapi.post(`auth/sign-in/${platform}`, { code });
     return response.data;
   } catch (error) {
     console.error("API 요청 중 오류 발생", error);
