@@ -6,6 +6,7 @@ import {
   getStoredToken,
   saveUserAndToken,
   clearStorage,
+  getNicknameFromToken,
 } from "@/contexts/AuthUtil";
 
 export const AuthProvider = ({ children }) => {
@@ -17,13 +18,20 @@ export const AuthProvider = ({ children }) => {
     const storedToken = getStoredToken();
 
     if (storedUser) setUser(storedUser);
-    if (storedToken) setAccessToken(storedToken);
+    if (storedToken) {
+      setAccessToken(storedToken);
+      const nickname = getNicknameFromToken(storedToken);
+      if (nickname) {
+        setUser((prev) => ({ ...prev, nickname }));
+      }
+    }
   }, []);
 
   const login = useCallback(({ user, token }) => {
-    setUser(user);
+    const nickname = getNicknameFromToken(token);
+    setUser({ ...user, nickname });
     setAccessToken(token);
-    saveUserAndToken(user, token);
+    saveUserAndToken({ ...user, nickname }, token);
   }, []);
 
   const logout = useCallback(() => {
