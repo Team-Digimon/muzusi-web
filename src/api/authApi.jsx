@@ -6,14 +6,25 @@ const authApi = axios.create({
   withCredentials: true,
 });
 
+export const reissueAccessToken = async () => {
+  try {
+    const response = await authApi.get("/auth/reissue");
+    const { accessToken } = response.data.data;
+    localStorage.setItem("accessToken", accessToken);
+    return accessToken;
+  } catch (error) {
+    console.error("토큰 재발급 오류", error);
+    throw error;
+  }
+};
+
 authApi.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("accessToken");
+    const accessToken = localStorage.getItem("accessToken");
 
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    if (accessToken) {
+      config.headers.Authorization = `Bearer ${accessToken}`;
     }
-
     return config;
   },
   (error) => {
@@ -23,9 +34,23 @@ authApi.interceptors.request.use(
 
 authApi.interceptors.response.use(
   (response) => response,
-  (error) => {
-    if (error.response && error.response.status === 401) {
-      console.error("인증 오류: 토큰이 유효하지 않거나 만료되었습니다.");
+  async (error) => {
+    const originalRequest = error.config;
+
+    if (
+      error.response &&
+      error.response.status === 401 &&
+      !originalRequest._retry
+    ) {
+      originalRequest._retry = true;
+      try {
+        const newAccessToken = await reissueAccessToken();
+        authApi.defaults.headers["Authorization"] = `Bearer ${newAccessToken}`;
+        return authApi(originalRequest);
+      } catch (error) {
+        console.error("토큰 재발급 실패", error);
+        return Promise.reject(error);
+      }
     }
     return Promise.reject(error);
   }
