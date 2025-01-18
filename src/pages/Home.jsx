@@ -1,5 +1,9 @@
+import { useAuth } from "@/contexts/useAuth";
+
 const Home = () => {
-  return <div>메인 페이지입니다.</div>;
+  const { user } = useAuth();
+
+  return <div>환영합니다, {user?.nickname}님</div>;
 };
 
 export default Home;
