@@ -39,7 +39,9 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
     setAccessToken(null);
     clearStorage();
+    window.location.herf = "/home";
   }, []);
+
   const value = useMemo(
     () => ({ user, accessToken, login, logout }),
     [user, accessToken, login, logout]
