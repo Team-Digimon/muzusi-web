@@ -39,7 +39,7 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
     setAccessToken(null);
     clearStorage();
-    window.location.herf = "/home";
+    window.location.herf = "/";
   }, []);
 
   const value = useMemo(
