@@ -1,8 +1,26 @@
 import styled from "styled-components";
 import MuzusiLogo from "@/assets/logo/MuzusiLogo.png";
 import SearchIcon from "@/assets/icon/SearchIcon.svg?react";
+import { useAuth } from "@/contexts/useAuth";
+import signOut from "@/api/auth/signOut";
 
 const Header = () => {
+  const { user, logout } = useAuth();
+
+  const handleLogout = async () => {
+    try {
+      const response = await signOut();
+      if (response.code === 200) {
+        console.log("로그아웃 완료", response);
+        logout();
+      } else {
+        console.error("로그아웃 실패", response);
+      }
+    } catch (error) {
+      console.error("로그아웃 실패", error);
+    }
+  };
+
   return (
     <GlobalNavBar>
       <NavBar>
@@ -31,10 +49,24 @@ const Header = () => {
           </GNBControl>
         </NavCenter>
         <NavLogin>
-          <LoginText>로그인하고 투자하기</LoginText>
-          <LoginBtn type="button" href="/signin">
-            로그인
-          </LoginBtn>
+          {user ? (
+            <>
+              <LoginText>
+                반갑습니다,
+                <Nickname>{user?.nickname}</Nickname>님!
+              </LoginText>
+              <LoginBtn type="button" onClick={handleLogout}>
+                로그아웃
+              </LoginBtn>
+            </>
+          ) : (
+            <>
+              <LoginText>로그인하고 투자하기</LoginText>
+              <LoginBtn type="button" href="/signin">
+                로그인
+              </LoginBtn>
+            </>
+          )}
         </NavLogin>
       </NavBar>
     </GlobalNavBar>
@@ -138,7 +170,7 @@ const NavLogin = styled.div`
   display: flex;
   justify-content: end;
   align-items: center;
-  width: 250px;
+  width: 300px;
 `;
 
 const LoginText = styled.span`
@@ -148,6 +180,11 @@ const LoginText = styled.span`
   font-size: 14px;
   color: #00132b94;
   line-height: 1.45;
+`;
+
+const Nickname = styled.span`
+  font-weight: 700;
+  color: #000;
 `;
 
 const LoginBtn = styled.a`
