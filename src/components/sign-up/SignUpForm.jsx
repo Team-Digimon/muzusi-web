@@ -47,6 +47,9 @@ const SignUpForm = () => {
           setError("닉네임 등록 중 문제가 발생했습니다. 다시 시도해주세요.");
         }
       } catch (apiError) {
+        if (apiError.reponse.status === 422) {
+          alert("닉네임 형식을 확인해주세요.");
+        }
         console.error("닉네임 등록 실패", apiError);
         setError("닉네임 등록 중 문제가 발생했습니다. 다시 시도해주세요.");
       }
