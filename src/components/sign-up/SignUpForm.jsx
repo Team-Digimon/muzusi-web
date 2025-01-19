@@ -3,9 +3,11 @@ import MuzusiLogo from "@/assets/logo/MuzusiLogo.png";
 import { useState } from "react";
 import postNickname from "../../api/sign-up/postNickname";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/useAuth";
 
 const SignUpForm = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const [nickname, setNickname] = useState("");
   const [available, setAvailable] = useState(
@@ -37,6 +39,7 @@ const SignUpForm = () => {
         const response = await postNickname(nickname);
         if (response.code === 200) {
           console.log("닉네임 등록 성공", response);
+          login({ token: response.data.accessToken });
           alert("닉네임 등록이 완료되었습니다.");
           navigate("/");
         } else {
