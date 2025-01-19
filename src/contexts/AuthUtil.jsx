@@ -13,7 +13,7 @@ export const getStoredToken = () => {
   try {
     return sessionStorage.getItem("accessToken");
   } catch (error) {
-    console.error("세션션 스토리지에서 토큰을 읽는 중 오류:", error);
+    console.error("세션 스토리지에서 토큰을 읽는 중 오류:", error);
     sessionStorage.removeItem("accessToken");
     return null;
   }
