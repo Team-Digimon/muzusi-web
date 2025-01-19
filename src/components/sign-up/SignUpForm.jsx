@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import MuzusiLogo from "@/assets/logo/MuzusiLogo.png";
 import { useState } from "react";
-import postNickname from "../../api/sign-up/postNickname";
+import signUp from "@/api/auth/signUp";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/useAuth";
 
@@ -36,7 +36,7 @@ const SignUpForm = () => {
     e.preventDefault();
     if (!error && nickname.length > 0) {
       try {
-        const response = await postNickname(nickname);
+        const response = await signUp(nickname);
         if (response.code === 200) {
           console.log("닉네임 등록 성공", response);
           login({ token: response.data.accessToken });

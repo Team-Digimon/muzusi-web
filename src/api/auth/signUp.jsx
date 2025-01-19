@@ -1,6 +1,6 @@
 import authApi from "@/api/authApi";
 
-const postNickname = async (nickname) => {
+const signUp = async (nickname) => {
   try {
     const response = await authApi.post(`auth/sign-up`, { nickname });
     return response.data;
@@ -19,4 +19,4 @@ const postNickname = async (nickname) => {
   }
 };
 
-export default postNickname;
+export default signUp;

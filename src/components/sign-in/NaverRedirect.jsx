@@ -1,6 +1,6 @@
 import { useCallback, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import socialSignIn from "@/api/sign-in/socialSignIn";
+import socialSignIn from "@/api/auth/socialSignIn";
 import { useAuth } from "@/contexts/useAuth";
 
 const NaverRedirect = () => {

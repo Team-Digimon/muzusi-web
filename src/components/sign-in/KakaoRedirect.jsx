@@ -1,7 +1,7 @@
 import { useCallback, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/useAuth";
-import socialSignIn from "@/api/sign-in/socialSignIn";
+import socialSignIn from "@/api/auth/socialSignIn";
 
 const KakaoRedirect = () => {
   const location = useLocation();
