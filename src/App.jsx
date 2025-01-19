@@ -9,11 +9,19 @@ import GlobalStyles from "@/GlobalStyles";
 import KakaoRedirect from "@/components/sign-in/KakaoRedirect";
 import NaverRedirect from "@/components/sign-in/NaverRedirect";
 import SignUp from "@/pages/SignUp";
-import { AuthProvider } from "@/contexts/AuthProvider";
+import React from "react";
+import { useAuth } from "@/contexts/useAuth";
+import { setUpInterceptors } from "./api/authApi";
 
 const App = () => {
+  const { logout } = useAuth();
+
+  React.useEffect(() => {
+    setUpInterceptors(logout);
+  }, [logout]);
+
   return (
-    <AuthProvider>
+    <>
       <GlobalStyles />
       <Router>
         <Routes>
@@ -39,7 +47,7 @@ const App = () => {
           </Route>
         </Routes>
       </Router>
-    </AuthProvider>
+    </>
   );
 };
 

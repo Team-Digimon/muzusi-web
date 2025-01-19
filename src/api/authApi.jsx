@@ -1,13 +1,12 @@
 import axios from "axios";
 import { baseUrl } from "@/config/Env";
-import { useAuth } from "@/contexts/useAuth";
 
 const authApi = axios.create({
   baseURL: baseUrl,
   withCredentials: true,
 });
 
-export const reissueAccessToken = async (logout) => {
+const reissueAccessToken = async (logout) => {
   try {
     const response = await authApi.get("/auth/reissue");
     console.log(response);
@@ -39,40 +38,43 @@ export const reissueAccessToken = async (logout) => {
   }
 };
 
-authApi.interceptors.request.use(
-  (config) => {
-    const accessToken = localStorage.getItem("accessToken");
+export const setUpInterceptors = (logout) => {
+  authApi.interceptors.request.use(
+    (config) => {
+      const accessToken = localStorage.getItem("accessToken");
 
-    if (accessToken) {
-      config.headers.Authorization = `Bearer ${accessToken}`;
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
-
-authApi.interceptors.response.use(
-  (response) => response,
-  async (error) => {
-    const originalRequest = error.config;
-    const { logout } = useAuth();
-
-    if (error.response.data.code === "0004" && !originalRequest._retry) {
-      originalRequest._retry = true;
-      try {
-        const newAccessToken = await reissueAccessToken(logout);
-        authApi.defaults.headers["Authorization"] = `Bearer ${newAccessToken}`;
-        return authApi(originalRequest);
-      } catch (error) {
-        console.error("토큰 재발급 실패", error);
-        logout();
-        return Promise.reject(error);
+      if (accessToken) {
+        config.headers.Authorization = `Bearer ${accessToken}`;
       }
+      return config;
+    },
+    (error) => {
+      return Promise.reject(error);
     }
-    return Promise.reject(error);
-  }
-);
+  );
+
+  authApi.interceptors.response.use(
+    (response) => response,
+    async (error) => {
+      const originalRequest = error.config;
+
+      if (error.response.data.code === "0004" && !originalRequest._retry) {
+        originalRequest._retry = true;
+        try {
+          const newAccessToken = await reissueAccessToken(logout);
+          authApi.defaults.headers[
+            "Authorization"
+          ] = `Bearer ${newAccessToken}`;
+          return authApi(originalRequest);
+        } catch (error) {
+          console.error("토큰 재발급 실패", error);
+          logout();
+          return Promise.reject(error);
+        }
+      }
+      return Promise.reject(error);
+    }
+  );
+};
 
 export default authApi;
