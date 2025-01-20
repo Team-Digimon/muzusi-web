@@ -1,4 +1,4 @@
-import { useAuth } from "@/contexts/useAuth";
+import useAuth from "@/contexts/useAuth";
 
 const Home = () => {
   const { user } = useAuth();

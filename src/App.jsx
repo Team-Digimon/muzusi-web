@@ -10,8 +10,8 @@ import KakaoRedirect from "@/components/auth/KakaoRedirect";
 import NaverRedirect from "@/components/auth/NaverRedirect";
 import SignUp from "@/pages/SignUp";
 import React from "react";
-import { useAuth } from "@/contexts/useAuth";
-import { setUpInterceptors } from "./api/authApi";
+import useAuth from "@/contexts/useAuth";
+import { setUpInterceptors } from "@/api/authApi";
 
 const App = () => {
   const { logout } = useAuth();

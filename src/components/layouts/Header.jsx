@@ -1,8 +1,8 @@
 import styled from "styled-components";
 import MuzusiLogo from "@/assets/logo/MuzusiLogo.png";
 import SearchIcon from "@/assets/icon/SearchIcon.svg?react";
-import { useAuth } from "@/contexts/useAuth";
 import signOut from "@/api/auth/signOut";
+import useAuth from "@/contexts/useAuth";
 
 const Header = () => {
   const { user, logout } = useAuth();

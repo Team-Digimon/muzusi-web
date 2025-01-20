@@ -3,7 +3,7 @@ import MuzusiLogo from "@/assets/logo/MuzusiLogo.png";
 import { useState } from "react";
 import signUp from "@/api/auth/signUp";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "@/contexts/useAuth";
+import useAuth from "@/contexts/useAuth";
 
 const SignUpForm = () => {
   const navigate = useNavigate();
