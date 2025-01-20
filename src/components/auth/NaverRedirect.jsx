@@ -12,7 +12,6 @@ const NaverRedirect = () => {
     async (code) => {
       try {
         const response = await socialSignIn("NAVER", code);
-        console.log("네이버 로그인 성공", response);
         login({ token: response.data.accessToken });
         if (response.data.isRegistered) {
           navigate("/");

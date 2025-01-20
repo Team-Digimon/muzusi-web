@@ -11,7 +11,6 @@ const Header = () => {
     try {
       const response = await signOut();
       if (response.code === 200) {
-        console.log("로그아웃 완료", response);
         logout();
       } else {
         console.error("로그아웃 실패", response);

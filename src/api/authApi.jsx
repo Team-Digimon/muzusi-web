@@ -9,18 +9,15 @@ const authApi = axios.create({
 const reissueAccessToken = async (logout) => {
   try {
     const response = await authApi.get("/auth/reissue");
-    console.log(response);
     if (response.data.code === 200) {
       const { accessToken } = response.data.data;
       sessionStorage.setItem("accessToken", accessToken);
-      console.log("토큰 재발급 성공", accessToken);
       return accessToken;
     }
     throw new Error("토큰 재발급 오류");
   } catch (error) {
     if (error.response) {
       if (error.reponse.data.code === "0008") {
-        console.log(error.response.data.message);
         alert("세션이 만료되었습니다. 다시 로그인해주세요.");
         logout();
         return null;

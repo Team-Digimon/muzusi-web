@@ -36,7 +36,6 @@ const SignUpForm = () => {
       try {
         const response = await signUp(nickname);
         if (response.code === 200) {
-          console.log("닉네임 등록 성공", response);
           login({ token: response.data.accessToken });
           alert("닉네임 등록이 완료되었습니다.");
           navigate("/");

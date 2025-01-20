@@ -35,7 +35,6 @@ const AuthProvider = ({ children }) => {
   }, []);
 
   const logout = useCallback(() => {
-    console.log("로그아웃 처리");
     setUser(null);
     setAccessToken(null);
     clearStorage();

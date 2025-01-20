@@ -12,7 +12,6 @@ const KakaoRedirect = () => {
     async (code) => {
       try {
         const response = await socialSignIn("KAKAO", code);
-        console.log("카카오 로그인 성공", response);
         login({ token: response.data.accessToken });
         if (response.data.isRegistered) {
           navigate("/");
