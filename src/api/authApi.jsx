@@ -13,7 +13,7 @@ const reissueAccessToken = async (logout) => {
 
     if (response.data.code === 200) {
       const { accessToken } = response.data.data;
-      localStorage.setItem("accessToken", accessToken);
+      sessionStorage.setItem("accessToken", accessToken);
       console.log("토큰 재발급 성공", accessToken);
       return accessToken;
     }
@@ -41,7 +41,7 @@ const reissueAccessToken = async (logout) => {
 export const setUpInterceptors = (logout) => {
   authApi.interceptors.request.use(
     (config) => {
-      const accessToken = localStorage.getItem("accessToken");
+      const accessToken = sessionStorage.getItem("accessToken");
 
       if (accessToken) {
         config.headers.Authorization = `Bearer ${accessToken}`;
