@@ -13,9 +13,7 @@ const KakaoRedirect = () => {
       try {
         const response = await socialSignIn("KAKAO", code);
         console.log("카카오 로그인 성공", response);
-
         login({ token: response.data.accessToken });
-
         if (response.data.isRegistered) {
           navigate("/");
         } else {
@@ -31,7 +29,6 @@ const KakaoRedirect = () => {
   useEffect(() => {
     const queryPrams = new URLSearchParams(location.search);
     const code = queryPrams.get("code");
-
     if (code) {
       fetchKakaoAccessToken(code);
     }

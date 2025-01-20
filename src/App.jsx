@@ -1,3 +1,4 @@
+import React from "react";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import Layout from "@/components/layouts/Layout";
 import SignIn from "@/pages/SignIn";
@@ -9,7 +10,6 @@ import GlobalStyles from "@/GlobalStyles";
 import KakaoRedirect from "@/components/auth/KakaoRedirect";
 import NaverRedirect from "@/components/auth/NaverRedirect";
 import SignUp from "@/pages/SignUp";
-import React from "react";
 import useAuth from "@/contexts/useAuth";
 import { setUpInterceptors } from "@/api/authApi";
 

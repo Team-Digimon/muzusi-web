@@ -13,9 +13,7 @@ const NaverRedirect = () => {
       try {
         const response = await socialSignIn("NAVER", code);
         console.log("네이버 로그인 성공", response);
-
         login({ token: response.data.accessToken });
-
         if (response.data.isRegistered) {
           navigate("/");
         } else {
@@ -31,7 +29,6 @@ const NaverRedirect = () => {
   useEffect(() => {
     const queryPrams = new URLSearchParams(location.search);
     const code = queryPrams.get("code");
-
     if (code) {
       fetchNaverAccessToken(code);
     }

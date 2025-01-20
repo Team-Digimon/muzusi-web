@@ -10,7 +10,6 @@ const reissueAccessToken = async (logout) => {
   try {
     const response = await authApi.get("/auth/reissue");
     console.log(response);
-
     if (response.data.code === 200) {
       const { accessToken } = response.data.data;
       sessionStorage.setItem("accessToken", accessToken);
@@ -33,7 +32,6 @@ const reissueAccessToken = async (logout) => {
     } else {
       console.error("네트워크 또는 서버 오류", error);
     }
-
     throw error;
   }
 };
@@ -42,7 +40,6 @@ export const setUpInterceptors = (logout) => {
   authApi.interceptors.request.use(
     (config) => {
       const accessToken = sessionStorage.getItem("accessToken");
-
       if (accessToken) {
         config.headers.Authorization = `Bearer ${accessToken}`;
       }
@@ -57,7 +54,6 @@ export const setUpInterceptors = (logout) => {
     (response) => response,
     async (error) => {
       const originalRequest = error.config;
-
       if (error.response.data.code === "0004" && !originalRequest._retry) {
         originalRequest._retry = true;
         try {
