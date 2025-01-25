@@ -1,9 +1,18 @@
-import useAuth from "@/contexts/useAuth";
+import News from "@/components/home/News";
+import styled from "styled-components";
 
 const Home = () => {
-  const { user } = useAuth();
-
-  return <div>환영합니다, {user?.nickname}님</div>;
+  return (
+    <Container>
+      <News />
+    </Container>
+  );
 };
 
 export default Home;
+
+const Container = styled.section`
+  display: flex;
+  width: 100%;
+  margin-top: 56px;
+`;
