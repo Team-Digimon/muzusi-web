@@ -1,4 +1,4 @@
-import React from "react";
+import { useEffect, useState } from "react";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import Layout from "@/components/layouts/Layout";
 import SignIn from "@/pages/SignIn";
@@ -15,10 +15,16 @@ import { setUpInterceptors } from "@/api/authApi";
 
 const App = () => {
   const { logout } = useAuth();
+  const [loading, setLoading] = useState(true);
 
-  React.useEffect(() => {
+  useEffect(() => {
     setUpInterceptors(logout);
+    setLoading(false);
   }, [logout]);
+
+  if (loading) {
+    return null;
+  }
 
   return (
     <>

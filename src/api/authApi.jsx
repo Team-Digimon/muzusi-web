@@ -6,7 +6,7 @@ const authApi = axios.create({
   withCredentials: true,
 });
 
-const reissueAccessToken = async (logout) => {
+export const reissueAccessToken = async (logout) => {
   try {
     const response = await authApi.get("/auth/reissue");
     if (response.data.code === 200) {
