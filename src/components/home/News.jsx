@@ -1,5 +1,5 @@
 import getNews from "@/api/news/getNews";
-import getNewsByKeyword from "@/api/news/getNewsbyKeyword";
+import getNewsByKeyword from "@/api/news/getNewsByKeyword";
 import { useCallback, useEffect, useState } from "react";
 import styled, { css, keyframes } from "styled-components";
 
