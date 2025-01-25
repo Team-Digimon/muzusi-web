@@ -6,6 +6,7 @@ import useAuth from "@/contexts/useAuth";
 
 const Header = () => {
   const { user, logout } = useAuth();
+  const currentPath = window.location.pathname;
 
   const handleLogout = async () => {
     try {
@@ -34,10 +35,17 @@ const Header = () => {
         <NavCenter>
           <GNBControl>
             <GNBBtn>
-              <GNBAnchor href="/">홈</GNBAnchor>
+              <GNBAnchor href="/" $isActive={currentPath === "/"}>
+                홈
+              </GNBAnchor>
             </GNBBtn>
             <GNBBtn>
-              <GNBAnchor href="/">내 계좌</GNBAnchor>
+              <GNBAnchor
+                href="/account"
+                $isActive={currentPath.startsWith("/account")}
+              >
+                내 계좌
+              </GNBAnchor>
             </GNBBtn>
             <SearchBtn>
               <SearchIconBox role="presentation">
@@ -133,6 +141,8 @@ const GNBAnchor = styled.a`
     font-weight: 700;
     color: #333d4b;
   }
+  font-weight: ${({ $isActive }) => ($isActive ? 700 : 500)};
+  color: ${({ $isActive }) => ($isActive ? "#333d4b" : "#4e5968")};
 `;
 
 const SearchBtn = styled.button`
@@ -193,7 +203,7 @@ const LoginBtn = styled.a`
   width: auto;
   min-height: 32px;
   min-width: 16px;
-  margin: 0px 20px;
+  margin-left: 20px;
   font-weight: 600;
   white-space: nowrap;
   text-align: center;
