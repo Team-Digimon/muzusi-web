@@ -38,7 +38,7 @@ const AuthProvider = ({ children }) => {
     setUser(null);
     setAccessToken(null);
     clearStorage();
-    window.location.herf = "/";
+    window.location.href = "/";
   }, []);
 
   const value = useMemo(
