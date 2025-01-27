@@ -75,8 +75,8 @@ const News = () => {
     }
   };
 
-  const handleKeyword = (el) => () => {
-    setKeyword(el);
+  const handleKeyword = (keyword) => () => {
+    setKeyword(keyword);
   };
 
   const handleNextPage = () => {
@@ -154,8 +154,8 @@ const News = () => {
 
 export default News;
 
-const NewsContainer = styled.div`
-  min-height: 340px;
+const NewsContainer = styled.section`
+  margin-bottom: 56px;
   width: 100%;
 `;
 
