@@ -257,7 +257,7 @@ const NewsTransitionContainer = styled.div`
   ${({ $animatingOut }) =>
     $animatingOut &&
     css`
-      animation: ${slideOutLeft} 0.5s ease-in-out;
+      animation: ${slideOutLeft} 0.6s ease-in-out;
     `}
 
   ${({ $animatingIn }) =>
