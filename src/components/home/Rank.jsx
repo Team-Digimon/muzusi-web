@@ -5,7 +5,7 @@ import styled from "styled-components";
 const Rank = () => {
   const [rank, setRank] = useState([]);
   const [type, setType] = useState("VOLUME");
-  const [now, setNow] = useState("");
+  const [time, setTime] = useState("");
   const [page, setPage] = useState(0);
 
   const types = [
@@ -19,28 +19,12 @@ const Rank = () => {
       const response = await getStocksRank({
         type: type,
       });
-      setRank(response.data);
+      setRank(response.data.rank);
+      setTime(response.data.time);
     } catch (error) {
       console.error("주식 순위 가져오기 실패: ", error.message);
     }
   }, [type]);
-
-  useEffect(() => {
-    const updateNow = () => {
-      const current = new Date();
-      const formattedTime = `${current.getFullYear()}.${String(
-        current.getMonth() + 1
-      ).padStart(2, "0")}.${String(current.getDate()).padStart(
-        2,
-        "0"
-      )} ${String(current.getHours()).padStart(2, "0")}:${String(
-        current.getMinutes()
-      ).padStart(2, "0")}`;
-      setNow(formattedTime);
-    };
-
-    updateNow();
-  }, []);
 
   useEffect(() => {
     fetchRank();
@@ -59,7 +43,7 @@ const Rank = () => {
     <RankContainer>
       <RankHeader>
         <RankTitle>실시간 TOP 30 차트</RankTitle>
-        <RankTime>{now} 기준</RankTime>
+        <RankTime>{time} 기준</RankTime>
       </RankHeader>
       <RankTypes>
         {types.map((el, index) => {
