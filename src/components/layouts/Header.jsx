@@ -59,6 +59,19 @@ const Header = () => {
     debouncedFetchSearchResults(inputValue);
   };
 
+  const HighlightedText = ({ text, highlight }) => {
+    if (!highlight) return text;
+
+    const parts = text.split(new RegExp(`(${highlight})`, "gi"));
+    return parts.map((part, index) =>
+      part.toLowerCase() === highlight.toLowerCase() ? (
+        <Highlighted key={index}>{part}</Highlighted>
+      ) : (
+        <span key={index}>{part}</span>
+      )
+    );
+  };
+
   const handleClickSearchedStock = (stock) => () => {
     navigate(`stocks/${stock.stockCode}`, { state: { stock } });
   };
@@ -145,7 +158,12 @@ const Header = () => {
                       key={index}
                       onClick={handleClickSearchedStock(el)}
                     >
-                      <SearchedStockName>{el.stockName}</SearchedStockName>
+                      <SearchedStockName>
+                        <HighlightedText
+                          text={el.stockName}
+                          highlight={searchText}
+                        />
+                      </SearchedStockName>
                       <SearchedStockCode>{el.stockCode}</SearchedStockCode>
                     </SearchedStock>
                   );
@@ -388,6 +406,10 @@ const SearchedStockCode = styled.div`
   text-overflow: ellipsis;
   overflow: hidden;
   word-break: break-all;
+`;
+
+const Highlighted = styled.span`
+  color: #f04452;
 `;
 
 const SearchNotice = styled.div`
