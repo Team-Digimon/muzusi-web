@@ -41,7 +41,7 @@ const App = () => {
           <Route path="/" element={<Layout />}>
             {/* 기본 경로 */}
             <Route index element={<Home />} />
-            <Route path="stocks" element={<Stocks />} />
+            <Route path="stocks/:stockcode" element={<Stocks />} />
 
             {/* 내 계좌 경로 */}
             <Route path="account">
