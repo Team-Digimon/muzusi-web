@@ -3,10 +3,18 @@ import MuzusiLogo from "@/assets/logo/MuzusiLogo.png";
 import SearchIcon from "@/assets/icon/SearchIcon.svg?react";
 import signOut from "@/api/auth/signOut";
 import useAuth from "@/contexts/useAuth";
+import React, { useCallback, useMemo, useState } from "react";
+import getStocksSearch from "@/api/stocks/getStocksSearch";
+import { debounce } from "lodash";
+import { useNavigate } from "react-router-dom";
 
 const Header = () => {
   const { user, logout } = useAuth();
   const currentPath = window.location.pathname;
+  const navigate = useNavigate();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [searchText, setSearchText] = useState("");
+  const [searchedStocks, setSearchedStocks] = useState([]);
 
   const handleLogout = async () => {
     try {
@@ -20,6 +28,46 @@ const Header = () => {
       console.error("로그아웃 실패", error);
     }
   };
+
+  const openSearchModal = () => {
+    setIsModalOpen(true);
+    setSearchText("");
+  };
+
+  const closeSearchModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const fetchSearchResults = useCallback(async (keyword) => {
+    if (!keyword) return;
+    try {
+      const response = await getStocksSearch({ keyword: keyword });
+      setSearchedStocks(response.data);
+    } catch (error) {
+      console.error("검색 결과 가져오기 실패: ", error.message);
+    }
+  }, []);
+
+  const debouncedFetchSearchResults = useMemo(
+    () => debounce((keyword) => fetchSearchResults(keyword), 500),
+    [fetchSearchResults]
+  );
+
+  const handleInputChange = (e) => {
+    const inputValue = e.target.value;
+    setSearchText(inputValue);
+    debouncedFetchSearchResults(inputValue);
+  };
+
+  const handleClickSearchedStock = (stock) => () => {
+    navigate(`stocks/${stock.stockCode}`, { state: { stock } });
+  };
+
+  React.useEffect(() => {
+    return () => {
+      debouncedFetchSearchResults.cancel();
+    };
+  }, [debouncedFetchSearchResults]);
 
   return (
     <GlobalNavBar>
@@ -47,7 +95,7 @@ const Header = () => {
                 내 계좌
               </GNBAnchor>
             </GNBBtn>
-            <SearchBtn>
+            <SearchBtn onClick={openSearchModal}>
               <SearchIconBox role="presentation">
                 <SearchIcon />
               </SearchIconBox>
@@ -76,6 +124,39 @@ const Header = () => {
           )}
         </NavLogin>
       </NavBar>
+      {isModalOpen && (
+        <ModalBackground onClick={closeSearchModal}>
+          <ModalContent onClick={(e) => e.stopPropagation()}>
+            <ModalSearchBox>
+              <SearchIconBox role="presentation">
+                <SearchIcon />
+              </SearchIconBox>
+              <ModalSearchText
+                placeholder="검색어를 입력해주세요"
+                value={searchText}
+                onChange={handleInputChange}
+              />
+            </ModalSearchBox>
+            {searchText ? (
+              <SearchedStocks>
+                {searchedStocks.map((el, index) => {
+                  return (
+                    <SearchedStock
+                      key={index}
+                      onClick={handleClickSearchedStock(el)}
+                    >
+                      <SearchedStockName>{el.stockName}</SearchedStockName>
+                      <SearchedStockCode>{el.stockCode}</SearchedStockCode>
+                    </SearchedStock>
+                  );
+                })}
+              </SearchedStocks>
+            ) : (
+              <SearchNotice>찾고자 하는 종목명을 입력해주세요!</SearchNotice>
+            )}
+          </ModalContent>
+        </ModalBackground>
+      )}
     </GlobalNavBar>
   );
 };
@@ -216,4 +297,105 @@ const LoginBtn = styled.a`
   line-height: 16px;
   color: #fff;
   background-color: #000;
+`;
+
+const ModalBackground = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.2);
+  display: flex;
+  justify-content: center;
+  z-index: 1000;
+`;
+
+const ModalContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border-radius: 20px;
+  width: 40%;
+  min-width: 600px;
+  max-height: 500px;
+  margin-top: 10px;
+`;
+
+const ModalSearchBox = styled.div`
+  width: calc(100% - 24px);
+  height: 40px;
+  min-height: 40px;
+  margin: 12px 12px 16px;
+  background-color: #0220470d;
+  border-radius: 50px;
+  display: flex;
+  align-items: center;
+`;
+
+const ModalSearchText = styled.input`
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: none;
+  outline: none;
+  background-color: transparent;
+  font-size: 14px;
+  color: #191f28;
+  &::placeholder {
+    color: #8b95a1;
+  }
+`;
+
+const SearchedStocks = styled.div`
+  width: calc(100% - 32px);
+  margin: 0px 16px 16px 16px;
+  display: block;
+  overflow: auto;
+`;
+
+const SearchedStock = styled.div`
+  width: 100%;
+  height: 55px;
+  border-radius: 8px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  cursor: pointer;
+  &:hover {
+    background-color: #0220470d;
+  }
+`;
+
+const SearchedStockName = styled.div`
+  font-weight: bold;
+  color: #333d4b;
+  line-height: 1.45;
+  font-size: 14px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  word-break: break-all;
+`;
+
+const SearchedStockCode = styled.div`
+  font-weight: 500;
+  color: #6b7684;
+  line-height: 1.45;
+  font-size: 12px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  word-break: break-all;
+`;
+
+const SearchNotice = styled.div`
+  height: 80%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 16px;
+  color: #191f28;
 `;
