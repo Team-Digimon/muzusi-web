@@ -54,5 +54,4 @@ const SideBarContainer = styled.div`
   position: fixed;
   top: 0;
   right: 0;
-  z-index: 1001;
 `;
