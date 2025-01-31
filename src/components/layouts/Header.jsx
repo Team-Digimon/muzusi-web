@@ -73,6 +73,7 @@ const Header = () => {
   };
 
   const handleClickSearchedStock = (stock) => () => {
+    setIsModalOpen(false);
     navigate(`stocks/${stock.stockCode}`, { state: { stock } });
   };
 
