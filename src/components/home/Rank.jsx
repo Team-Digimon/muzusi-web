@@ -1,8 +1,10 @@
 import getStocksRank from "@/api/stocks/getStocksRank";
 import { useCallback, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
 const Rank = () => {
+  const navigate = useNavigate();
   const [rank, setRank] = useState([]);
   const [type, setType] = useState("VOLUME");
   const [time, setTime] = useState("");
@@ -37,6 +39,11 @@ const Rank = () => {
 
   const handlePage = (pageNumber) => () => {
     setPage(pageNumber - 1);
+  };
+
+  const handleClickStock = (el) => () => {
+    const stock = { stockName: el.name, stockCode: el.code };
+    navigate(`stocks/${stock.stockCode}`, { state: { stock } });
   };
 
   return (
@@ -79,7 +86,11 @@ const Rank = () => {
               el.prdyCtrt < 0 ? Math.abs(el.prdyCtrt) : el.prdyCtrt;
             const formattedAvrgVol = el.avrgVol.toLocaleString();
             return (
-              <RankTableStock key={el.rank} $isOdd={el.rank % 2 !== 0}>
+              <RankTableStock
+                key={el.rank}
+                onClick={handleClickStock(el)}
+                $isOdd={el.rank % 2 !== 0}
+              >
                 <StockRanking>{el.rank}</StockRanking>
                 <StockName>{el.name}</StockName>
                 <StockPrice>{formattedPrice}원</StockPrice>
