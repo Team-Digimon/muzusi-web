@@ -1,13 +1,16 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import Header from "@/components/layouts/Header";
 import styled from "styled-components";
 import SideBar from "@/components/layouts/SideBar";
 
 const Layout = () => {
+  const location = useLocation();
+  const isStockPage = location.pathname.startsWith("/stocks");
+
   return (
-    <Container>
+    <Container $isStockPage={isStockPage}>
       <ContentContainer>
-        <HeaderContainer>
+        <HeaderContainer $isStockPage={isStockPage}>
           <Header />
         </HeaderContainer>
         <MainContainer>
@@ -25,6 +28,7 @@ export default Layout;
 
 const Container = styled.div`
   display: flex;
+  background: ${({ $isStockPage }) => ($isStockPage ? "#F6F7F9" : "#fff")};
 `;
 
 const ContentContainer = styled.div`
@@ -42,6 +46,7 @@ const HeaderContainer = styled.header`
   min-width: 1000px;
   background: white;
   z-index: 1000;
+  background: ${({ $isStockPage }) => ($isStockPage ? "#F6F7F9" : "#fff")};
 `;
 
 const MainContainer = styled.div`
