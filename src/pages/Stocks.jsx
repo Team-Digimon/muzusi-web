@@ -1,9 +1,10 @@
+import StockChartContainer from "@/components/stocks/StockChartContainer";
 import { useLocation } from "react-router-dom";
 
 const Stocks = () => {
   const location = useLocation();
   const stock = location.state?.stock;
-  return <div>{stock.stockName}종목 화면입니다.</div>;
+  return <StockChartContainer stock={stock} />;
 };
 
 export default Stocks;
