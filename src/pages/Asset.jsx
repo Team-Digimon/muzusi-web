@@ -1,5 +1,17 @@
+import CurrentAccount from "@/components/account/CurrentAccount";
+import styled from "styled-components";
+
 const Asset = () => {
-  return <div>자산 페이지입니다.</div>;
+  return (
+    <AssetContainer>
+      <CurrentAccount />
+    </AssetContainer>
+  );
 };
 
 export default Asset;
+
+const AssetContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+`;

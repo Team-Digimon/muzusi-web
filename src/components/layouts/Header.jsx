@@ -103,7 +103,7 @@ const Header = () => {
             </GNBBtn>
             <GNBBtn>
               <GNBAnchor
-                href="/account"
+                href="/account/asset"
                 $isActive={currentPath.startsWith("/account")}
               >
                 내 계좌
