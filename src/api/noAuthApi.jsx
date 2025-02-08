@@ -1,9 +1,9 @@
 import axios from "axios";
 import { baseUrl } from "@/config/Env";
 
-const noAuthapi = axios.create({
+const noAuthApi = axios.create({
   baseURL: baseUrl,
   withCredentials: true,
 });
 
-export default noAuthapi;
+export default noAuthApi;

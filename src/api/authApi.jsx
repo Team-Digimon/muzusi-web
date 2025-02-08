@@ -1,14 +1,15 @@
 import axios from "axios";
 import { baseUrl } from "@/config/Env";
+import noAuthapi from "./noAuthApi";
 
 const authApi = axios.create({
   baseURL: baseUrl,
   withCredentials: true,
 });
 
-export const reissueAccessToken = async (logout) => {
+const reissueAccessToken = async (logout) => {
   try {
-    const response = await authApi.get("/auth/reissue");
+    const response = await noAuthapi.get("/auth/reissue");
     if (response.data.code === 200) {
       const { accessToken } = response.data.data;
       sessionStorage.setItem("accessToken", accessToken);
