@@ -54,7 +54,6 @@ export const setUpInterceptors = (logout) => {
       const originalRequest = error.config;
       if (error.response.data.code === "0004" && !originalRequest._retry) {
         originalRequest._retry = true;
-        console.log("오류 발생!!!!");
         try {
           const newAccessToken = await reissueAccessToken(logout);
           authApi.defaults.headers[
