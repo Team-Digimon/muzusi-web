@@ -45,10 +45,8 @@ const StockChartContainer = ({ stock }) => {
 
   return (
     <StockContainer>
-      <StockName>{stock.stockName}</StockName>
       <ChartContainer>
         <ChartHeader>
-          <ChartTitle>차트</ChartTitle>
           <ChartPeriods>
             {periods.map((el, index) => {
               return (
@@ -81,38 +79,21 @@ export default StockChartContainer;
 const StockContainer = styled.div`
   display: flex;
   flex-direction: column;
-`;
-
-const StockName = styled.div`
-  font-size: 25px;
-  font-weight: bold;
-  color: #333d4b;
-  line-height: 1.3;
-  padding: 8px;
+  width: 70%;
 `;
 
 const ChartContainer = styled.div`
   display: flex;
   flex-direction: column;
-  padding: 8px 16px;
-  border-radius: 16px;
-  background: #fff;
 `;
 
 const ChartHeader = styled.div`
   display: flex;
-  justify-content: space-between;
+  justify-content: end;
   font-size: 14px;
   align-items: center;
-  padding: 8px 0px;
   margin-bottom: 16px;
   margin-right: 22px;
-`;
-
-const ChartTitle = styled.div`
-  font-weight: bold;
-  color: #333d4b;
-  line-height: 1.45;
 `;
 
 const ChartPeriods = styled.div`

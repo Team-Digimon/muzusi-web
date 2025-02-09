@@ -50,7 +50,7 @@ const StockChart = ({ chartData }) => {
 
     const chart = createChart(chartContainerRef.current, {
       width: chartContainerRef.current.clientWidth,
-      height: 500,
+      height: chartContainerRef.current.clientHeight,
       layout: {
         backgroundColor: "#ffffff",
         textColor: "#000000",
@@ -61,6 +61,7 @@ const StockChart = ({ chartData }) => {
       },
       timeScale: {
         visible: true,
+        borderVisible: false,
       },
       rightPriceScale: {
         visible: true,
@@ -116,7 +117,10 @@ const StockChart = ({ chartData }) => {
     });
 
     const handleResize = () => {
-      chart.resize(chartContainerRef.current.clientWidth, 600);
+      chart.resize(
+        chartContainerRef.current.clientWidth,
+        chartContainerRef.current.clientHeight
+      );
     };
     window.addEventListener("resize", handleResize);
 
@@ -197,6 +201,10 @@ const StockChart = ({ chartData }) => {
     };
   }, [chartData]);
 
+  if (chartData.length === 0) {
+    return <LoadingChart>지원하지 않는 차트입니다.</LoadingChart>;
+  }
+
   return (
     <ChartContainer>
       <Chart ref={chartContainerRef} />
@@ -241,6 +249,7 @@ export default StockChart;
 
 const ChartContainer = styled.div`
   position: relative;
+  height: 500px;
 `;
 
 const Chart = styled.div`
@@ -250,11 +259,7 @@ const Chart = styled.div`
 
 const TooltipContainer = styled.div`
   position: absolute;
-  top: 10px;
-  left: 10px;
-  background-color: white;
-  border-radius: 4px;
-  padding: 8px;
+  top: -30px;
   font-size: 12px;
   z-index: 1000;
   pointer-events: none;
@@ -279,4 +284,13 @@ const TooltipPrice = styled.span`
 const TooltipChange = styled.span`
   color: ${({ $change }) =>
     $change > 0 ? "#f04452" : $change < 0 ? "#3182f6" : "#4e5968"};
+`;
+
+const LoadingChart = styled.div`
+  height: 500px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  color: #333d4b;
 `;
