@@ -1,3 +1,4 @@
+import createAccount from "@/api/account/createAccount";
 import getCurrentAccount from "@/api/account/getCurrentAccount";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
@@ -11,11 +12,37 @@ const CurrentAccount = () => {
   const fetchCurrentAccount = async () => {
     try {
       const response = await getCurrentAccount();
-      console.log(response);
       setCurrentAccount(response.data);
       setIsLoading(false);
     } catch (error) {
       console.error("현재 계좌 가져오기 실패 : ", error.message);
+    }
+  };
+
+  const handleClickCreateBtn = async () => {
+    const now = new Date();
+    const koreaTime = new Intl.DateTimeFormat("en-US", {
+      timeZone: "Asia/Seoul",
+      hour: "numeric",
+      hour12: false,
+    }).format(now);
+
+    if (koreaTime > 9 && koreaTime < 18) {
+      alert("계좌 초기화는 오후 6시  ~ 오전 9시 사이에만 가능합니다.");
+      return;
+    }
+
+    const isConfirmed = window.confirm("정말 계좌를 초기화 하시겠습니까?");
+    if (!isConfirmed) return;
+
+    try {
+      const response = await createAccount();
+      console.log(response);
+    } catch (error) {
+      if (error.code === "4003") {
+        alert(error.message);
+      }
+      console.error("계좌 생성 실패 : ", error.message);
     }
   };
 
@@ -28,7 +55,12 @@ const CurrentAccount = () => {
   return (
     <CurrentAccountContainer>
       <BalanceContainer>
-        <Title>현재 내 자산</Title>
+        <BalanceHeader>
+          <Title>현재 내 자산</Title>
+          <CreateAccountBtn onClick={handleClickCreateBtn}>
+            초기화 및 계좌 재생성
+          </CreateAccountBtn>
+        </BalanceHeader>
         <Balance>{totalAsset.toLocaleString()} 원</Balance>
       </BalanceContainer>
       <AssetsContainer>
@@ -57,11 +89,33 @@ const CurrentAccountContainer = styled.div`
 
 const BalanceContainer = styled.div``;
 
+const BalanceHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+`;
+
 const Title = styled.div`
   font-weight: normal;
   font-size: 15px;
   color: #4e5968;
   line-height: 1.45;
+`;
+
+const CreateAccountBtn = styled.div`
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 20px;
+  padding: 2px 12px;
+  color: #333d4b;
+  border-radius: 8px;
+  border: 1px solid #333d4b;
+  transition: 0.2s;
+  cursor: pointer;
+  &:hover {
+    color: #fff;
+    background: #000;
+    border: 1px solid #000;
+  }
 `;
 
 const Balance = styled.div`
