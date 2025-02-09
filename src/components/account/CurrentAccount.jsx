@@ -27,8 +27,8 @@ const CurrentAccount = () => {
       hour12: false,
     }).format(now);
 
-    if (koreaTime > 9 && koreaTime < 18) {
-      alert("계좌 초기화는 오후 6시  ~ 오전 9시 사이에만 가능합니다.");
+    if (koreaTime > 9) {
+      alert("계좌 초기화는 00:00 ~ 09:00 사이에만 가능합니다.");
       return;
     }
 
