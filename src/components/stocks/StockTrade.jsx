@@ -1,0 +1,350 @@
+import { useState } from "react";
+import styled from "styled-components";
+
+const StockTrade = () => {
+  const [tradeType, setTradeType] = useState("BUY");
+  const [priceType, setPriceType] = useState("지정가");
+  const [inputPrice, setInputPrice] = useState("");
+  const [inputCount, setInputCount] = useState("");
+  const [isPriceFocused, setIsPriceFocused] = useState(false);
+  const [isCountFocused, setIsCountFocused] = useState(false);
+
+  const tradeTypes = [
+    {
+      value: "BUY",
+      korean: "매수",
+      color: "#f04452",
+      hoverColor: "#e42939",
+      label: "구매",
+    },
+    {
+      value: "SELL",
+      korean: "매도",
+      color: "#3182f6",
+      hoverColor: "#2272eb",
+      label: "판매",
+    },
+  ];
+
+  const priceTypes = ["지정가", "시장가"];
+
+  const activeTradeIndex = tradeTypes.findIndex((el) => el.value === tradeType);
+  const activePriceIndex = priceTypes.findIndex((el) => el === priceType);
+
+  const handleTradeType = (type) => () => {
+    setTradeType(type);
+  };
+
+  const handlePriceType = (type) => () => {
+    setPriceType(type);
+  };
+
+  const handleInputPriceChange = (e) => {
+    const value = e.target.value.replace(/[^0-9]/g, "");
+    setInputPrice(value);
+    setInputCount("1");
+  };
+
+  const formatPriceDisplay = () => {
+    return inputPrice ? parseInt(inputPrice, 10).toLocaleString() + " 원" : "";
+  };
+
+  const handleInputCountChange = (e) => {
+    const value = e.target.value.replace(/[^0-9]/g, "");
+    setInputCount(value);
+  };
+
+  const formatCountDisplay = () => {
+    return inputCount ? parseInt(inputCount, 10).toLocaleString() + " 주" : "";
+  };
+
+  return (
+    <StockTradeContainer>
+      <TradeTitle>주문하기</TradeTitle>
+      <TradeTypes>
+        <TradeHighlight $index={activeTradeIndex} />
+        {tradeTypes.map((el, index) => {
+          return (
+            <TradeType
+              key={index}
+              onClick={handleTradeType(el.value)}
+              $color={el.color}
+              $isActive={tradeType === el.value}
+            >
+              {el.korean}
+            </TradeType>
+          );
+        })}
+      </TradeTypes>
+      <TradeOrderForm>
+        <OrderLine>
+          <OrderLabel>{tradeTypes[activeTradeIndex].label} 가격</OrderLabel>
+          <PriceTypes>
+            <PriceHighlight $index={activePriceIndex} />
+            {priceTypes.map((el, index) => {
+              return (
+                <PriceType
+                  key={index}
+                  onClick={handlePriceType(el)}
+                  $isActive={priceType === el}
+                >
+                  {el}
+                </PriceType>
+              );
+            })}
+          </PriceTypes>
+        </OrderLine>
+        <OrderLine>
+          <OrderLabel />
+          {priceType === "지정가" ? (
+            <OrderInput
+              type="text"
+              value={isPriceFocused ? inputPrice : formatPriceDisplay()}
+              onChange={handleInputPriceChange}
+              placeholder="가격 입력"
+              onFocus={() => setIsPriceFocused(true)}
+              onBlur={() => setIsPriceFocused(false)}
+            />
+          ) : (
+            <OrderDisableInput>최대한 빠른 가격</OrderDisableInput>
+          )}
+        </OrderLine>
+        <OrderLine>
+          <OrderLabel>수량</OrderLabel>
+          <OrderInput
+            type="text"
+            value={isCountFocused ? inputCount : formatCountDisplay()}
+            onChange={handleInputCountChange}
+            placeholder="수량 입력"
+            onFocus={() => setIsCountFocused(true)}
+            onBlur={() => setIsCountFocused(false)}
+          />
+        </OrderLine>
+        <OrderInfoContainer>
+          <OrderInfo>
+            <OrderInfoSpan>구매 가능 금액</OrderInfoSpan>
+            <OrderInfoSpan>0 원</OrderInfoSpan>
+          </OrderInfo>
+          <OrderInfo>
+            <OrderInfoSpan>총 주문 금액</OrderInfoSpan>
+            <OrderInfoSpan>
+              {inputPrice && inputCount
+                ? `${(inputPrice * inputCount).toLocaleString()} 원`
+                : "0 원"}
+            </OrderInfoSpan>
+          </OrderInfo>
+        </OrderInfoContainer>
+        <TradeBtn
+          type="submit"
+          $color={tradeTypes[activeTradeIndex].color}
+          $hoverColor={tradeTypes[activeTradeIndex].hoverColor}
+        >
+          {tradeTypes[activeTradeIndex].label} 예약하기
+        </TradeBtn>
+      </TradeOrderForm>
+    </StockTradeContainer>
+  );
+};
+
+export default StockTrade;
+
+const StockTradeContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 30%;
+  gap: 8px;
+  margin-top: 48px;
+  height: 500px;
+  position: relative;
+`;
+
+const TradeTitle = styled.div`
+  font-weight: bold;
+  line-height: 1.45;
+  font-size: 14px;
+  color: #333d4b;
+`;
+
+const TradeTypes = styled.div`
+  display: flex;
+  padding: 2px;
+  border-radius: 8px;
+  justify-content: space-evenly;
+  align-items: center;
+  height: 32px;
+  background: #0220470d;
+  position: relative;
+  margin-bottom: 5px;
+`;
+
+const TradeHighlight = styled.div`
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: calc(50% - 2px);
+  height: calc(100% - 4px);
+  background: white;
+  border-radius: 6px;
+  box-shadow: #001b370a 0px 1px 3px 0px;
+  transition: transform 0.4s ease-in-out;
+  transform: ${({ $index }) => `translateX(${100 * $index}% )`};
+`;
+
+const TradeType = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 600;
+  line-height: 1.45;
+  font-size: 14px;
+  color: ${({ $isActive, $color }) => ($isActive ? $color : "#4e5968")};
+  width: 50%;
+  height: 100%;
+  cursor: pointer;
+  position: relative;
+  transition: 0.2s;
+`;
+
+const PriceTypes = styled.div`
+  display: flex;
+  padding: 2px;
+  border-radius: 8px;
+  justify-content: space-evenly;
+  align-items: center;
+  height: 32px;
+  background: #0220470d;
+  position: relative;
+  width: 100%;
+`;
+
+const PriceHighlight = styled.div`
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: calc(50% - 2px);
+  height: calc(100% - 4px);
+  background: white;
+  border-radius: 6px;
+  box-shadow: #001b370a 0px 1px 3px 0px;
+  transition: transform 0.4s ease-in-out;
+  transform: ${({ $index }) => `translateX(${100 * $index}% )`};
+`;
+
+const PriceType = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 600;
+  line-height: 1.45;
+  font-size: 14px;
+  color: ${({ $isActive, $color }) => ($isActive ? $color : "#4e5968")};
+  width: 50%;
+  height: 100%;
+  cursor: pointer;
+  position: relative;
+  transition: 0.2s;
+`;
+
+const TradeOrderForm = styled.form`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+`;
+
+const OrderLine = styled.div`
+  display: flex;
+  gap: 8px;
+  padding: 0px 8px;
+`;
+
+const OrderLabel = styled.span`
+  display: flex;
+  align-items: center;
+  line-height: 33px;
+  min-width: 60px;
+  font-size: 14px;
+  line-height: 1.45;
+  font-weight: 600;
+  color: #333d4b;
+`;
+
+const OrderInput = styled.input`
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 32px;
+  border-radius: 8px;
+  font-weight: 600;
+  color: #000c4dcc;
+  line-height: 20px;
+  font-size: 14px;
+  padding: 0px 14px;
+  border: 1px solid #dddddd;
+  transition: 0.1s;
+  &:hover {
+    border: 2px solid #000c4dcc;
+  }
+  &::placeholder {
+    font-size: 13px;
+    font-weight: 600;
+  }
+`;
+
+const OrderDisableInput = styled.div`
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 32px;
+  border-radius: 8px;
+  color: #03183275;
+  line-height: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 0px 14px;
+  background: #0220470d;
+  border: 1px solid #dddddd;
+`;
+
+const OrderInfoContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  padding-top: 70px;
+  margin-top: 70px;
+  border-top: 2px solid #001b370a;
+`;
+
+const OrderInfo = styled.div`
+  display: flex;
+  justify-content: space-between;
+  font-weight: bold;
+  color: #333d4b;
+  font-size: 14px;
+  line-height: 1.45px;
+  margin: 15px 8px;
+`;
+
+const OrderInfoSpan = styled.span``;
+
+const TradeBtn = styled.button`
+  font-family: pretendard;
+  min-height: 40px;
+  font-weight: 600;
+  text-align: center;
+  font-size: 15px;
+  line-height: 20px;
+  vertical-align: middle;
+  text-decoration: none;
+  border-radius: 10px;
+  background: ${({ $color }) => $color};
+  color: #fff;
+  transition: 0.2s;
+  border: none;
+  position: absolute;
+  left: 0px;
+  bottom: 20px;
+  width: 100%;
+  cursor: pointer;
+  &:hover {
+    background: ${({ $hoverColor }) => $hoverColor};
+  }
+`;
