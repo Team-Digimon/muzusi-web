@@ -269,6 +269,7 @@ const OrderLabel = styled.span`
 `;
 
 const OrderInput = styled.input`
+  font-family: pretendard;
   display: flex;
   align-items: center;
   width: 100%;
