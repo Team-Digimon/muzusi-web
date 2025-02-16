@@ -13,6 +13,7 @@ import SignUp from "@/pages/SignUp";
 import AccountLayout from "@/components/layouts/AccountLayout";
 import useAuth from "@/contexts/useAuth";
 import { setUpInterceptors } from "@/api/authApi";
+import Records from "./pages/Records";
 
 const App = () => {
   const { logout } = useAuth();
@@ -48,6 +49,7 @@ const App = () => {
             <Route path="account" element={<AccountLayout />}>
               <Route path="asset" element={<Asset />} />
               <Route path="transactions" element={<Transactions />} />
+              <Route path="records" element={<Records />} />
             </Route>
           </Route>
         </Routes>

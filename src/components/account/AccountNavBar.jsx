@@ -7,6 +7,7 @@ const AccountNavBar = () => {
   const accountNavBtns = [
     { value: "asset", korean: "자산" },
     { value: "transactions", korean: "거래 내역" },
+    { value: "records", korean: "전체 계좌 기록" },
   ];
 
   return (
