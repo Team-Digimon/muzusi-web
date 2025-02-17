@@ -94,7 +94,7 @@ const StockChart = ({ chartData }) => {
 
     candleSeries.setData(
       chartData.map((el) => ({
-        time: el.time,
+        time: Math.floor(new Date(el.time).getTime() / 1000),
         open: el.open,
         high: el.high,
         low: el.low,
@@ -103,7 +103,7 @@ const StockChart = ({ chartData }) => {
     );
     volumeSeries.setData(
       chartData.map((el) => ({
-        time: el.time,
+        time: Math.floor(new Date(el.time).getTime() / 1000),
         value: el.value,
         color: el.open < el.close ? "#f04452" : "#3182f6",
       }))
@@ -127,8 +127,12 @@ const StockChart = ({ chartData }) => {
     const totalDataPoints = chartData.length;
     if (totalDataPoints > 75) {
       chart.timeScale().setVisibleRange({
-        from: chartData[totalDataPoints - 75].time,
-        to: chartData[totalDataPoints - 1].time,
+        from: Math.floor(
+          new Date(chartData[totalDataPoints - 75].time).getTime() / 1000
+        ),
+        to: Math.floor(
+          new Date(chartData[totalDataPoints - 1].time).getTime() / 1000
+        ),
       });
     }
 
@@ -180,8 +184,19 @@ const StockChart = ({ chartData }) => {
           : null;
       };
 
+      const formatTimestampToDateTime = (timestamp) => {
+        return new Intl.DateTimeFormat("ko-KR", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false,
+        }).format(new Date(timestamp * 1000));
+      };
+
       setTooltipData({
-        time: param.time,
+        time: formatTimestampToDateTime(param.time),
         open,
         high,
         low,
