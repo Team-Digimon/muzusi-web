@@ -7,7 +7,7 @@ import {
 } from "lightweight-charts";
 import styled from "styled-components";
 
-const StockChart = ({ chartData }) => {
+const StockChart = ({ chartData, period }) => {
   const chartContainerRef = useRef(null);
   const chartRef = useRef(null);
   const [tooltipData, setTooltipData] = useState(null);
@@ -62,6 +62,7 @@ const StockChart = ({ chartData }) => {
       timeScale: {
         visible: true,
         borderVisible: false,
+        timeVisible: period === "MINUTES" ? true : false,
       },
       rightPriceScale: {
         visible: true,
@@ -94,7 +95,7 @@ const StockChart = ({ chartData }) => {
 
     candleSeries.setData(
       chartData.map((el) => ({
-        time: el.time,
+        time: Math.floor(new Date(el.time).getTime() / 1000),
         open: el.open,
         high: el.high,
         low: el.low,
@@ -103,7 +104,7 @@ const StockChart = ({ chartData }) => {
     );
     volumeSeries.setData(
       chartData.map((el) => ({
-        time: el.time,
+        time: Math.floor(new Date(el.time).getTime() / 1000),
         value: el.value,
         color: el.open < el.close ? "#f04452" : "#3182f6",
       }))
@@ -127,8 +128,12 @@ const StockChart = ({ chartData }) => {
     const totalDataPoints = chartData.length;
     if (totalDataPoints > 75) {
       chart.timeScale().setVisibleRange({
-        from: chartData[totalDataPoints - 75].time,
-        to: chartData[totalDataPoints - 1].time,
+        from: Math.floor(
+          new Date(chartData[totalDataPoints - 75].time).getTime() / 1000
+        ),
+        to: Math.floor(
+          new Date(chartData[totalDataPoints - 1].time).getTime() / 1000
+        ),
       });
     }
 
@@ -180,8 +185,22 @@ const StockChart = ({ chartData }) => {
           : null;
       };
 
+      const formatTimestampToDateTime = (timestamp) => {
+        return new Intl.DateTimeFormat("ko-KR", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false,
+        }).format(new Date(timestamp * 1000));
+      };
+
       setTooltipData({
-        time: param.time,
+        time:
+          period === "MINUTES"
+            ? formatTimestampToDateTime(param.time)
+            : formatTimestampToDateTime(param.time).split(". 00")[0],
         open,
         high,
         low,
@@ -199,7 +218,7 @@ const StockChart = ({ chartData }) => {
       window.removeEventListener("resize", handleResize);
       chart.remove();
     };
-  }, [chartData]);
+  }, [period, chartData]);
 
   if (chartData.length === 0) {
     return <LoadingChart>지원하지 않는 차트입니다.</LoadingChart>;
@@ -243,6 +262,7 @@ StockChart.propTypes = {
       value: PropTypes.number.isRequired,
     })
   ).isRequired,
+  period: PropTypes.string.isRequired,
 };
 
 export default StockChart;

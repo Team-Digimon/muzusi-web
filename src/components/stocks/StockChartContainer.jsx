@@ -9,6 +9,7 @@ const StockChartContainer = ({ stock }) => {
   const [period, setPeriod] = useState("DAILY");
 
   const periods = [
+    { value: "MINUTES", korean: "10분" },
     { value: "DAILY", korean: "일" },
     { value: "WEEKLY", korean: "주" },
     { value: "MONTHLY", korean: "월" },
@@ -18,19 +19,63 @@ const StockChartContainer = ({ stock }) => {
   useEffect(() => {
     const fetchChartData = async () => {
       try {
-        const response = await getStocksChart({
-          stockCode: stock.stockCode,
-          period: period,
-        });
-        const transformedChartData = response.data.map((el) => ({
-          time: el.date,
-          open: el.open,
-          high: el.high,
-          low: el.low,
-          close: el.close,
-          value: el.volume,
-        }));
-        setChartData(transformedChartData);
+        if (period === "MINUTES") {
+          const now = new Date();
+          const hours = now.getHours();
+          const minutes = now.getMinutes();
+          const isTradingTime =
+            (hours === 9 && minutes >= 10) || (hours > 9 && hours < 16);
+
+          const requests = [
+            getStocksChart({
+              stockCode: stock.stockCode,
+              period: "MINUTES_WEEK",
+            }),
+          ];
+
+          if (isTradingTime) {
+            requests.push(
+              getStocksChart({
+                stockCode: stock.stockCode,
+                period: "MINUTES_TODAY",
+              })
+            );
+          }
+
+          const responses = await Promise.all(requests);
+
+          const transformData = (data) =>
+            data?.map((el) => ({
+              time: el.date,
+              open: el.open,
+              high: el.high,
+              low: el.low,
+              close: el.close,
+              value: el.volume,
+            })) || [];
+
+          const combinedData = responses.flatMap((response) =>
+            transformData(response.data)
+          );
+          combinedData.sort((a, b) => a.time - b.time);
+
+          setChartData(combinedData);
+        } else {
+          const response = await getStocksChart({
+            stockCode: stock.stockCode,
+            period,
+          });
+          const transformedData =
+            response?.data.map((el) => ({
+              time: el.date,
+              open: el.open,
+              high: el.high,
+              low: el.low,
+              close: el.close,
+              value: el.volume,
+            })) || [];
+          setChartData(transformedData);
+        }
       } catch (error) {
         console.error("주식 차트 데이터 가져오기 실패:", error.message);
       }
@@ -61,7 +106,7 @@ const StockChartContainer = ({ stock }) => {
             })}
           </ChartPeriods>
         </ChartHeader>
-        <StockChart chartData={chartData} />
+        <StockChart chartData={chartData} period={period} />
       </ChartContainer>
     </StockContainer>
   );
