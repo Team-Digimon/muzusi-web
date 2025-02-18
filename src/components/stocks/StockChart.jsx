@@ -62,6 +62,7 @@ const StockChart = ({ chartData, period }) => {
       timeScale: {
         visible: true,
         borderVisible: false,
+        timeVisible: period === "MINUTES" ? true : false,
       },
       rightPriceScale: {
         visible: true,
@@ -197,7 +198,7 @@ const StockChart = ({ chartData, period }) => {
 
       setTooltipData({
         time:
-          period === "MINUTE"
+          period === "MINUTES"
             ? formatTimestampToDateTime(param.time)
             : formatTimestampToDateTime(param.time).split(". 00")[0],
         open,
