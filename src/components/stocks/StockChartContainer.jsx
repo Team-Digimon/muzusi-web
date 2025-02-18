@@ -106,7 +106,7 @@ const StockChartContainer = ({ stock }) => {
             })}
           </ChartPeriods>
         </ChartHeader>
-        <StockChart chartData={chartData} />
+        <StockChart chartData={chartData} period={period} />
       </ChartContainer>
     </StockContainer>
   );

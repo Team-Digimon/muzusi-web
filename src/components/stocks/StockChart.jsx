@@ -7,7 +7,7 @@ import {
 } from "lightweight-charts";
 import styled from "styled-components";
 
-const StockChart = ({ chartData }) => {
+const StockChart = ({ chartData, period }) => {
   const chartContainerRef = useRef(null);
   const chartRef = useRef(null);
   const [tooltipData, setTooltipData] = useState(null);
@@ -196,7 +196,10 @@ const StockChart = ({ chartData }) => {
       };
 
       setTooltipData({
-        time: formatTimestampToDateTime(param.time),
+        time:
+          period === "MINUTE"
+            ? formatTimestampToDateTime(param.time)
+            : formatTimestampToDateTime(param.time).split(". 00")[0],
         open,
         high,
         low,
@@ -214,7 +217,7 @@ const StockChart = ({ chartData }) => {
       window.removeEventListener("resize", handleResize);
       chart.remove();
     };
-  }, [chartData]);
+  }, [period, chartData]);
 
   if (chartData.length === 0) {
     return <LoadingChart>지원하지 않는 차트입니다.</LoadingChart>;
@@ -258,6 +261,7 @@ StockChart.propTypes = {
       value: PropTypes.number.isRequired,
     })
   ).isRequired,
+  period: PropTypes.string.isRequired,
 };
 
 export default StockChart;
