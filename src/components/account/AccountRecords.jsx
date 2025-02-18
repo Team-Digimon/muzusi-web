@@ -35,11 +35,12 @@ const AccountRecords = () => {
         <RecordTableContent>
           {accountRecords.map((el, index) => {
             const formattedBalance = el.balance.toLocaleString();
+            const formattedDate = el.createdAt.split(".")[0].replace("T", " ");
             const change = ((el.balance - 10000000) / 10000000) * 100;
             return (
               <RecordTableAccount key={el.id} $isOdd={(index + 1) % 2 !== 0}>
                 <AccountNumber>{index + 1}</AccountNumber>
-                <AccountDate>2025.02.16 ~ 2025.02.18</AccountDate>
+                <AccountDate>{formattedDate}8</AccountDate>
                 <AccountPrice>{formattedBalance}원</AccountPrice>
                 <AccountChange $change={change}>{change}%</AccountChange>
               </RecordTableAccount>
