@@ -1,9 +1,13 @@
 import getAccountRecords from "@/api/account/getAccountRecords";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
+import Loading from "@/components/common/Loading";
+import Error from "@/components/common/Error";
 
 const AccountRecords = () => {
   const [accountRecords, setAccountRecords] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const fetchAccountRecords = async () => {
     try {
@@ -11,12 +15,18 @@ const AccountRecords = () => {
       setAccountRecords(response.data);
     } catch (error) {
       console.error("계좌 기록 불러오기 실패 : ", error.message);
+      setError(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   useEffect(() => {
     fetchAccountRecords();
   }, []);
+
+  if (isLoading) return <Loading />;
+  if (error) return <Error />;
 
   return (
     <AccountRecordsContainer>

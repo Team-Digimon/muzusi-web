@@ -236,7 +236,6 @@ const StockChart = ({ chartData, period }) => {
             <strong>{tooltipData.time}</strong>
           </TooltipPrice>
           {tooltipCategory.map((el, index) => {
-            console.log(el);
             return (
               <TooltipInfo key={index}>
                 <TooltipTitle>{el.title}:</TooltipTitle>

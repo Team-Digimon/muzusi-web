@@ -2,10 +2,13 @@ import createAccount from "@/api/account/createAccount";
 import getCurrentAccount from "@/api/account/getCurrentAccount";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
+import Loading from "@/components/common/Loading";
+import Error from "../common/Error";
 
 const CurrentAccount = () => {
   const [currentAccount, setCurrentAccount] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const totalAsset = currentAccount.balance + currentAccount.reservedPrice;
 
@@ -13,9 +16,11 @@ const CurrentAccount = () => {
     try {
       const response = await getCurrentAccount();
       setCurrentAccount(response.data);
-      setIsLoading(false);
     } catch (error) {
       console.error("현재 계좌 가져오기 실패 : ", error.message);
+      setError(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -50,7 +55,8 @@ const CurrentAccount = () => {
     fetchCurrentAccount();
   }, []);
 
-  if (isLoading) return null;
+  if (isLoading) return <Loading />;
+  if (error) return <Error />;
 
   return (
     <CurrentAccountContainer>
