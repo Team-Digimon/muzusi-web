@@ -1,11 +1,15 @@
 import getStocksChart from "@/api/stocks/getStockChart";
 import Error from "@/components/common/Error";
 import Loading from "@/components/common/Loading";
+import LiveStockPrice from "@/components/stocks/LiveStockPrice";
 import StockChartContainer from "@/components/stocks/StockChartContainer";
 import StockHeader from "@/components/stocks/StockHeader";
 import StockTrade from "@/components/stocks/StockTrade";
-import { useEffect, useState } from "react";
+import { webSocketUrl } from "@/config/Env";
+import { Client } from "@stomp/stompjs";
+import { useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
+import SockJS from "sockjs-client";
 import styled from "styled-components";
 
 const Stocks = () => {
@@ -15,6 +19,8 @@ const Stocks = () => {
   const [error, setError] = useState(null);
   const [chartData, setChartData] = useState([]);
   const [period, setPeriod] = useState("DAILY");
+  const [messages, setMessages] = useState([]);
+  const subscriptionRef = useRef(null);
 
   const periods = [
     { value: "MINUTES", korean: "10분" },
@@ -23,6 +29,57 @@ const Stocks = () => {
     { value: "MONTHLY", korean: "월" },
     { value: "YEARLY", korean: "년" },
   ];
+
+  useEffect(() => {
+    const socket = new SockJS(webSocketUrl.replace(/^ws/, "http"));
+    const client = new Client({
+      webSocketFactory: () => socket,
+      reconnectDelay: 5000,
+
+      onConnect: () => {
+        if (subscriptionRef.current) {
+          subscriptionRef.current.unsubscribe();
+        }
+
+        subscriptionRef.current = client.subscribe(
+          `/sub/${stock.stockCode}`,
+          (message) => {
+            const parsedMessage = JSON.parse(message.body);
+            setMessages((prev) => {
+              [...prev, parsedMessage];
+            });
+          },
+          {
+            stockCode: stock.stockCode,
+          }
+        );
+      },
+      onStompError: (frame) => {
+        console.error("STOMP Error 발생:", frame);
+      },
+    });
+
+    client.activate();
+
+    return () => {
+      if (subscriptionRef.current) {
+        client.publish({
+          destination: "/app/unsubscribe",
+          body: JSON.stringify({ stockCode: stock.stockCode }),
+          headers: { stockCode: stock.stockCode },
+        });
+
+        client.unsubscribe(subscriptionRef.current.id, {
+          stockCode: stock.stockCode,
+        });
+
+        subscriptionRef.current = null;
+      }
+      if (client.connected) {
+        client.deactivate();
+      }
+    };
+  }, [stock?.stockCode]);
 
   useEffect(() => {
     const fetchChartData = async () => {
@@ -114,6 +171,7 @@ const Stocks = () => {
         />
         <StockTrade />
       </StockContainer>
+      <LiveStockPrice messages={messages} />
     </Container>
   );
 };
