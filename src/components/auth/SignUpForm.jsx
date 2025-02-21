@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import MuzusiLogo from "@/assets/logo/MuzusiLogo.png";
 import signUp from "@/api/auth/signUp";
 import useAuth from "@/contexts/useAuth";
+import Loading from "@/components/common/Loading";
+import Error from "@/components/common/Error";
 
 const SignUpForm = () => {
   const navigate = useNavigate();
@@ -12,7 +14,9 @@ const SignUpForm = () => {
   const [available, setAvailable] = useState(
     "2~8자의 한글, 영문, 숫자(공백, 특수문자 제외)"
   );
-  const [error, setError] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const handleInputChange = (e) => {
     const value = e.target.value;
@@ -20,19 +24,19 @@ const SignUpForm = () => {
     const regex = /^[a-zA-Z0-9ㄱ-ㅎ|ㅏ-ㅣ|가-힣]{2,8}$/;
     if (regex.test(value)) {
       setAvailable("사용 가능한 닉네임입니다.");
-      setError("");
+      setErrorMessage("");
     } else if (!value) {
       setAvailable("2~8자의 한글, 영문, 숫자(공백, 특수문자 제외)");
-      setError("");
+      setErrorMessage("");
     } else {
       setAvailable("");
-      setError("닉네임 형식을 확인해주세요.");
+      setErrorMessage("닉네임 형식을 확인해주세요.");
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!error && nickname.length > 0) {
+    if (!errorMessage && nickname.length > 0) {
       try {
         const response = await signUp(nickname);
         if (response.code === 200) {
@@ -41,20 +45,30 @@ const SignUpForm = () => {
           navigate("/");
         } else {
           console.error("닉네임 등록 실패", response);
-          setError("닉네임 등록 중 문제가 발생했습니다. 다시 시도해주세요.");
+          setErrorMessage(
+            "닉네임 등록 중 문제가 발생했습니다. 다시 시도해주세요."
+          );
         }
       } catch (apiError) {
         if (apiError.reponse.status === 422) {
           alert("닉네임 형식을 확인해주세요.");
         }
         console.error("닉네임 등록 실패", apiError);
-        setError("닉네임 등록 중 문제가 발생했습니다. 다시 시도해주세요.");
+        setErrorMessage(
+          "닉네임 등록 중 문제가 발생했습니다. 다시 시도해주세요."
+        );
+        setError(apiError);
+      } finally {
+        setIsLoading(false);
       }
     } else {
-      setError("닉네임 형식을 확인해주세요.");
+      setErrorMessage("닉네임 형식을 확인해주세요.");
       setAvailable("");
     }
   };
+
+  if (isLoading) return <Loading />;
+  if (error) return <Error />;
 
   return (
     <SignUpFormContainer>
@@ -72,11 +86,11 @@ const SignUpForm = () => {
         <NicknameInput
           value={nickname}
           onChange={handleInputChange}
-          $hasError={!!error}
+          $hasError={!!errorMessage}
           placeholder="사용하실 닉네임을 입력해주세요."
         />
         {available && <AvailableText>{available}</AvailableText>}
-        {error && <ErrorText>{error}</ErrorText>}
+        {errorMessage && <ErrorText>{errorMessage}</ErrorText>}
         <NicknameBtns>
           <SubmitBtn type="submit">확인</SubmitBtn>
           <SkipBtnContainer>

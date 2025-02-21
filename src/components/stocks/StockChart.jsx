@@ -102,6 +102,7 @@ const StockChart = ({ chartData, period }) => {
         close: el.close,
       }))
     );
+
     volumeSeries.setData(
       chartData.map((el) => ({
         time: Math.floor(new Date(el.time).getTime() / 1000),
@@ -176,7 +177,9 @@ const StockChart = ({ chartData, period }) => {
       const { open, high, low, close } = candleData;
       const volume = volumeData.value;
 
-      const currentIndex = chartData.findIndex((el) => el.time === param.time);
+      const currentIndex = chartData.findIndex(
+        (el) => Math.floor(new Date(el.time).getTime() / 1000) === param.time
+      );
       const prevData = currentIndex > 0 ? chartData[currentIndex - 1] : null;
 
       const calculateChange = (current, previous) => {
