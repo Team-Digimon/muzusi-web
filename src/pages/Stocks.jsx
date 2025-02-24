@@ -45,9 +45,7 @@ const Stocks = () => {
           `/sub/${stock.stockCode}`,
           (message) => {
             const parsedMessage = JSON.parse(message.body);
-            setMessages((prev) => {
-              [...prev, parsedMessage];
-            });
+            setMessages((prev) => [parsedMessage, ...prev]);
           },
           {
             stockCode: stock.stockCode,
