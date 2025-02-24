@@ -21,6 +21,7 @@ const Stocks = () => {
   const [period, setPeriod] = useState("DAILY");
   const [messages, setMessages] = useState([]);
   const subscriptionRef = useRef(null);
+  const clientRef = useRef(null);
 
   const periods = [
     { value: "MINUTES", korean: "10분" },
@@ -58,21 +59,41 @@ const Stocks = () => {
     });
 
     client.activate();
+    clientRef.current = client;
+
+    const unsubscribeAndDisconnect = () => {
+      if (subscriptionRef.current) {
+        clientRef.current.unsubscribe(subscriptionRef.current.id, {
+          stockCode: stock.stockCode,
+        });
+        subscriptionRef.current = null;
+      }
+
+      if (clientRef.current.connected) {
+        clientRef.current.deactivate();
+      }
+    };
+
+    const handleBeforeUnload = () => {
+      console.log("⚠️ 브라우저 창이 닫힘, 구독 해제 진행");
+      unsubscribeAndDisconnect();
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
 
     return () => {
       if (subscriptionRef.current) {
-        client.publish({
-          destination: "/app/unsubscribe",
-          body: JSON.stringify({ stockCode: stock.stockCode }),
-          headers: { stockCode: stock.stockCode },
-        });
-
         client.unsubscribe(subscriptionRef.current.id, {
           stockCode: stock.stockCode,
         });
 
         subscriptionRef.current = null;
       }
+
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+
+      unsubscribeAndDisconnect();
+
       if (client.connected) {
         client.deactivate();
       }
