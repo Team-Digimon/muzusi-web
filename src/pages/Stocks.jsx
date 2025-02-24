@@ -31,7 +31,16 @@ const Stocks = () => {
     { value: "YEARLY", korean: "년" },
   ];
 
+  const now = new Date();
+  const hours = now.getHours();
+  const minutes = now.getMinutes();
+  const isTradingTime =
+    (hours === 9 && minutes >= 0) ||
+    (hours > 9 && (hours < 15 || (hours === 15 && minutes <= 30)));
+
   useEffect(() => {
+    if (!isTradingTime) return;
+
     const socket = new SockJS(webSocketUrl.replace(/^ws/, "http"));
     const client = new Client({
       webSocketFactory: () => socket,
@@ -75,7 +84,6 @@ const Stocks = () => {
     };
 
     const handleBeforeUnload = () => {
-      console.log("⚠️ 브라우저 창이 닫힘, 구독 해제 진행");
       unsubscribeAndDisconnect();
     };
 
@@ -98,18 +106,12 @@ const Stocks = () => {
         client.deactivate();
       }
     };
-  }, [stock?.stockCode]);
+  }, [stock?.stockCode, isTradingTime]);
 
   useEffect(() => {
     const fetchChartData = async () => {
       try {
         if (period === "MINUTES") {
-          const now = new Date();
-          const hours = now.getHours();
-          const minutes = now.getMinutes();
-          const isTradingTime =
-            (hours === 9 && minutes >= 10) || (hours > 9 && hours < 16);
-
           const requests = [
             getStocksChart({
               stockCode: stock.stockCode,
@@ -169,7 +171,7 @@ const Stocks = () => {
     };
 
     fetchChartData();
-  }, [stock.stockCode, period]);
+  }, [stock.stockCode, period, isTradingTime]);
 
   const handlePeriod = (period) => () => {
     setPeriod(period);
