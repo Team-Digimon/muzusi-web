@@ -40,6 +40,7 @@ const HeaderContainer = styled.header`
   top: 0;
   width: calc(100% - 56px);
   min-width: 1000px;
+  padding-right: 20px;
   background: white;
   z-index: 1000;
 `;
@@ -47,6 +48,8 @@ const HeaderContainer = styled.header`
 const MainContainer = styled.div`
   width: 100%;
   max-width: 1280px;
+  min-width: 1000px;
+  padding-right: 20px;
   margin: 60px auto 0 auto;
 `;
 
@@ -54,4 +57,5 @@ const SideBarContainer = styled.div`
   position: fixed;
   top: 0;
   right: 0;
+  z-index: 9999;
 `;
