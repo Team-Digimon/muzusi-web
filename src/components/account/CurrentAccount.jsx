@@ -3,7 +3,8 @@ import getCurrentAccount from "@/api/account/getCurrentAccount";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import Loading from "@/components/common/Loading";
-import Error from "../common/Error";
+import Error from "@/components/common/Error";
+import AccountChart from "@/components/account/AccountChart";
 
 const CurrentAccount = () => {
   const [currentAccount, setCurrentAccount] = useState([]);
@@ -51,6 +52,17 @@ const CurrentAccount = () => {
     }
   };
 
+  const accountProfits = currentAccount?.accountProfits || [];
+  const hasEnoughData = accountProfits.length >= 2;
+
+  const previousBalance = hasEnoughData ? accountProfits[0].totalBalance : 0;
+  const currentBalance = hasEnoughData ? accountProfits[1].totalBalance : 0;
+
+  const balanceChange = currentBalance - previousBalance;
+  const balanceChangeRate = previousBalance
+    ? ((balanceChange / previousBalance) * 100).toFixed(2)
+    : "0.00";
+
   useEffect(() => {
     fetchCurrentAccount();
   }, []);
@@ -68,7 +80,17 @@ const CurrentAccount = () => {
           </CreateAccountBtn>
         </BalanceHeader>
         <Balance>{totalAsset.toLocaleString()} 원</Balance>
+        {hasEnoughData ? (
+          <BalanceChange>
+            이 전날보다{" "}
+            <BalanceChangeRate $change={balanceChange}>
+              {balanceChange > 0 ? "+" : ""}
+              {balanceChange.toLocaleString()}({balanceChangeRate}%)
+            </BalanceChangeRate>
+          </BalanceChange>
+        ) : null}
       </BalanceContainer>
+      <AccountChart chartData={currentAccount.accountProfits} />
       <AssetsContainer>
         <AssetContainer>
           <Title>주문 가능 금액</Title>
@@ -129,6 +151,18 @@ const Balance = styled.div`
   color: #333d4b;
   line-height: 1.45;
   font-size: 24px;
+`;
+
+const BalanceChange = styled.div`
+  font-weight: 500;
+  color: #4e5968;
+  font-size: 15px;
+  line-height: 1.45;
+`;
+
+const BalanceChangeRate = styled.span`
+  color: ${({ $change }) =>
+    $change > 0 ? "#f04452" : $change < 0 ? "#3182f6" : "#4e5968"};
 `;
 
 const AssetsContainer = styled.div`
