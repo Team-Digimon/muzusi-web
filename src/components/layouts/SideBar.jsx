@@ -1,11 +1,23 @@
 import styled from "styled-components";
 import InvestIcon from "@/assets/icon/InvestIcon.svg?react";
 import InterestIcon from "@/assets/icon/InterestIcon.svg?react";
+import PropTypes from "prop-types";
 
-const SideBar = () => {
+const SideBar = ({ sideCartegory, setSideCartegory }) => {
+  const cartegoryHandler = (cartegory) => () => {
+    if (sideCartegory === cartegory) {
+      setSideCartegory("");
+    } else {
+      setSideCartegory(cartegory);
+    }
+  };
+
   return (
     <GlobalSideBar>
-      <SideAnchor>
+      <SideAnchor
+        $isActive={sideCartegory === "내 투자"}
+        onClick={cartegoryHandler("내 투자")}
+      >
         <SideBtn>
           <SideIcon>
             <InvestIcon />
@@ -13,7 +25,10 @@ const SideBar = () => {
         </SideBtn>
         <span>내 투자</span>
       </SideAnchor>
-      <SideAnchor>
+      <SideAnchor
+        $isActive={sideCartegory === "관심"}
+        onClick={cartegoryHandler("관심")}
+      >
         <SideBtn>
           <SideIcon>
             <InterestIcon />
@@ -23,6 +38,11 @@ const SideBar = () => {
       </SideAnchor>
     </GlobalSideBar>
   );
+};
+
+SideBar.propTypes = {
+  sideCartegory: PropTypes.string.isRequired,
+  setSideCartegory: PropTypes.func.isRequired,
 };
 
 export default SideBar;
@@ -57,7 +77,16 @@ const SideAnchor = styled.a`
   padding: 0;
   font-size: 12px;
   line-height: 1.45;
+  color: ${({ $isActive }) => ($isActive ? "#000c1ecc" : "#00132b94")};
   cursor: pointer;
+
+  div {
+    background-color: ${({ $isActive }) => ($isActive ? "#dee1e5" : null)};
+  }
+
+  svg path {
+    fill: ${({ $isActive }) => ($isActive ? "#000c1ecc" : "#00132b94")};
+  }
 
   &:hover {
     color: #000c1ecc;

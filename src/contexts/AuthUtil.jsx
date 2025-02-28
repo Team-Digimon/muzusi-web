@@ -3,7 +3,7 @@ export const getStoredUser = () => {
     const storedUser = sessionStorage.getItem("user");
     return storedUser ? JSON.parse(storedUser) : null;
   } catch (error) {
-    console.error("세션션 스토리지에서 유저 데이터를 파싱하는 중 오류:", error);
+    console.error("세션 스토리지에서 유저 데이터를 파싱하는 중 오류:", error);
     sessionStorage.removeItem("user");
     return null;
   }
