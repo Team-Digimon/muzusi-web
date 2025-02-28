@@ -2,20 +2,28 @@ import { Outlet } from "react-router-dom";
 import Header from "@/components/layouts/Header";
 import styled from "styled-components";
 import SideBar from "@/components/layouts/SideBar";
+import SlidingPanel from "@/components/layouts/SlidingPanel";
+import { useState } from "react";
 
 const Layout = () => {
+  const [sideCartegory, setSideCartegory] = useState("");
+
   return (
     <Container>
-      <ContentContainer>
-        <HeaderContainer>
+      <ContentContainer $sideCartegory={sideCartegory}>
+        <HeaderContainer $sideCartegory={sideCartegory}>
           <Header />
         </HeaderContainer>
         <MainContainer>
           <Outlet />
         </MainContainer>
       </ContentContainer>
+      <SlidingPanel sideCartegory={sideCartegory} />
       <SideBarContainer>
-        <SideBar />
+        <SideBar
+          sideCartegory={sideCartegory}
+          setSideCartegory={setSideCartegory}
+        />
       </SideBarContainer>
     </Container>
   );
@@ -30,19 +38,23 @@ const Container = styled.div`
 const ContentContainer = styled.div`
   display: flex;
   flex-direction: column;
-  width: calc(100% - 56px);
+  width: ${({ $sideCartegory }) =>
+    $sideCartegory !== "" ? "calc(100% - 370px)" : "calc(100% - 56px)"};
   height: 100vh;
+  transition: 0.2s ease-in-out;
 `;
 
 const HeaderContainer = styled.header`
   position: fixed;
   margin: auto;
   top: 0;
-  width: calc(100% - 56px);
+  width: ${({ $sideCartegory }) =>
+    $sideCartegory !== "" ? "calc(100% - 370px)" : "calc(100% - 56px)"};
   min-width: 1000px;
   padding-right: 20px;
   background: white;
   z-index: 1000;
+  transition: 0.2s ease-in-out;
 `;
 
 const MainContainer = styled.div`
