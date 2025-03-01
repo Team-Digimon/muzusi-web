@@ -9,6 +9,18 @@ const AccountRecords = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const formatDateTime = (dateString) => {
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+    const seconds = String(date.getSeconds()).padStart(2, "0");
+
+    return `${year}년 ${month}월 ${day}일 ${hours}:${minutes}:${seconds}`;
+  };
+
   const fetchAccountRecords = async () => {
     try {
       const response = await getAccountRecords();
@@ -44,16 +56,18 @@ const AccountRecords = () => {
           </RecordTheadTr>
         </RecordThead>
         <RecordTableContent>
-          {accountRecords.map((el, index) => {
+          {accountRecords.reverse().map((el, index) => {
             const formattedBalance = el.balance.toLocaleString();
-            const formattedDate = el.createdAt.split(".")[0].replace("T", " ");
+
             const change = ((el.balance - 10000000) / 10000000) * 100;
             return (
               <RecordTableAccount key={el.id} $isOdd={(index + 1) % 2 !== 0}>
                 <AccountNumber>{index + 1}</AccountNumber>
-                <AccountDate>{formattedDate}8</AccountDate>
+                <AccountDate>{formatDateTime(el.createdAt)}</AccountDate>
                 <AccountPrice>{formattedBalance}원</AccountPrice>
-                <AccountChange $change={change}>{change}%</AccountChange>
+                <AccountChange $change={change}>
+                  {change.toFixed(2)}%
+                </AccountChange>
               </RecordTableAccount>
             );
           })}
