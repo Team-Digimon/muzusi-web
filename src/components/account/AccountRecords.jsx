@@ -30,6 +30,7 @@ const AccountRecords = () => {
 
   return (
     <AccountRecordsContainer>
+      <Title>전체 계좌 기록</Title>
       <RecordTable>
         <RecordThead>
           <RecordTheadTr>
@@ -67,6 +68,14 @@ export default AccountRecords;
 const AccountRecordsContainer = styled.div`
   display: flex;
   flex-direction: column;
+`;
+
+const Title = styled.div`
+  font-weight: 600;
+  font-size: 24px;
+  color: #333d4b;
+  line-height: 1.45;
+  margin-bottom: 24px;
 `;
 
 const RecordTable = styled.table`
