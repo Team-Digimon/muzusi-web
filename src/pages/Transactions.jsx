@@ -1,5 +1,14 @@
+import AccountTransactions from "@/components/account/AccountTransactions";
+import styled from "styled-components";
+
 const Transactions = () => {
-  return <div>거래 내역 화면입니다.</div>;
+  return (
+    <TransactionsContainer>
+      <AccountTransactions />
+    </TransactionsContainer>
+  );
 };
 
 export default Transactions;
+
+const TransactionsContainer = styled.div``;
