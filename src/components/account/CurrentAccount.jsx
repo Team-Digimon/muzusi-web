@@ -11,8 +11,6 @@ const CurrentAccount = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const totalAsset = currentAccount.balance + currentAccount.reservedPrice;
-
   const fetchCurrentAccount = async () => {
     try {
       const response = await getCurrentAccount();
@@ -79,7 +77,7 @@ const CurrentAccount = () => {
             초기화 및 계좌 재생성
           </CreateAccountBtn>
         </BalanceHeader>
-        <Balance>{totalAsset.toLocaleString()} 원</Balance>
+        <Balance>{accountProfits[1].totalBalance.toLocaleString()} 원</Balance>
         {hasEnoughData ? (
           <BalanceChange>
             이 전날보다{" "}
