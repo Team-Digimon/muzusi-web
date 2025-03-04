@@ -18,10 +18,13 @@ const Stocks = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [chartData, setChartData] = useState([]);
-  const [period, setPeriod] = useState("DAILY");
+  const [period, setPeriod] = useState("MINUTES");
   const [messages, setMessages] = useState([]);
   const subscriptionRef = useRef(null);
   const clientRef = useRef(null);
+  const isFirstSet = useRef(true);
+  const [yesterdayData, setYesterdayData] = useState({});
+  const [currentPrice, setCurrentPrice] = useState(0);
 
   const periods = [
     { value: "MINUTES", korean: "10분" },
@@ -37,6 +40,31 @@ const Stocks = () => {
   const isTradingTime =
     (hours === 9 && minutes >= 0) ||
     (hours > 9 && (hours < 15 || (hours === 15 && minutes <= 30)));
+
+  useEffect(() => {
+    const fetchYesterdayPrice = async () => {
+      try {
+        const response = await getStocksChart({
+          stockCode: stock.stockCode,
+          period: "DAILY",
+        });
+        setYesterdayData(response.data[response.data.length - 2]);
+      } catch (error) {
+        console.error("주식 차트 데이터 가져오기 실패:", error.message);
+        setError(error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchYesterdayPrice();
+  }, [stock.stockCode]);
+
+  useEffect(() => {
+    if (isFirstSet.current && chartData.length > 0) {
+      isFirstSet.current = false;
+      setCurrentPrice(chartData[chartData.length - 1].close);
+    }
+  }, [chartData]);
 
   useEffect(() => {
     if (!isTradingTime) return;
@@ -56,6 +84,7 @@ const Stocks = () => {
           (message) => {
             const parsedMessage = JSON.parse(message.body);
             setMessages((prev) => [parsedMessage, ...prev]);
+            setCurrentPrice(parsedMessage.price);
           },
           {
             stockCode: stock.stockCode,
@@ -182,7 +211,12 @@ const Stocks = () => {
 
   return (
     <Container>
-      <StockHeader stock={stock} />
+      <StockHeader
+        stock={stock}
+        currentPrice={currentPrice}
+        yesterdayData={yesterdayData}
+        messages={messages}
+      />
       <StockContainer>
         <StockChartContainer
           period={period}
