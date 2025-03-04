@@ -187,13 +187,12 @@ const AssetContainer = styled.div`
   padding: 20px 24px;
   background: #f9fafb;
   border-radius: 15px;
-  gap: 12px;
 `;
 
 const AvailableBalance = styled.div`
   display: flex;
   flex-direction: column;
-  font-weight: 600;
+  font-weight: 500;
   color: #333d4b;
   line-height: 1.45;
   font-size: 20px;
