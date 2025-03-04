@@ -53,7 +53,7 @@ const LiveStockPrice = ({ messages }) => {
           <Logo src={MuLogo} alt="MuLogo" />
           현재 장 시간이 아닙니다.
           <br />
-          (9:00 ~ 13:30)
+          (9:00 ~ 15:30)
         </Notice>
       ) : messages.length > 0 ? null : (
         <Notice>실시간 정보를 불러오는 중입니다.</Notice>
