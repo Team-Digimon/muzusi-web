@@ -50,4 +50,6 @@ export const saveUserAndToken = (user, token) => {
 export const clearStorage = () => {
   sessionStorage.removeItem("user");
   sessionStorage.removeItem("accessToken");
+  sessionStorage.removeItem("balance");
+  sessionStorage.removeItem("holdings");
 };
