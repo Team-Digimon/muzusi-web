@@ -6,7 +6,7 @@ import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 
-const StockTrade = ({ stockData, currentPrice }) => {
+const StockTrade = ({ stock, currentPrice }) => {
   const { user } = useAuth();
   const [tradeType, setTradeType] = useState("BUY");
   const [priceType, setPriceType] = useState("지정가");
@@ -17,13 +17,10 @@ const StockTrade = ({ stockData, currentPrice }) => {
   const [holdings, setHoldings] = useState([]);
   const [balance, setBalance] = useState(0);
 
-  const stock = stockData
-    ? stockData
-    : JSON.parse(sessionStorage.getItem("stockData"));
-
   const now = new Date();
   const hours = now.getHours();
   const minutes = now.getMinutes();
+
   const isTradingTime =
     (hours === 9 && minutes >= 0) ||
     (hours > 9 && (hours < 15 || (hours === 15 && minutes <= 30)));
@@ -257,7 +254,7 @@ const StockTrade = ({ stockData, currentPrice }) => {
 };
 
 StockTrade.propTypes = {
-  stockData: PropTypes.shape({
+  stock: PropTypes.shape({
     stockName: PropTypes.string.isRequired,
     stockCode: PropTypes.string.isRequired,
   }),

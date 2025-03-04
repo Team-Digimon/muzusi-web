@@ -14,9 +14,7 @@ import styled from "styled-components";
 
 const Stocks = () => {
   const location = useLocation();
-  const stock = location.state?.stock
-    ? location.state?.stock
-    : JSON.parse(sessionStorage.getItem("stockData"));
+  const stock = location.state?.stock;
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [chartData, setChartData] = useState([]);
@@ -27,13 +25,6 @@ const Stocks = () => {
   const isFirstSet = useRef(true);
   const [yesterdayData, setYesterdayData] = useState({});
   const [currentPrice, setCurrentPrice] = useState(0);
-
-  useEffect(() => {
-    if (sessionStorage.getItem("stockData")) {
-      sessionStorage.removeItem("stockData");
-    }
-    sessionStorage.setItem("stockData", JSON.stringify(stock));
-  }, [stock]);
 
   const periods = [
     { value: "MINUTES", korean: "10분" },
@@ -221,7 +212,7 @@ const Stocks = () => {
   return (
     <Container>
       <StockHeader
-        stockData={stock}
+        stock={stock}
         currentPrice={currentPrice}
         yesterdayData={yesterdayData}
       />
@@ -232,7 +223,7 @@ const Stocks = () => {
           handlePeriod={handlePeriod}
           chartData={chartData}
         />
-        <StockTrade stockData={stock} currentPrice={currentPrice} />
+        <StockTrade stock={stock} currentPrice={currentPrice} />
       </StockContainer>
       <LiveStockPrice messages={messages} />
     </Container>
