@@ -53,8 +53,8 @@ const CurrentAccount = () => {
   const accountProfits = currentAccount?.accountProfits || [];
   const hasEnoughData = accountProfits.length >= 2;
 
-  const previousBalance = hasEnoughData ? accountProfits[0].totalBalance : 0;
-  const currentBalance = hasEnoughData ? accountProfits[1].totalBalance : 0;
+  const previousBalance = hasEnoughData ? accountProfits[1].totalBalance : 0;
+  const currentBalance = hasEnoughData ? accountProfits[0].totalBalance : 0;
 
   const balanceChange = currentBalance - previousBalance;
   const balanceChangeRate = previousBalance
@@ -77,7 +77,7 @@ const CurrentAccount = () => {
             초기화 및 계좌 재생성
           </CreateAccountBtn>
         </BalanceHeader>
-        <Balance>{accountProfits[1].totalBalance.toLocaleString()} 원</Balance>
+        <Balance>{accountProfits[0].totalBalance.toLocaleString()} 원</Balance>
         {hasEnoughData ? (
           <BalanceChange>
             이 전날보다{" "}
@@ -98,7 +98,17 @@ const CurrentAccount = () => {
         </AssetContainer>
         <AssetContainer>
           <Title>투자 중인 금액</Title>
-          <AvailableBalance>- 원</AvailableBalance>
+          <AvailableBalance>
+            {currentAccount.totalEvaluatedAmount.toLocaleString()}원
+            <Return $return={currentAccount.totalProfitAmount}>
+              {currentAccount.totalProfitAmount > 0
+                ? `+ ${currentAccount.totalProfitAmount.toLocaleString()}`
+                : `- ${Math.abs(
+                    currentAccount.totalProfitAmount
+                  ).toLocaleString()}`}
+              원 ({Math.abs(currentAccount.totalRateOfReturn)}%)
+            </Return>
+          </AvailableBalance>
         </AssetContainer>
       </AssetsContainer>
     </CurrentAccountContainer>
@@ -181,8 +191,19 @@ const AssetContainer = styled.div`
 `;
 
 const AvailableBalance = styled.div`
+  display: flex;
+  flex-direction: column;
   font-weight: 600;
   color: #333d4b;
   line-height: 1.45;
   font-size: 20px;
+`;
+
+const Return = styled.div`
+  display: flex;
+  font-weight: normal;
+  line-height: 1.45;
+  font-size: 14px;
+  color: ${({ $return }) =>
+    $return > 0 ? "#f04452" : $return < 0 ? "#3182f6" : "#4e5968"};
 `;
