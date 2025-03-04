@@ -1,4 +1,5 @@
 import getAccountHoldings from "@/api/account/getAccountHoldings";
+import getCurrentAccount from "@/api/account/getCurrentAccount";
 import createTrade from "@/api/stocks/createTrade";
 import useAuth from "@/contexts/useAuth";
 import PropTypes from "prop-types";
@@ -32,6 +33,11 @@ const StockTrade = ({ stockData, currentPrice }) => {
   );
   const holdingCount = currentHolding ? currentHolding.stockCount : 0;
 
+  const fetchBalance = async () => {
+    const response = await getCurrentAccount();
+    sessionStorage.setItem("balance", JSON.stringify(response.data.balance));
+  };
+
   const fetchHoldings = async () => {
     const response = await getAccountHoldings();
     sessionStorage.setItem("holdings", JSON.stringify(response.data));
@@ -40,6 +46,7 @@ const StockTrade = ({ stockData, currentPrice }) => {
   useEffect(() => {
     if (user) {
       fetchHoldings();
+      fetchBalance();
     }
   }, [user]);
 
@@ -116,6 +123,7 @@ const StockTrade = ({ stockData, currentPrice }) => {
           alert("정상적으로 주문이 처리되었습니다.");
         }
         fetchHoldings();
+        fetchBalance();
       }
     } catch (error) {
       console.error("주문 실패: ", error.message);
