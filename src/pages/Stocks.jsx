@@ -31,8 +31,8 @@ const Stocks = () => {
   useEffect(() => {
     if (sessionStorage.getItem("stockData")) {
       sessionStorage.removeItem("stockData");
-      sessionStorage.setItem("stockData", JSON.stringify(stock));
     }
+    sessionStorage.setItem("stockData", JSON.stringify(stock));
   }, [stock]);
 
   const periods = [

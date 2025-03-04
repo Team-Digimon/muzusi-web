@@ -14,12 +14,12 @@ const StockTrade = ({ stockData, currentPrice }) => {
   const [inputCount, setInputCount] = useState("");
   const [isPriceFocused, setIsPriceFocused] = useState(false);
   const [isCountFocused, setIsCountFocused] = useState(false);
+  const [holdings, setHoldings] = useState([]);
+  const [balance, setBalance] = useState(0);
 
   const stock = stockData
     ? stockData
     : JSON.parse(sessionStorage.getItem("stockData"));
-  const balance = user ? JSON.parse(sessionStorage.getItem("balance")) : 0;
-  const holdings = JSON.parse(sessionStorage.getItem("holdings"));
 
   const now = new Date();
   const hours = now.getHours();
@@ -35,12 +35,12 @@ const StockTrade = ({ stockData, currentPrice }) => {
 
   const fetchBalance = async () => {
     const response = await getCurrentAccount();
-    sessionStorage.setItem("balance", JSON.stringify(response.data.balance));
+    setBalance(response.data.balance);
   };
 
   const fetchHoldings = async () => {
     const response = await getAccountHoldings();
-    sessionStorage.setItem("holdings", JSON.stringify(response.data));
+    setHoldings(response.data);
   };
 
   useEffect(() => {

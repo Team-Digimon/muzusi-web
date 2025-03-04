@@ -1,5 +1,3 @@
-import getAccountHoldings from "@/api/account/getAccountHoldings";
-import getCurrentAccount from "@/api/account/getCurrentAccount";
 import getNews from "@/api/news/getNews";
 import getNewsByKeyword from "@/api/news/getNewsByKeyword";
 import getStocksRank from "@/api/stocks/getStocksRank";
@@ -7,12 +5,10 @@ import Error from "@/components/common/Error";
 import Loading from "@/components/common/Loading";
 import News from "@/components/home/News";
 import Rank from "@/components/home/Rank";
-import useAuth from "@/contexts/useAuth";
 import { useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
 
 const Home = () => {
-  const { user } = useAuth();
   const [news, setNews] = useState([]);
   const [newsPage, setNewsPage] = useState(0);
   const [keyword, setKeyword] = useState("전체");
@@ -31,24 +27,6 @@ const Home = () => {
     { value: "RISING", korean: "급상승" },
     { value: "FALLING", korean: "급하락" },
   ];
-
-  useEffect(() => {
-    if (user) {
-      const fetchBalance = async () => {
-        const response = await getCurrentAccount();
-        sessionStorage.setItem(
-          "balance",
-          JSON.stringify(response.data.balance)
-        );
-      };
-      const fetchHoldings = async () => {
-        const response = await getAccountHoldings();
-        sessionStorage.setItem("holdings", JSON.stringify(response.data));
-      };
-      fetchBalance();
-      fetchHoldings();
-    }
-  }, [user]);
 
   const fetchNews = useCallback(async () => {
     setIsLoading(true);

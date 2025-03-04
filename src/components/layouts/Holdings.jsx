@@ -13,7 +13,6 @@ const Holdings = () => {
     setIsLoading(true);
     try {
       const response = await getAccountHoldings();
-      sessionStorage.setItem("holdings", JSON.stringify(response.data));
       setHoldings(response.data);
     } catch (error) {
       console.error("보유 주식 가져오기 실패: ", error.message);
