@@ -196,6 +196,7 @@ const StockChart = ({ chartData, period }) => {
           hour: "2-digit",
           minute: "2-digit",
           hour12: false,
+          timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
         }).format(new Date(timestamp * 1000));
       };
 
@@ -282,7 +283,7 @@ const Chart = styled.div`
 
 const TooltipContainer = styled.div`
   position: absolute;
-  top: -30px;
+  top: -10px;
   font-size: 12px;
   z-index: 1000;
   pointer-events: none;
