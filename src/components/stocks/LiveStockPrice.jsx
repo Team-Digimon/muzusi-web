@@ -1,5 +1,6 @@
 import PropTypes from "prop-types";
 import styled from "styled-components";
+import MuLogo from "@/assets/logo/MuLogo.webp";
 
 const LiveStockPrice = ({ messages }) => {
   return (
@@ -17,27 +18,37 @@ const LiveStockPrice = ({ messages }) => {
             <LiveTheadTh style={{ paddingRight: "20px" }}>시간</LiveTheadTh>
           </LiveTheadTr>
         </LiveThead>
-        <LiveTableContent>
-          {messages.map((el, index) => {
-            const formattedPrice = el.price.toLocaleString();
-            const formattedStockCount = el.stockCount.toLocaleString();
-            const formattedVolume = el.volume.toLocaleString();
-            return (
-              <LiveElement key={index}>
-                <LivePrice>{formattedPrice}</LivePrice>
-                <LiveChange $tradeType={el.tradeType}>
-                  {formattedStockCount}
-                </LiveChange>
-                <LiveChange $tradeType={el.tradeType}>
-                  {el.changeRate}%
-                </LiveChange>
-                <LiveEnd>{formattedVolume}</LiveEnd>
-                <LiveEnd style={{ paddingRight: "5px" }}>{el.time}</LiveEnd>
-              </LiveElement>
-            );
-          })}
-        </LiveTableContent>
+        {messages.length > 0 ? (
+          <LiveTableContent>
+            {messages.map((el, index) => {
+              const formattedPrice = el.price.toLocaleString();
+              const formattedStockCount = el.stockCount.toLocaleString();
+              const formattedVolume = el.volume.toLocaleString();
+              return (
+                <LiveElement key={index}>
+                  <LivePrice>{formattedPrice}</LivePrice>
+                  <LiveChange $tradeType={el.tradeType}>
+                    {formattedStockCount}
+                  </LiveChange>
+                  <LiveChange $tradeType={el.tradeType}>
+                    {el.changeRate}%
+                  </LiveChange>
+                  <LiveEnd>{formattedVolume}</LiveEnd>
+                  <LiveEnd style={{ paddingRight: "5px" }}>{el.time}</LiveEnd>
+                </LiveElement>
+              );
+            })}
+          </LiveTableContent>
+        ) : null}
       </LiveTable>
+      {messages.length > 0 ? null : (
+        <Notice>
+          <Logo src={MuLogo} alt="MuLogo" />
+          현재 장 시간이 아닙니다.
+          <br />
+          (9:00 ~ 13:30)
+        </Notice>
+      )}
     </LivePriceContainer>
   );
 };
@@ -145,4 +156,20 @@ const LiveEnd = styled.th`
   font-weight: 400;
   font-size: 12px;
   color: #4e5968;
+`;
+
+const Notice = styled.div`
+  width: 100%;
+  min-height: 100px;
+  display: flex;
+  gap: 5px;
+  justify-content: center;
+  align-items: end;
+  font-size: 15px;
+  font-weight: 600;
+`;
+
+const Logo = styled.img`
+  width: 50px;
+  height: auto;
 `;
