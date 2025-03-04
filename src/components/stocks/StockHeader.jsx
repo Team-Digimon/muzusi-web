@@ -2,10 +2,14 @@ import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 
-const StockHeader = ({ stock, currentPrice, yesterdayData }) => {
+const StockHeader = ({ stockData, currentPrice, yesterdayData }) => {
   const [change, setChange] = useState(0);
   const [changeRate, setChangeRate] = useState(0);
   const [yesterdayPrice, setYesterdayPrice] = useState(0);
+
+  const stock = stockData
+    ? stockData
+    : JSON.parse(sessionStorage.getItem("stockData"));
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -43,13 +47,12 @@ const StockHeader = ({ stock, currentPrice, yesterdayData }) => {
 };
 
 StockHeader.propTypes = {
-  stock: PropTypes.shape({
+  stockData: PropTypes.shape({
     stockName: PropTypes.string.isRequired,
     stockCode: PropTypes.string.isRequired,
   }),
   currentPrice: PropTypes.number.isRequired,
   yesterdayData: PropTypes.object.isRequired,
-  messages: PropTypes.array.isRequired,
 };
 
 export default StockHeader;
