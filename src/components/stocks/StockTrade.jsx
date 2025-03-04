@@ -124,6 +124,7 @@ const StockTrade = ({ stockData, currentPrice }) => {
         }
         fetchHoldings();
         fetchBalance();
+        window.location.reload();
       }
     } catch (error) {
       console.error("주문 실패: ", error.message);
