@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import styled from "styled-components";
 import MuLogo from "@/assets/logo/MuLogo.webp";
 import Holdings from "@/components/layouts/Holdings";
+import Reservations from "@/components/layouts/Reservations";
 
 const SlidingPanel = ({ sideCartegory }) => {
   const { user } = useAuth();
@@ -11,7 +12,11 @@ const SlidingPanel = ({ sideCartegory }) => {
     <SlidingPanelContainer $sideCartegory={sideCartegory}>
       <SideBarTitle>{sideCartegory}</SideBarTitle>
       {user ? (
-        sideCartegory === "내 투자" && <Holdings />
+        sideCartegory === "내 투자" ? (
+          <Holdings />
+        ) : (
+          <Reservations />
+        )
       ) : (
         <ErrorContainer>
           <Logo src={MuLogo} alt="MuLogo" />
