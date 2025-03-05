@@ -187,7 +187,7 @@ const GlobalNavBar = styled.div`
   height: 60px;
   position: sticky;
   width: 100%;
-  z-index: 10001;
+  z-index: 99;
   max-width: 1280px;
   margin: auto;
 `;

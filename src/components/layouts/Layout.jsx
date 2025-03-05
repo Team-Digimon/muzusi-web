@@ -53,7 +53,7 @@ const HeaderContainer = styled.header`
   min-width: 1000px;
   padding-right: 20px;
   background: white;
-  z-index: 1000;
+  z-index: 99;
   transition: 0.2s ease-in-out;
 `;
 
@@ -69,5 +69,5 @@ const SideBarContainer = styled.div`
   position: fixed;
   top: 0;
   right: 0;
-  z-index: 9999;
+  z-index: 100;
 `;
