@@ -4,18 +4,26 @@ import styled from "styled-components";
 import MuLogo from "@/assets/logo/MuLogo.webp";
 import Holdings from "@/components/layouts/Holdings";
 import Reservations from "@/components/layouts/Reservations";
+import { useState } from "react";
 
 const SlidingPanel = ({ sideCartegory }) => {
   const { user } = useAuth();
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
-    <SlidingPanelContainer $sideCartegory={sideCartegory}>
+    <SlidingPanelContainer
+      $sideCartegory={sideCartegory}
+      $isModalOpen={isModalOpen}
+    >
       <SideBarTitle>{sideCartegory}</SideBarTitle>
       {user ? (
         sideCartegory === "내 투자" ? (
-          <Holdings />
+          <Holdings isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} />
         ) : (
-          <Reservations />
+          <Reservations
+            isModalOpen={isModalOpen}
+            setIsModalOpen={setIsModalOpen}
+          />
         )
       ) : (
         <ErrorContainer>
@@ -45,7 +53,7 @@ const SlidingPanelContainer = styled.div`
   margin-right: 56px;
   height: 100vh;
   padding: 16px;
-  z-index: 9998;
+  z-index: ${({ $isModalOpen }) => ($isModalOpen ? 999 : 99)};
   transition: 0.2s ease-in-out;
 `;
 

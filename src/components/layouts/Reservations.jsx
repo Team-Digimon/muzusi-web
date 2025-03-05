@@ -4,11 +4,60 @@ import styled from "styled-components";
 import Loading from "@/components/common/Loading";
 import Error from "@/components/common/Error";
 import MuLogo from "@/assets/logo/MuLogo.webp";
+import PropTypes from "prop-types";
+import deleteReservation from "@/api/stocks/deleteReservation";
 
-const Reservations = () => {
+const Reservations = ({ isModalOpen, setIsModalOpen }) => {
   const [reservations, setReservations] = useState([]);
+  const [reservation, setReservation] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const openModal = (reservationData) => () => {
+    setIsModalOpen(true);
+    setReservation({
+      id: reservationData.id,
+      "주문 일시": formatDateTime(reservationData.createdAt),
+      "주문 유형":
+        reservationData.tradeType === "BUY" ? "매수 예약" : "매도 예약",
+      종목명: reservationData.stockName,
+      "종목 코드": reservationData.stockCode,
+      "1 주당 가격": `${reservationData.inputPrice.toLocaleString()}원`,
+      "주문 개수": `${reservationData.stockCount.toLocaleString()}개`,
+      "총 주문 가격": `${(
+        reservationData.inputPrice * reservationData.stockCount
+      ).toLocaleString()}원`,
+    });
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setReservation(null);
+  };
+
+  const formatDateTime = (dateString) => {
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1);
+    const day = String(date.getDate());
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+    const seconds = String(date.getSeconds()).padStart(2, "0");
+
+    return `${year}년 ${month}월 ${day}일 ${hours}:${minutes}:${seconds}`;
+  };
+
+  const deleteHandler = async () => {
+    if (!reservation?.id) return;
+
+    try {
+      await deleteReservation({ tradeReservationId: reservation.id });
+      closeModal();
+      fetchReservations();
+    } catch (error) {
+      console.error("예약 취소 실패:", error);
+    }
+  };
 
   const fetchReservations = useCallback(async () => {
     setIsLoading(true);
@@ -34,7 +83,10 @@ const Reservations = () => {
     <ReservationsContainer>
       {reservations.map((reservation) => {
         return (
-          <HoldingReservation key={reservation.id}>
+          <HoldingReservation
+            key={reservation.id}
+            onClick={openModal(reservation)}
+          >
             <ReservationInfo>
               <ReservationName>{reservation.stockName}</ReservationName>
               <ReservationPrice>
@@ -50,6 +102,22 @@ const Reservations = () => {
           </HoldingReservation>
         );
       })}
+      {isModalOpen && reservation && (
+        <ModalBackground onClick={closeModal}>
+          <ModalContent onClick={(e) => e.stopPropagation()}>
+            <ModalTitle>예약된 주문</ModalTitle>
+            {Object.entries(reservation)
+              .filter(([key]) => key !== "id")
+              .map(([label, value], index) => (
+                <ModalLine key={index}>
+                  <ModalLabel>{label}</ModalLabel>
+                  <ModalInfo>{value}</ModalInfo>
+                </ModalLine>
+              ))}
+            <ModalBtn onClick={deleteHandler}>주문 취소하기</ModalBtn>
+          </ModalContent>
+        </ModalBackground>
+      )}
     </ReservationsContainer>
   ) : (
     <NoticeContainer>
@@ -57,6 +125,11 @@ const Reservations = () => {
       <NoticeDescription>예약된 주문이 없습니다.</NoticeDescription>
     </NoticeContainer>
   );
+};
+
+Reservations.propTypes = {
+  isModalOpen: PropTypes.bool.isRequired,
+  setIsModalOpen: PropTypes.func.isRequired,
 };
 
 export default Reservations;
@@ -72,6 +145,7 @@ const HoldingReservation = styled.div`
   align-items: center;
   padding: 8px;
   border-radius: 10px;
+  cursor: pointer;
 
   &:hover {
     background-color: #021f470d;
@@ -130,4 +204,74 @@ const Logo = styled.img`
 const NoticeDescription = styled.div`
   font-size: 15px;
   font-weight: 600;
+`;
+
+const ModalBackground = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.2);
+  display: flex;
+  justify-content: center;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const ModalContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border-radius: 20px;
+  min-width: 300px;
+  max-height: 500px;
+  padding: 15px;
+  margin-bottom: 200px;
+`;
+
+const ModalTitle = styled.div`
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 1.45;
+  color: #333d4b;
+  margin-bottom: 10px;
+`;
+
+const ModalLine = styled.div`
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 2px;
+`;
+
+const ModalLabel = styled.span`
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 1.45;
+  color: #333d4b;
+`;
+
+const ModalInfo = styled.span`
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 1.45;
+  color: #6b7684;
+`;
+
+const ModalBtn = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  border-radius: 10px;
+  background: #000;
+  color: #fff;
+  font-weight: 600;
+  line-height: 1.45;
+  font-size: 14px;
+  padding: 5px;
+  margin-top: 15px;
+  cursor: pointer;
 `;
