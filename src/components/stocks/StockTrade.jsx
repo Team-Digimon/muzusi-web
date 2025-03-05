@@ -1,13 +1,51 @@
-import { useState } from "react";
+import getAccountHoldings from "@/api/account/getAccountHoldings";
+import getCurrentAccount from "@/api/account/getCurrentAccount";
+import createTrade from "@/api/stocks/createTrade";
+import useAuth from "@/contexts/useAuth";
+import PropTypes from "prop-types";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 
-const StockTrade = () => {
+const StockTrade = ({ stock, currentPrice }) => {
+  const { user } = useAuth();
   const [tradeType, setTradeType] = useState("BUY");
   const [priceType, setPriceType] = useState("지정가");
   const [inputPrice, setInputPrice] = useState("");
   const [inputCount, setInputCount] = useState("");
   const [isPriceFocused, setIsPriceFocused] = useState(false);
   const [isCountFocused, setIsCountFocused] = useState(false);
+  const [holdings, setHoldings] = useState([]);
+  const [balance, setBalance] = useState(0);
+
+  const now = new Date();
+  const hours = now.getHours();
+  const minutes = now.getMinutes();
+
+  const isTradingTime =
+    (hours === 9 && minutes >= 0) ||
+    (hours > 9 && (hours < 15 || (hours === 15 && minutes <= 30)));
+
+  const currentHolding = holdings?.find(
+    (holding) => holding.stockName === stock.stockName
+  );
+  const holdingCount = currentHolding ? currentHolding.stockCount : 0;
+
+  const fetchBalance = async () => {
+    const response = await getCurrentAccount();
+    setBalance(response.data.balance);
+  };
+
+  const fetchHoldings = async () => {
+    const response = await getAccountHoldings();
+    setHoldings(response.data);
+  };
+
+  useEffect(() => {
+    if (user) {
+      fetchHoldings();
+      fetchBalance();
+    }
+  }, [user]);
 
   const tradeTypes = [
     {
@@ -37,6 +75,9 @@ const StockTrade = () => {
 
   const handlePriceType = (type) => () => {
     setPriceType(type);
+    if (type === "시장가") {
+      setInputPrice("");
+    }
   };
 
   const handleInputPriceChange = (e) => {
@@ -56,6 +97,58 @@ const StockTrade = () => {
 
   const formatCountDisplay = () => {
     return inputCount ? parseInt(inputCount, 10).toLocaleString() + " 주" : "";
+  };
+
+  const totalPrice =
+    (user && priceType === "시장가" ? currentPrice : inputPrice) * inputCount ||
+    0;
+
+  const tradeStocks = async (data) => {
+    if (!isTradingTime) {
+      alert("주문 가능 시간이 아닙니다. (9:00 ~ 15:30)");
+      return;
+    }
+    try {
+      const response = await createTrade({ data: data });
+      if (response.code === 200) {
+        if (
+          (data.tradeType === "BUY" && data.stockPrice > data.inputPrice) ||
+          (data.tradeType === "SELL" && data.stockPrice < data.inputPrice)
+        )
+          alert("정상적으로 주문이 예약되었습니다.");
+        else {
+          alert("정상적으로 주문이 처리되었습니다.");
+        }
+        fetchHoldings();
+        fetchBalance();
+        window.location.reload();
+      }
+    } catch (error) {
+      console.error("주문 실패: ", error.message);
+    }
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!inputCount || inputCount <= 0) {
+      alert("수량을 입력해주세요.");
+      return;
+    }
+    if (priceType === "지정가" && (!inputPrice || inputPrice <= 0)) {
+      alert("가격을 입력해주세요.");
+      return;
+    }
+
+    const data = {
+      stockPrice: currentPrice,
+      inputPrice: inputPrice ? inputPrice : currentPrice,
+      stockCount: inputCount,
+      stockName: stock.stockName,
+      stockCode: stock.stockCode,
+      tradeType: tradeType,
+    };
+
+    tradeStocks(data);
   };
 
   return (
@@ -122,28 +215,50 @@ const StockTrade = () => {
         </OrderLine>
         <OrderInfoContainer>
           <OrderInfo>
-            <OrderInfoSpan>구매 가능 금액</OrderInfoSpan>
-            <OrderInfoSpan>0 원</OrderInfoSpan>
+            <OrderInfoSpan>
+              {tradeTypes[activeTradeIndex].label} 가능{" "}
+              {tradeTypes[activeTradeIndex].label === "구매" ? "금액" : "개수"}
+            </OrderInfoSpan>
+            <OrderInfoSpan>
+              {tradeTypes[activeTradeIndex].label === "구매"
+                ? `${balance.toLocaleString()} 원`
+                : `${holdingCount.toLocaleString()} 주`}
+            </OrderInfoSpan>
           </OrderInfo>
           <OrderInfo>
             <OrderInfoSpan>총 주문 금액</OrderInfoSpan>
-            <OrderInfoSpan>
-              {inputPrice && inputCount
-                ? `${(inputPrice * inputCount).toLocaleString()} 원`
-                : "0 원"}
-            </OrderInfoSpan>
+            <OrderInfoSpan>{totalPrice.toLocaleString()} 원</OrderInfoSpan>
           </OrderInfo>
         </OrderInfoContainer>
         <TradeBtn
           type="submit"
+          onClick={handleSubmit}
+          disabled={
+            !user ||
+            (tradeTypes[activeTradeIndex].label === "판매" &&
+              holdingCount === 0)
+          }
           $color={tradeTypes[activeTradeIndex].color}
           $hoverColor={tradeTypes[activeTradeIndex].hoverColor}
         >
-          {tradeTypes[activeTradeIndex].label} 예약하기
+          {!user
+            ? `로그인하고 ${tradeTypes[activeTradeIndex].label}하기`
+            : tradeTypes[activeTradeIndex].label === "판매" &&
+              holdingCount === 0
+            ? "보유하지 않은 종목입니다."
+            : `${tradeTypes[activeTradeIndex].label} 예약하기`}
         </TradeBtn>
       </TradeOrderForm>
     </StockTradeContainer>
   );
+};
+
+StockTrade.propTypes = {
+  stock: PropTypes.shape({
+    stockName: PropTypes.string.isRequired,
+    stockCode: PropTypes.string.isRequired,
+  }),
+  currentPrice: PropTypes.number.isRequired,
 };
 
 export default StockTrade;
@@ -336,7 +451,7 @@ const TradeBtn = styled.button`
   vertical-align: middle;
   text-decoration: none;
   border-radius: 10px;
-  background: ${({ $color }) => $color};
+  background: ${({ disabled, $color }) => (disabled ? "#ccc" : $color)};
   color: #fff;
   transition: 0.2s;
   border: none;
@@ -344,8 +459,10 @@ const TradeBtn = styled.button`
   left: 0px;
   bottom: 20px;
   width: 100%;
-  cursor: pointer;
+  cursor: ${({ disabled }) => (disabled ? "not-allowed" : "pointer")};
+
   &:hover {
-    background: ${({ $hoverColor }) => $hoverColor};
+    background: ${({ disabled, $hoverColor }) =>
+      disabled ? "#ccc" : $hoverColor};
   }
 `;

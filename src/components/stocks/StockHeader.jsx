@@ -49,7 +49,6 @@ StockHeader.propTypes = {
   }),
   currentPrice: PropTypes.number.isRequired,
   yesterdayData: PropTypes.object.isRequired,
-  messages: PropTypes.array.isRequired,
 };
 
 export default StockHeader;

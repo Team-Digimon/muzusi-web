@@ -42,7 +42,7 @@ const Stocks = () => {
     (hours > 9 && (hours < 15 || (hours === 15 && minutes <= 30)));
 
   useEffect(() => {
-    const fetchYesterdayPrice = async () => {
+    const fetchYesterdayData = async () => {
       try {
         const response = await getStocksChart({
           stockCode: stock.stockCode,
@@ -56,7 +56,7 @@ const Stocks = () => {
         setIsLoading(false);
       }
     };
-    fetchYesterdayPrice();
+    fetchYesterdayData();
   }, [stock.stockCode]);
 
   useEffect(() => {
@@ -215,7 +215,6 @@ const Stocks = () => {
         stock={stock}
         currentPrice={currentPrice}
         yesterdayData={yesterdayData}
-        messages={messages}
       />
       <StockContainer>
         <StockChartContainer
@@ -224,7 +223,7 @@ const Stocks = () => {
           handlePeriod={handlePeriod}
           chartData={chartData}
         />
-        <StockTrade />
+        <StockTrade stock={stock} currentPrice={currentPrice} />
       </StockContainer>
       <LiveStockPrice messages={messages} />
     </Container>
