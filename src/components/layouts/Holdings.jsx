@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
 import Loading from "@/components/common/Loading";
 import Error from "@/components/common/Error";
+import MuLogo from "@/assets/logo/MuLogo.webp";
 
 const Holdings = () => {
   const [holdings, setHoldings] = useState([]);
@@ -29,7 +30,7 @@ const Holdings = () => {
   if (isLoading) return <Loading />;
   if (error) return <Error />;
 
-  return (
+  return holdings.length > 0 ? (
     <HoldingsContainer>
       {holdings.map((stock) => {
         const totalPrice = stock.stockCount * stock.averagePrice;
@@ -58,6 +59,11 @@ const Holdings = () => {
         );
       })}
     </HoldingsContainer>
+  ) : (
+    <NoticeContainer>
+      <Logo src={MuLogo} alt="MuLogo" />
+      <NoticeDescription>예약된 주문이 없습니다.</NoticeDescription>
+    </NoticeContainer>
   );
 };
 
@@ -112,4 +118,24 @@ const RateOfReturn = styled.span`
   line-height: 1.45;
   font-size: 12px;
   color: ${({ $profit }) => ($profit > 0 ? "#f04452" : "#3182f6")};
+`;
+
+const NoticeContainer = styled.div`
+  display: flex;
+  width: 100%;
+  height: 80vh;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+`;
+
+const Logo = styled.img`
+  width: 100px;
+  height: auto;
+`;
+
+const NoticeDescription = styled.div`
+  font-size: 15px;
+  font-weight: 600;
 `;
