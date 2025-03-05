@@ -26,15 +26,15 @@ const SideBar = ({ sideCartegory, setSideCartegory }) => {
         <span>내 투자</span>
       </SideAnchor>
       <SideAnchor
-        $isActive={sideCartegory === "관심"}
-        onClick={cartegoryHandler("관심")}
+        $isActive={sideCartegory === "예약"}
+        onClick={cartegoryHandler("예약")}
       >
         <SideBtn>
           <SideIcon>
             <InterestIcon />
           </SideIcon>
         </SideBtn>
-        <span>관심</span>
+        <span>예약</span>
       </SideAnchor>
     </GlobalSideBar>
   );

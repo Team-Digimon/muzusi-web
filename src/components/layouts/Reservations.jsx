@@ -1,20 +1,20 @@
-import getAccountHoldings from "@/api/account/getAccountHoldings";
+import getReservations from "@/api/stocks/getReservations";
 import { useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
 import Loading from "@/components/common/Loading";
 import Error from "@/components/common/Error";
 import MuLogo from "@/assets/logo/MuLogo.webp";
 
-const Holdings = () => {
-  const [holdings, setHoldings] = useState([]);
+const Reservations = () => {
+  const [reservations, setReservations] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const fetchHoldings = useCallback(async () => {
+  const fetchReservations = useCallback(async () => {
     setIsLoading(true);
     try {
-      const response = await getAccountHoldings();
-      setHoldings(response.data);
+      const response = await getReservations();
+      setReservations(response.data);
     } catch (error) {
       console.error("보유 주식 가져오기 실패: ", error.message);
       setError(error);
@@ -24,41 +24,33 @@ const Holdings = () => {
   }, []);
 
   useEffect(() => {
-    fetchHoldings();
-  }, [fetchHoldings]);
+    fetchReservations();
+  }, [fetchReservations]);
 
   if (isLoading) return <Loading />;
   if (error) return <Error />;
 
-  return holdings.length > 0 ? (
-    <HoldingsContainer>
-      {holdings.map((stock) => {
-        const totalPrice = stock.stockCount * stock.averagePrice;
-        const adjustedRate =
-          stock.rateOfReturn < 0
-            ? Math.abs(stock.rateOfReturn)
-            : stock.rateOfReturn;
-        const formattedProfit = stock.totalProfitAmount.toLocaleString();
-
+  return reservations.length > 0 ? (
+    <ReservationsContainer>
+      {reservations.map((reservation) => {
         return (
-          <HoldingStock key={stock.id}>
-            <StockInfo>
-              <StockName>{stock.stockName}</StockName>
-              <StockPrice>{totalPrice.toLocaleString()}</StockPrice>
-            </StockInfo>
-            <StockInfo>
-              <StockCount>{stock.stockCount}주</StockCount>
-              <RateOfReturn $profit={stock.totalProfitAmount}>
-                {stock.totalProfitAmount > 0
-                  ? `+${formattedProfit}`
-                  : formattedProfit}
-                ({adjustedRate}%)
-              </RateOfReturn>
-            </StockInfo>
-          </HoldingStock>
+          <HoldingReservation key={reservation.id}>
+            <ReservationInfo>
+              <ReservationName>{reservation.stockName}</ReservationName>
+              <ReservationPrice>
+                {reservation.inputPrice.toLocaleString()}
+              </ReservationPrice>
+            </ReservationInfo>
+            <ReservationInfo>
+              <ReservationCount>{reservation.stockCount}주</ReservationCount>
+              <ReservationType $type={reservation.tradeType === "BUY"}>
+                {reservation.tradeType === "BUY" ? "구매 대기" : "판매 대기"}
+              </ReservationType>
+            </ReservationInfo>
+          </HoldingReservation>
         );
       })}
-    </HoldingsContainer>
+    </ReservationsContainer>
   ) : (
     <NoticeContainer>
       <Logo src={MuLogo} alt="MuLogo" />
@@ -67,14 +59,14 @@ const Holdings = () => {
   );
 };
 
-export default Holdings;
+export default Reservations;
 
-const HoldingsContainer = styled.div`
+const ReservationsContainer = styled.div`
   display: flex;
   flex-direction: column;
 `;
 
-const HoldingStock = styled.div`
+const HoldingReservation = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -86,38 +78,38 @@ const HoldingStock = styled.div`
   }
 `;
 
-const StockInfo = styled.div`
+const ReservationInfo = styled.div`
   display: flex;
   width: 100%;
   justify-content: space-between;
 `;
 
-const StockName = styled.span`
+const ReservationName = styled.span`
   font-weight: 500;
   color: #4e5968;
   line-height: 1.45;
   font-size: 14px;
 `;
 
-const StockPrice = styled.span`
+const ReservationPrice = styled.span`
   font-weight: 600;
   color: #333d4b;
   line-height: 1.45;
   font-size: 14px;
 `;
 
-const StockCount = styled.span`
+const ReservationCount = styled.span`
   font-weight: 500;
   color: #6b7684;
   line-height: 1.45;
   font-size: 12px;
 `;
 
-const RateOfReturn = styled.span`
+const ReservationType = styled.span`
   font-weight: 500;
   line-height: 1.45;
   font-size: 12px;
-  color: ${({ $profit }) => ($profit > 0 ? "#f04452" : "#3182f6")};
+  color: ${({ $type }) => ($type ? "#f04452" : "#3182f6")};
 `;
 
 const NoticeContainer = styled.div`
