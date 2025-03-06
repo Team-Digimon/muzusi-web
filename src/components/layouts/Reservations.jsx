@@ -10,6 +10,8 @@ import deleteReservation from "@/api/stocks/deleteReservation";
 const Reservations = ({ isModalOpen, setIsModalOpen }) => {
   const [reservations, setReservations] = useState([]);
   const [reservation, setReservation] = useState(null);
+  const [isCheckModalOpen, setIsCheckModalOpen] = useState(false);
+  const [isDelete, setIsDelete] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -23,7 +25,7 @@ const Reservations = ({ isModalOpen, setIsModalOpen }) => {
       종목명: reservationData.stockName,
       "종목 코드": reservationData.stockCode,
       "1 주당 가격": `${reservationData.inputPrice.toLocaleString()}원`,
-      "주문 개수": `${reservationData.stockCount.toLocaleString()}개`,
+      "주문 개수": `${reservationData.stockCount.toLocaleString()}주`,
       "총 주문 가격": `${(
         reservationData.inputPrice * reservationData.stockCount
       ).toLocaleString()}원`,
@@ -33,6 +35,17 @@ const Reservations = ({ isModalOpen, setIsModalOpen }) => {
   const closeModal = () => {
     setIsModalOpen(false);
     setReservation(null);
+    setIsCheckModalOpen(false);
+    setIsDelete(false);
+    fetchReservations();
+  };
+
+  const openCheckModal = () => {
+    setIsCheckModalOpen(true);
+  };
+
+  const closeCheckModal = () => {
+    setIsCheckModalOpen(false);
   };
 
   const formatDateTime = (dateString) => {
@@ -51,9 +64,12 @@ const Reservations = ({ isModalOpen, setIsModalOpen }) => {
     if (!reservation?.id) return;
 
     try {
-      await deleteReservation({ tradeReservationId: reservation.id });
-      closeModal();
-      fetchReservations();
+      const response = await deleteReservation({
+        tradeReservationId: reservation.id,
+      });
+      if (response.code === 200) {
+        setIsDelete(true);
+      }
     } catch (error) {
       console.error("예약 취소 실패:", error);
     }
@@ -114,7 +130,19 @@ const Reservations = ({ isModalOpen, setIsModalOpen }) => {
                   <ModalInfo>{value}</ModalInfo>
                 </ModalLine>
               ))}
-            <ModalBtn onClick={deleteHandler}>주문 취소하기</ModalBtn>
+            {isDelete ? (
+              <CheckTitle>주문 취소가 완료되었습니다.</CheckTitle>
+            ) : isCheckModalOpen ? (
+              <>
+                <CheckTitle>정말로 주문을 취소하시겠습니까?</CheckTitle>
+                <CheckBtnContainer>
+                  <CheckBtn onClick={closeCheckModal}>&lt; 뒤로</CheckBtn>
+                  <ModalBtn onClick={deleteHandler}>주문 취소</ModalBtn>
+                </CheckBtnContainer>
+              </>
+            ) : (
+              <ModalBtn onClick={openCheckModal}>주문 취소하기</ModalBtn>
+            )}
           </ModalContent>
         </ModalBackground>
       )}
@@ -265,7 +293,7 @@ const ModalBtn = styled.div`
   align-items: center;
   justify-content: center;
   width: 100%;
-  border-radius: 10px;
+  border-radius: 20px;
   background: #000;
   color: #fff;
   font-weight: 600;
@@ -273,5 +301,37 @@ const ModalBtn = styled.div`
   font-size: 14px;
   padding: 5px;
   margin-top: 15px;
+  border: 1px solid #000;
+  cursor: pointer;
+`;
+
+const CheckTitle = styled.div`
+  text-align: center;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 1.45;
+  color: #444d4b;
+  margin-top: 10px;
+`;
+
+const CheckBtnContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+`;
+
+const CheckBtn = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  border-radius: 20px;
+  background: #fff;
+  color: #000;
+  font-weight: 600;
+  line-height: 1.45;
+  font-size: 14px;
+  padding: 5px;
+  margin-top: 15px;
+  border: 1px solid #000;
   cursor: pointer;
 `;

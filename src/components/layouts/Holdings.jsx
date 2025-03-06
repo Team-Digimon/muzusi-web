@@ -4,11 +4,19 @@ import styled from "styled-components";
 import Loading from "@/components/common/Loading";
 import Error from "@/components/common/Error";
 import MuLogo from "@/assets/logo/MuLogo.webp";
+import { useNavigate } from "react-router-dom";
 
 const Holdings = () => {
   const [holdings, setHoldings] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const navigate = useNavigate();
+
+  const handleClickStockInfo = (info) => () => {
+    const stock = { stockName: info.stockName, stockCode: info.stockCode };
+    navigate(`stocks/${stock.stockCode}`, { state: { stock } });
+  };
 
   const fetchHoldings = useCallback(async () => {
     setIsLoading(true);
@@ -41,7 +49,7 @@ const Holdings = () => {
         const formattedProfit = stock.totalProfitAmount.toLocaleString();
 
         return (
-          <HoldingStock key={stock.id}>
+          <HoldingStock key={stock.id} onClick={handleClickStockInfo(stock)}>
             <StockInfo>
               <StockName>{stock.stockName}</StockName>
               <StockPrice>{totalPrice.toLocaleString()}</StockPrice>
@@ -80,6 +88,7 @@ const HoldingStock = styled.div`
   align-items: center;
   padding: 8px;
   border-radius: 10px;
+  cursor: pointer;
 
   &:hover {
     background-color: #021f470d;

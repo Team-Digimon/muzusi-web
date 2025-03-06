@@ -1,7 +1,6 @@
 import authApi from "@/api/authApi";
 
 const createTrade = async ({ data }) => {
-  console.log(data);
   try {
     const response = await authApi.post(`stocks`, data);
     return response.data;
