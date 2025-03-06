@@ -16,6 +16,11 @@ const StockTrade = ({ stock, currentPrice }) => {
   const [isCountFocused, setIsCountFocused] = useState(false);
   const [holdings, setHoldings] = useState([]);
   const [balance, setBalance] = useState(0);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalTitle, setModalTitle] = useState("");
+  const [modalMessage, setModalMessage] = useState("");
+  const [trade, setTrade] = useState(null);
+  const [tradeData, setTradeData] = useState(null);
 
   const now = new Date();
   const hours = now.getHours();
@@ -29,6 +34,17 @@ const StockTrade = ({ stock, currentPrice }) => {
     (holding) => holding.stockName === stock.stockName
   );
   const holdingCount = currentHolding ? currentHolding.stockCount : 0;
+
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setModalTitle("");
+    setModalMessage("");
+    window.location.reload();
+  };
 
   const fetchBalance = async () => {
     const response = await getCurrentAccount();
@@ -104,51 +120,67 @@ const StockTrade = ({ stock, currentPrice }) => {
     0;
 
   const tradeStocks = async (data) => {
-    if (!isTradingTime) {
-      alert("주문 가능 시간이 아닙니다. (9:00 ~ 15:30)");
-      return;
-    }
     try {
       const response = await createTrade({ data: data });
       if (response.code === 200) {
+        setTrade(null);
+        setModalTitle("주문 성공");
         if (
           (data.tradeType === "BUY" && data.stockPrice > data.inputPrice) ||
           (data.tradeType === "SELL" && data.stockPrice < data.inputPrice)
-        )
-          alert("정상적으로 주문이 예약되었습니다.");
-        else {
-          alert("정상적으로 주문이 처리되었습니다.");
+        ) {
+          setModalMessage("정상적으로 주문이 예약되었습니다.");
+        } else {
+          setModalMessage("정상적으로 주문이 체결되었습니다.");
         }
         fetchHoldings();
         fetchBalance();
-        window.location.reload();
       }
     } catch (error) {
       console.error("주문 실패: ", error.message);
+      setTrade(null);
+      setModalTitle("주문 실패");
+      setModalMessage(error.message);
     }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!inputCount || inputCount <= 0) {
-      alert("수량을 입력해주세요.");
+      setModalMessage("수량을 입력해주세요.");
+      openModal();
       return;
     }
     if (priceType === "지정가" && (!inputPrice || inputPrice <= 0)) {
-      alert("가격을 입력해주세요.");
+      setModalMessage("가격을 입력해주세요.");
+      openModal();
       return;
     }
 
-    const data = {
+    const tradePrice = inputPrice ? inputPrice : currentPrice;
+
+    setTradeData({
       stockPrice: currentPrice,
-      inputPrice: inputPrice ? inputPrice : currentPrice,
+      inputPrice: tradePrice,
       stockCount: inputCount,
       stockName: stock.stockName,
       stockCode: stock.stockCode,
       tradeType: tradeType,
-    };
+    });
 
-    tradeStocks(data);
+    setTrade({
+      "주문 유형": tradeType === "BUY" ? "매수 주문" : "매도 주문",
+      종목명: stock.stockName,
+      "종목 코드": stock.stockCode,
+      "1 주당 가격": `${tradePrice.toLocaleString()}원`,
+      "주문 개수": `${inputCount.toLocaleString()}주`,
+      "총 주문 가격": `${(tradePrice * inputCount).toLocaleString()}원`,
+    });
+    openModal();
+  };
+
+  const handleTrade = () => {
+    tradeStocks(tradeData);
   };
 
   return (
@@ -235,6 +267,7 @@ const StockTrade = ({ stock, currentPrice }) => {
           onClick={handleSubmit}
           disabled={
             !user ||
+            !isTradingTime ||
             (tradeTypes[activeTradeIndex].label === "판매" &&
               holdingCount === 0)
           }
@@ -243,12 +276,35 @@ const StockTrade = ({ stock, currentPrice }) => {
         >
           {!user
             ? `로그인하고 ${tradeTypes[activeTradeIndex].label}하기`
+            : !isTradingTime
+            ? `주문 가능 시간(9:00 ~ 15:30)`
             : tradeTypes[activeTradeIndex].label === "판매" &&
               holdingCount === 0
             ? "보유하지 않은 종목입니다."
             : `${tradeTypes[activeTradeIndex].label} 예약하기`}
         </TradeBtn>
       </TradeOrderForm>
+      {isModalOpen && (
+        <ModalBackground onClick={closeModal}>
+          {trade ? (
+            <ModalContent onClick={(e) => e.stopPropagation()}>
+              <ModalTitle>주문 정보</ModalTitle>
+              {Object.entries(trade).map(([label, value], index) => (
+                <ModalLine key={index}>
+                  <ModalLabel>{label}</ModalLabel>
+                  <ModalInfo>{value}</ModalInfo>
+                </ModalLine>
+              ))}
+              <ModalBtn onClick={handleTrade}>주문하기</ModalBtn>
+            </ModalContent>
+          ) : (
+            <ErrorContainer onClick={(e) => e.stopPropagation()}>
+              <ErrorTitle>{modalTitle}</ErrorTitle>
+              <ErrorDescription>{modalMessage}</ErrorDescription>
+            </ErrorContainer>
+          )}
+        </ModalBackground>
+      )}
     </StockTradeContainer>
   );
 };
@@ -465,4 +521,105 @@ const TradeBtn = styled.button`
     background: ${({ disabled, $hoverColor }) =>
       disabled ? "#ccc" : $hoverColor};
   }
+`;
+
+const ModalBackground = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.2);
+  display: flex;
+  justify-content: center;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const ModalContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border-radius: 20px;
+  min-width: 300px;
+  max-height: 500px;
+  padding: 15px;
+  margin-bottom: 200px;
+`;
+
+const ModalTitle = styled.div`
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 1.45;
+  color: #333d4b;
+  margin-bottom: 10px;
+`;
+
+const ModalLine = styled.div`
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 2px;
+`;
+
+const ModalLabel = styled.span`
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 1.45;
+  color: #333d4b;
+`;
+
+const ModalInfo = styled.span`
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 1.45;
+  color: #6b7684;
+`;
+
+const ModalBtn = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  border-radius: 20px;
+  background: #000;
+  color: #fff;
+  font-weight: 600;
+  line-height: 1.45;
+  font-size: 14px;
+  padding: 5px;
+  margin-top: 15px;
+  border: 1px solid #000;
+  cursor: pointer;
+`;
+
+const ErrorContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border-radius: 20px;
+  min-width: 300px;
+  max-height: 500px;
+  padding: 15px;
+  margin-bottom: 200px;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+`;
+
+const ErrorTitle = styled.div`
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 1.45;
+  color: #000;
+`;
+
+const ErrorDescription = styled.div`
+  display: flex;
+  align-items: center;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 1.45;
+  color: #333d4b;
 `;
