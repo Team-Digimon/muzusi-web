@@ -23,7 +23,7 @@ const Reservations = ({ isModalOpen, setIsModalOpen }) => {
       종목명: reservationData.stockName,
       "종목 코드": reservationData.stockCode,
       "1 주당 가격": `${reservationData.inputPrice.toLocaleString()}원`,
-      "주문 개수": `${reservationData.stockCount.toLocaleString()}개`,
+      "주문 개수": `${reservationData.stockCount.toLocaleString()}주`,
       "총 주문 가격": `${(
         reservationData.inputPrice * reservationData.stockCount
       ).toLocaleString()}원`,
