@@ -1,15 +1,9 @@
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import MuLogo from "@/assets/logo/MuLogo.webp";
+import isTradingTime from "@/utils/isTradingTime";
 
 const LiveStockPrice = ({ messages }) => {
-  const now = new Date();
-  const hours = now.getHours();
-  const minutes = now.getMinutes();
-  const isTradingTime =
-    (hours === 9 && minutes >= 0) ||
-    (hours > 9 && (hours < 15 || (hours === 15 && minutes <= 30)));
-
   return (
     <LivePriceContainer>
       <LiveTitle>실시간 시세</LiveTitle>
@@ -48,7 +42,7 @@ const LiveStockPrice = ({ messages }) => {
           </LiveTableContent>
         ) : null}
       </LiveTable>
-      {!isTradingTime ? (
+      {!isTradingTime() ? (
         <Notice>
           <Logo src={MuLogo} alt="MuLogo" />
           현재 장 시간이 아닙니다.
