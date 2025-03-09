@@ -23,12 +23,15 @@ const StockTrade = ({ stock, currentPrice }) => {
   const [tradeData, setTradeData] = useState(null);
 
   const now = new Date();
+  const day = now.getDay();
   const hours = now.getHours();
   const minutes = now.getMinutes();
 
   const isTradingTime =
-    (hours === 9 && minutes >= 0) ||
-    (hours > 9 && (hours < 15 || (hours === 15 && minutes <= 30)));
+    day >= 1 &&
+    day <= 5 &&
+    ((hours === 9 && minutes >= 0) ||
+      (hours > 9 && (hours < 15 || (hours === 15 && minutes <= 30))));
 
   const currentHolding = holdings?.find(
     (holding) => holding.stockName === stock.stockName
