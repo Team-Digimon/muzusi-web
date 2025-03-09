@@ -7,16 +7,9 @@ import Error from "@/components/common/Error";
 
 const AccountTransactions = () => {
   const [transactions, setTransactions] = useState([]);
-  const [tradeType, setTradeType] = useState("완료");
   const [transactionDetail, setTransactionDetail] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  const tradeTypes = ["완료", "예약"];
-
-  const handleTradeType = (type) => () => {
-    setTradeType(type);
-  };
 
   const openDetail = (transaction) => () => {
     setTransactionDetail((prev) =>
@@ -67,96 +60,82 @@ const AccountTransactions = () => {
   return (
     <AccountTransactionsContainer>
       <Title>거래 내역</Title>
-      <TradeTypes>
-        {tradeTypes.map((type, index) => {
-          return (
-            <TradeType
-              key={index}
-              onClick={handleTradeType(type)}
-              $isActive={tradeType === type}
-            >
-              {type}
-            </TradeType>
-          );
-        })}
-      </TradeTypes>
-      {tradeType === "완료" && (
-        <TransactionsContainer>
-          <TransactionsInfo
-            $isDetailOpen={Object.keys(transactionDetail).length !== 0}
-          >
-            {transactions.map((transaction, index) => {
-              const formattedDate = formatDate(transaction.tradeAt);
-              const prevFormattedDate =
-                index > 0 ? formatDate(transactions[index - 1].tradeAt) : null;
-              const isSelected = transactionDetail.id === transaction.id;
 
-              return (
-                <Info
-                  key={transaction.id}
-                  onClick={openDetail(transaction)}
-                  $isSelected={isSelected}
-                >
-                  <TradeInfo>
-                    <TradeDate>
-                      {formattedDate !== prevFormattedDate && formattedDate}
-                    </TradeDate>
-                    <TradeBody>
-                      <StockName>{transaction.stockName}</StockName>
-                      <TransactionType $type={transaction.tradeType === "BUY"}>
-                        {transaction.tradeType === "BUY"
-                          ? "구매완료"
-                          : "판매완료"}
-                        <StockCount>
-                          &middot; {transaction.stockCount}주
-                        </StockCount>
-                      </TransactionType>
-                    </TradeBody>
-                  </TradeInfo>
-                  <StockPrice>
-                    {transaction.stockPrice.toLocaleString()}원
-                  </StockPrice>
-                </Info>
-              );
-            })}
-          </TransactionsInfo>
-          {Object.keys(transactionDetail).length !== 0 && (
-            <TransactionDetail>
-              <DetailStockName>{transactionDetail.stockName}</DetailStockName>
-              <DetailType>
-                {transactionDetail.tradeType === "BUY"
-                  ? "구매 완료"
-                  : "판매 완료"}
-              </DetailType>
-              <DetailLine>
-                <DetailLabel>주문 시간</DetailLabel>
-                <DetailInfo>
-                  {formatDateTime(transactionDetail.tradeAt)}
-                </DetailInfo>
-              </DetailLine>
-              <DetailLine>
-                <DetailLabel>1주 구매 가격</DetailLabel>
-                <DetailInfo>
-                  {transactionDetail.stockPrice.toLocaleString()}원
-                </DetailInfo>
-              </DetailLine>
-              <DetailLine>
-                <DetailLabel>구매 수량</DetailLabel>
-                <DetailInfo>{transactionDetail.stockCount}주</DetailInfo>
-              </DetailLine>
-              <DetailLine style={{ borderTop: "1px solid #001b371a" }}>
-                <DetailLabel>총 구매 금액</DetailLabel>
-                <DetailInfo>
-                  {(
-                    transactionDetail.stockPrice * transactionDetail.stockCount
-                  ).toLocaleString()}
-                  원
-                </DetailInfo>
-              </DetailLine>
-            </TransactionDetail>
-          )}
-        </TransactionsContainer>
-      )}
+      <TransactionsContainer>
+        <TransactionsInfo
+          $isDetailOpen={Object.keys(transactionDetail).length !== 0}
+        >
+          {transactions.map((transaction, index) => {
+            const formattedDate = formatDate(transaction.tradeAt);
+            const prevFormattedDate =
+              index > 0 ? formatDate(transactions[index - 1].tradeAt) : null;
+            const isSelected = transactionDetail.id === transaction.id;
+
+            return (
+              <Info
+                key={transaction.id}
+                onClick={openDetail(transaction)}
+                $isSelected={isSelected}
+              >
+                <TradeInfo>
+                  <TradeDate>
+                    {formattedDate !== prevFormattedDate && formattedDate}
+                  </TradeDate>
+                  <TradeBody>
+                    <StockName>{transaction.stockName}</StockName>
+                    <TransactionType $type={transaction.tradeType === "BUY"}>
+                      {transaction.tradeType === "BUY"
+                        ? "구매완료"
+                        : "판매완료"}
+                      <StockCount>
+                        &middot; {transaction.stockCount}주
+                      </StockCount>
+                    </TransactionType>
+                  </TradeBody>
+                </TradeInfo>
+                <StockPrice>
+                  {transaction.stockPrice.toLocaleString()}원
+                </StockPrice>
+              </Info>
+            );
+          })}
+        </TransactionsInfo>
+        {Object.keys(transactionDetail).length !== 0 && (
+          <TransactionDetail>
+            <DetailStockName>{transactionDetail.stockName}</DetailStockName>
+            <DetailType>
+              {transactionDetail.tradeType === "BUY"
+                ? "구매 완료"
+                : "판매 완료"}
+            </DetailType>
+            <DetailLine>
+              <DetailLabel>주문 시간</DetailLabel>
+              <DetailInfo>
+                {formatDateTime(transactionDetail.tradeAt)}
+              </DetailInfo>
+            </DetailLine>
+            <DetailLine>
+              <DetailLabel>1주 구매 가격</DetailLabel>
+              <DetailInfo>
+                {transactionDetail.stockPrice.toLocaleString()}원
+              </DetailInfo>
+            </DetailLine>
+            <DetailLine>
+              <DetailLabel>구매 수량</DetailLabel>
+              <DetailInfo>{transactionDetail.stockCount}주</DetailInfo>
+            </DetailLine>
+            <DetailLine style={{ borderTop: "1px solid #001b371a" }}>
+              <DetailLabel>총 구매 금액</DetailLabel>
+              <DetailInfo>
+                {(
+                  transactionDetail.stockPrice * transactionDetail.stockCount
+                ).toLocaleString()}
+                원
+              </DetailInfo>
+            </DetailLine>
+          </TransactionDetail>
+        )}
+      </TransactionsContainer>
     </AccountTransactionsContainer>
   );
 };
@@ -176,30 +155,10 @@ const Title = styled.div`
   margin-bottom: 24px;
 `;
 
-const TradeTypes = styled.div`
-  border-bottom: 1px solid #001b371a;
-  display: flex;
-  align-items: center;
-  width: 100%;
-  height: 48px;
-  gap: 20px;
-`;
-
-const TradeType = styled.div`
-  display: flex;
-  align-items: center;
-  height: 100%;
-  font-weight: 600;
-  font-size: 17px;
-  line-height: 1.45;
-  cursor: pointer;
-  color: ${({ $isActive }) => ($isActive ? "#000" : "#4e5968")};
-  border-bottom: ${({ $isActive }) => ($isActive ? "2px solid #000" : "none")};
-`;
-
 const TransactionsContainer = styled.div`
   display: flex;
   min-height: 500px;
+  border-top: 1px solid #001b371a;
 `;
 
 const TransactionsInfo = styled.div`
@@ -237,6 +196,7 @@ const TradeDate = styled.div`
   line-height: 1.45px;
   font-weight: 500;
   font-size: 15px;
+  margin-right: 10px;
 `;
 
 const TradeBody = styled.div`
