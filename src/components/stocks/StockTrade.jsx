@@ -2,6 +2,7 @@ import getAccountHoldings from "@/api/account/getAccountHoldings";
 import getCurrentAccount from "@/api/account/getCurrentAccount";
 import createTrade from "@/api/stocks/createTrade";
 import useAuth from "@/contexts/useAuth";
+import isTradingTime from "@/utils/isTradingTime";
 import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
@@ -21,17 +22,6 @@ const StockTrade = ({ stock, currentPrice }) => {
   const [modalMessage, setModalMessage] = useState("");
   const [trade, setTrade] = useState(null);
   const [tradeData, setTradeData] = useState(null);
-
-  const now = new Date();
-  const day = now.getDay();
-  const hours = now.getHours();
-  const minutes = now.getMinutes();
-
-  const isTradingTime =
-    day >= 1 &&
-    day <= 5 &&
-    ((hours === 9 && minutes >= 0) ||
-      (hours > 9 && (hours < 15 || (hours === 15 && minutes <= 30))));
 
   const currentHolding = holdings?.find(
     (holding) => holding.stockName === stock.stockName
@@ -270,7 +260,7 @@ const StockTrade = ({ stock, currentPrice }) => {
           onClick={handleSubmit}
           disabled={
             !user ||
-            !isTradingTime ||
+            !isTradingTime() ||
             (tradeTypes[activeTradeIndex].label === "판매" &&
               holdingCount === 0)
           }
@@ -279,7 +269,7 @@ const StockTrade = ({ stock, currentPrice }) => {
         >
           {!user
             ? `로그인하고 ${tradeTypes[activeTradeIndex].label}하기`
-            : !isTradingTime
+            : !isTradingTime()
             ? `주문 가능 시간(9:00 ~ 15:30)`
             : tradeTypes[activeTradeIndex].label === "판매" &&
               holdingCount === 0

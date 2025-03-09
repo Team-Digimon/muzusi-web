@@ -6,6 +6,7 @@ import StockChartContainer from "@/components/stocks/StockChartContainer";
 import StockHeader from "@/components/stocks/StockHeader";
 import StockTrade from "@/components/stocks/StockTrade";
 import { webSocketUrl } from "@/config/Env";
+import isTradingTime from "@/utils/isTradingTime";
 import { Client } from "@stomp/stompjs";
 import { useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
@@ -34,17 +35,6 @@ const Stocks = () => {
     { value: "YEARLY", korean: "년" },
   ];
 
-  const now = new Date();
-  const day = now.getDay();
-  const hours = now.getHours();
-  const minutes = now.getMinutes();
-
-  const isTradingTime =
-    day >= 1 &&
-    day <= 5 &&
-    ((hours === 9 && minutes >= 0) ||
-      (hours > 9 && (hours < 15 || (hours === 15 && minutes <= 30))));
-
   useEffect(() => {
     const fetchYesterdayData = async () => {
       try {
@@ -71,7 +61,7 @@ const Stocks = () => {
   }, [chartData]);
 
   useEffect(() => {
-    if (!isTradingTime) return;
+    if (!isTradingTime()) return;
 
     const socket = new SockJS(webSocketUrl.replace(/^ws/, "http"));
     const client = new Client({
@@ -139,7 +129,7 @@ const Stocks = () => {
         client.deactivate();
       }
     };
-  }, [stock?.stockCode, isTradingTime]);
+  }, [stock?.stockCode]);
 
   useEffect(() => {
     const fetchChartData = async () => {
@@ -152,7 +142,7 @@ const Stocks = () => {
             }),
           ];
 
-          if (isTradingTime) {
+          if (isTradingTime()) {
             requests.push(
               getStocksChart({
                 stockCode: stock.stockCode,
@@ -204,7 +194,7 @@ const Stocks = () => {
     };
 
     fetchChartData();
-  }, [stock.stockCode, period, isTradingTime]);
+  }, [stock.stockCode, period]);
 
   const handlePeriod = (period) => () => {
     setPeriod(period);
