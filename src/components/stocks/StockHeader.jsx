@@ -32,11 +32,17 @@ const StockHeader = ({ stock, currentPrice, yesterdayData }) => {
       </StockInfo>
       <StockPrice>
         <CurrentPrice>{currentPrice.toLocaleString()}원</CurrentPrice>
-        <PriceText>{formatDate(yesterdayData.date)}보다</PriceText>
-        <PriceChange $change={change}>
-          {change > 0 ? `+${change.toLocaleString()}` : change.toLocaleString()}
-          원 ({changeRate.toFixed(2)}%)
-        </PriceChange>
+        {Object.keys(yesterdayData).length > 0 && (
+          <>
+            <PriceText>{formatDate(yesterdayData.date)}보다</PriceText>
+            <PriceChange $change={change}>
+              {change > 0
+                ? `+${change.toLocaleString()}`
+                : change.toLocaleString()}
+              원 ({changeRate.toFixed(2)}%)
+            </PriceChange>
+          </>
+        )}
       </StockPrice>
     </StockHeaderContainer>
   );

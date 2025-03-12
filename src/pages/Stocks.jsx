@@ -42,7 +42,9 @@ const Stocks = () => {
           stockCode: stock.stockCode,
           period: "DAILY",
         });
-        setYesterdayData(response.data[response.data.length - 2]);
+        if (response.data.length >= 2) {
+          setYesterdayData(response.data[response.data.length - 2]);
+        }
       } catch (error) {
         console.error("주식 차트 데이터 가져오기 실패:", error.message);
         setError(error);
