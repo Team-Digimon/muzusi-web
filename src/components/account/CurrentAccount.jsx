@@ -8,8 +8,24 @@ import AccountChart from "@/components/account/AccountChart";
 
 const CurrentAccount = () => {
   const [currentAccount, setCurrentAccount] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isCheckModalOpen, setIsCheckModalOpen] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const openCheckModal = () => {
+    setIsCheckModalOpen(true);
+  };
+
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModals = () => {
+    setIsCheckModalOpen(false);
+    setIsModalOpen(false);
+  };
 
   const fetchCurrentAccount = async () => {
     try {
@@ -32,12 +48,10 @@ const CurrentAccount = () => {
     }).format(now);
 
     if (koreaTime > 9) {
-      alert("계좌 초기화는 00:00 ~ 09:00 사이에만 가능합니다.");
+      setErrorMessage("00:00 ~ 09:00 사이에만 가능합니다.");
+      openModal();
       return;
     }
-
-    const isConfirmed = window.confirm("정말 계좌를 초기화 하시겠습니까?");
-    if (!isConfirmed) return;
 
     try {
       const response = await createAccount();
@@ -45,7 +59,11 @@ const CurrentAccount = () => {
     } catch (error) {
       if (error.code === "4003") {
         alert(error.message);
+        setErrorMessage(error.message);
+      } else {
+        setErrorMessage(error.message);
       }
+      openModal();
       console.error("계좌 생성 실패 : ", error.message);
     }
   };
@@ -61,6 +79,8 @@ const CurrentAccount = () => {
     ? ((balanceChange / previousBalance) * 100).toFixed(2)
     : "0.00";
 
+  console.log(accountProfits);
+
   useEffect(() => {
     fetchCurrentAccount();
   }, []);
@@ -73,7 +93,7 @@ const CurrentAccount = () => {
       <BalanceContainer>
         <BalanceHeader>
           <Title>현재 내 자산</Title>
-          <CreateAccountBtn onClick={handleClickCreateBtn}>
+          <CreateAccountBtn onClick={openCheckModal}>
             초기화 및 계좌 재생성
           </CreateAccountBtn>
         </BalanceHeader>
@@ -111,6 +131,27 @@ const CurrentAccount = () => {
           </AvailableBalance>
         </AssetContainer>
       </AssetsContainer>
+      {isCheckModalOpen && (
+        <ModalBackground onClick={closeModals}>
+          <ModalContent onClick={(e) => e.stopPropagation()}>
+            {isModalOpen ? (
+              <CheckTitle>
+                {errorMessage ? errorMessage : "계좌가 초기화되었습니다."}
+              </CheckTitle>
+            ) : (
+              <>
+                <CheckTitle>계좌를 초기화 및 재생성하시겠습니까?</CheckTitle>
+                <CheckBtnContainer>
+                  <CheckBtn onClick={closeModals}>&lt; 뒤로</CheckBtn>
+                  <ModalBtn onClick={handleClickCreateBtn}>
+                    초기화 및 재생성
+                  </ModalBtn>
+                </CheckBtnContainer>
+              </>
+            )}
+          </ModalContent>
+        </ModalBackground>
+      )}
     </CurrentAccountContainer>
   );
 };
@@ -205,4 +246,77 @@ const Return = styled.div`
   font-size: 14px;
   color: ${({ $return }) =>
     $return > 0 ? "#f04452" : $return < 0 ? "#3182f6" : "#4e5968"};
+`;
+
+const ModalBackground = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.2);
+  display: flex;
+  justify-content: center;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const ModalContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border-radius: 20px;
+  min-width: 300px;
+  max-height: 500px;
+  padding: 15px;
+  margin-bottom: 200px;
+`;
+
+const CheckTitle = styled.div`
+  text-align: center;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 1.45;
+  color: #444d4b;
+`;
+
+const CheckBtnContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+`;
+
+const ModalBtn = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  border-radius: 20px;
+  background: #000;
+  color: #fff;
+  font-weight: 600;
+  line-height: 1.45;
+  font-size: 14px;
+  padding: 5px;
+  margin-top: 15px;
+  border: 1px solid #000;
+  cursor: pointer;
+`;
+
+const CheckBtn = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  border-radius: 20px;
+  background: #fff;
+  color: #000;
+  font-weight: 600;
+  line-height: 1.45;
+  font-size: 14px;
+  padding: 5px;
+  margin-top: 15px;
+  border: 1px solid #000;
+  cursor: pointer;
 `;
