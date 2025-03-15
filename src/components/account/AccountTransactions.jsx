@@ -8,8 +8,19 @@ import Error from "@/components/common/Error";
 const AccountTransactions = () => {
   const [transactions, setTransactions] = useState([]);
   const [transactionDetail, setTransactionDetail] = useState({});
+  const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const currentTransactions = transactions.slice(
+    currentPage * 10 - 10,
+    currentPage * 10
+  );
+  const totalPages = Math.ceil(transactions.length / 10);
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
 
   const openDetail = (transaction) => () => {
     setTransactionDetail((prev) =>
@@ -41,7 +52,7 @@ const AccountTransactions = () => {
       setIsLoading(true);
       const currentAccount = await getCurrentAccount();
       const response = await getAccountTransactions(currentAccount.data.id);
-      setTransactions(response.data);
+      setTransactions(response.data.reverse());
     } catch (error) {
       console.error("계좌 거래 내역 가오 실패: ", error.message);
       setError(error);
@@ -65,10 +76,12 @@ const AccountTransactions = () => {
         <TransactionsInfo
           $isDetailOpen={Object.keys(transactionDetail).length !== 0}
         >
-          {transactions.map((transaction, index) => {
+          {currentTransactions.map((transaction, index) => {
             const formattedDate = formatDate(transaction.tradeAt);
             const prevFormattedDate =
-              index > 0 ? formatDate(transactions[index - 1].tradeAt) : null;
+              index > 0
+                ? formatDate(currentTransactions[index - 1].tradeAt)
+                : null;
             const isSelected = transactionDetail.id === transaction.id;
 
             return (
@@ -136,6 +149,17 @@ const AccountTransactions = () => {
           </TransactionDetail>
         )}
       </TransactionsContainer>
+      <PaginationContainer>
+        {Array.from({ length: totalPages }, (_, i) => (
+          <PageButton
+            key={i + 1}
+            onClick={() => handlePageChange(i + 1)}
+            $isActive={currentPage === i + 1}
+          >
+            {i + 1}
+          </PageButton>
+        ))}
+      </PaginationContainer>
     </AccountTransactionsContainer>
   );
 };
@@ -159,6 +183,8 @@ const TransactionsContainer = styled.div`
   display: flex;
   min-height: 500px;
   border-top: 1px solid #001b371a;
+  border-bottom: 1px solid #001b371a;
+  padding-bottom: 12px;
 `;
 
 const TransactionsInfo = styled.div`
@@ -279,4 +305,32 @@ const DetailLabel = styled.span`
 
 const DetailInfo = styled.span`
   color: #333d4b;
+`;
+
+const PaginationContainer = styled.div`
+  display: flex;
+  gap: 5px;
+  justify-content: center;
+  margin-top: 20px;
+`;
+
+const PageButton = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  list-style: none;
+  height: 36px;
+  min-width: 36px;
+  padding: 0px 6px;
+  border-radius: 18px;
+  font-size: 17px;
+  color: #6b7684;
+  font-weight: 600;
+  line-height: 1.15;
+  cursor: pointer;
+  color: ${({ $isActive }) => ($isActive ? "#333d4b" : "#6b7684")};
+  background: ${({ $isActive }) => ($isActive ? "#001B371A" : "none")};
+  &:hover {
+    background: #0220470d;
+  }
 `;
