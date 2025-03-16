@@ -48,7 +48,7 @@ const AccountRecords = () => {
           <RecordTheadTr>
             <RecordTheadTh style={{ width: "5%" }} />
             <RecordTheadTh style={{ width: "30%", justifyContent: "start" }}>
-              일시
+              생성 일시
             </RecordTheadTh>
             <RecordTheadTh style={{ width: "30%" }}>최종 잔고</RecordTheadTh>
             <RecordTheadTh style={{ width: "30%" }}>수익률</RecordTheadTh>
@@ -57,9 +57,13 @@ const AccountRecords = () => {
         </RecordThead>
         <RecordTableContent>
           {accountRecords.reverse().map((el, index) => {
-            const formattedBalance = el.balance.toLocaleString();
+            const formattedBalance = (
+              el.balance + el.totalEvaluatedAmount
+            ).toLocaleString();
 
-            const change = ((el.balance - 10000000) / 10000000) * 100;
+            const change =
+              ((el.balance + el.totalEvaluatedAmount - 10000000) / 10000000) *
+              100;
             return (
               <RecordTableAccount key={el.id} $isOdd={(index + 1) % 2 !== 0}>
                 <AccountNumber>{index + 1}</AccountNumber>
