@@ -54,8 +54,7 @@ const CurrentAccount = () => {
     }
 
     try {
-      const response = await createAccount();
-      console.log(response);
+      await createAccount();
     } catch (error) {
       if (error.code === "4003") {
         alert(error.message);
@@ -79,8 +78,6 @@ const CurrentAccount = () => {
     ? ((balanceChange / previousBalance) * 100).toFixed(2)
     : "0.00";
 
-  console.log(accountProfits);
-
   useEffect(() => {
     fetchCurrentAccount();
   }, []);
@@ -97,7 +94,12 @@ const CurrentAccount = () => {
             초기화 및 계좌 재생성
           </CreateAccountBtn>
         </BalanceHeader>
-        <Balance>{accountProfits[0].totalBalance.toLocaleString()} 원</Balance>
+        <Balance>
+          {accountProfits[0]?.totalBalance
+            ? accountProfits[0].totalBalance.toLocaleString()
+            : currentAccount.balance.toLocaleString()}{" "}
+          원
+        </Balance>
         {hasEnoughData ? (
           <BalanceChange>
             이 전날보다{" "}
@@ -121,7 +123,7 @@ const CurrentAccount = () => {
           <AvailableBalance>
             {currentAccount.totalEvaluatedAmount.toLocaleString()}원
             <Return $return={currentAccount.totalProfitAmount}>
-              {currentAccount.totalProfitAmount > 0
+              {currentAccount.totalProfitAmount >= 0
                 ? `+ ${currentAccount.totalProfitAmount.toLocaleString()}`
                 : `- ${Math.abs(
                     currentAccount.totalProfitAmount
