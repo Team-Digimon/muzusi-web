@@ -219,7 +219,11 @@ const Stocks = () => {
           handlePeriod={handlePeriod}
           chartData={chartData}
         />
-        <StockTrade stock={stock} currentPrice={currentPrice} />
+        <StockTrade
+          stock={stock}
+          currentPrice={currentPrice}
+          chartData={chartData}
+        />
       </StockContainer>
       <LiveStockPrice messages={messages} />
     </Container>
