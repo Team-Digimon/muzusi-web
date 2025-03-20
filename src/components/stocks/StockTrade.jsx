@@ -7,7 +7,7 @@ import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 
-const StockTrade = ({ stock, currentPrice }) => {
+const StockTrade = ({ stock, currentPrice, chartData }) => {
   const { user } = useAuth();
   const [tradeType, setTradeType] = useState("BUY");
   const [priceType, setPriceType] = useState("지정가");
@@ -259,6 +259,7 @@ const StockTrade = ({ stock, currentPrice }) => {
           type="submit"
           onClick={handleSubmit}
           disabled={
+            chartData.length <= 0 ||
             !user ||
             !isTradingTime() ||
             (tradeTypes[activeTradeIndex].label === "판매" &&
@@ -267,7 +268,9 @@ const StockTrade = ({ stock, currentPrice }) => {
           $color={tradeTypes[activeTradeIndex].color}
           $hoverColor={tradeTypes[activeTradeIndex].hoverColor}
         >
-          {!user
+          {chartData.length <= 0
+            ? "거래 불가능한 종목입니다."
+            : !user
             ? `로그인하고 ${tradeTypes[activeTradeIndex].label}하기`
             : !isTradingTime()
             ? `주문 가능 시간(9:00 ~ 15:30)`
@@ -308,6 +311,7 @@ StockTrade.propTypes = {
     stockCode: PropTypes.string.isRequired,
   }),
   currentPrice: PropTypes.number.isRequired,
+  chartData: PropTypes.array.isRequired,
 };
 
 export default StockTrade;
