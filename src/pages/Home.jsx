@@ -20,6 +20,7 @@ const Home = () => {
 
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isNewsLoading, setIsNewsLoading] = useState(true);
 
   const keywords = ["전체", "코스닥", "코스피"];
   const types = [
@@ -29,7 +30,7 @@ const Home = () => {
   ];
 
   const fetchNews = useCallback(async () => {
-    setIsLoading(true);
+    setIsNewsLoading(true);
     try {
       const response = await getNews({
         page: 0,
@@ -42,7 +43,7 @@ const Home = () => {
       console.error("주요 뉴스 가져오기 실패: ", error.message);
       setError(error);
     } finally {
-      setIsLoading(false);
+      setIsNewsLoading(false);
     }
   }, []);
 
@@ -101,6 +102,7 @@ const Home = () => {
         keywords={keywords}
         setNewsPage={setNewsPage}
         setKeyword={setKeyword}
+        isNewsLoading={isNewsLoading}
       />
       <Rank
         rank={rank}

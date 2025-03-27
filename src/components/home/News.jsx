@@ -9,6 +9,7 @@ const News = ({
   keywords,
   setNewsPage,
   setKeyword,
+  isNewsLoading,
 }) => {
   const [animatingOut, setAnimatingOut] = useState(false);
   const [animatingIn, setAnimatingIn] = useState(false);
@@ -84,25 +85,16 @@ const News = ({
           ))}
         </PageIndicators>
       </NewsHeader>
-      <NewsContents>
-        <NewsTransitionContainer
-          $animatingOut={animatingOut}
-          $animatingIn={animatingIn}
-        >
-          <NewsColumn>
-            {news.slice(newsPage * 10, newsPage * 10 + 5).map((el, index) => {
-              return (
-                <NewsContent key={index} href={el.link}>
-                  <NewsTitle>{decodeHtmlEntities(el.title)}</NewsTitle>
-                  <NewsPubDate>{getRelativeTime(el.pubDate)}</NewsPubDate>
-                </NewsContent>
-              );
-            })}
-          </NewsColumn>
-          <NewsColumn>
-            {news
-              .slice(newsPage * 10 + 5, newsPage * 10 + 10)
-              .map((el, index) => {
+      {isNewsLoading ? (
+        <NewsLoading>뉴스를 불러오는 중입니다.</NewsLoading>
+      ) : (
+        <NewsContents>
+          <NewsTransitionContainer
+            $animatingOut={animatingOut}
+            $animatingIn={animatingIn}
+          >
+            <NewsColumn>
+              {news.slice(newsPage * 10, newsPage * 10 + 5).map((el, index) => {
                 return (
                   <NewsContent key={index} href={el.link}>
                     <NewsTitle>{decodeHtmlEntities(el.title)}</NewsTitle>
@@ -110,10 +102,23 @@ const News = ({
                   </NewsContent>
                 );
               })}
-          </NewsColumn>
-        </NewsTransitionContainer>
-        <MoreNewsBtn onClick={handleNextPage}>&gt;</MoreNewsBtn>
-      </NewsContents>
+            </NewsColumn>
+            <NewsColumn>
+              {news
+                .slice(newsPage * 10 + 5, newsPage * 10 + 10)
+                .map((el, index) => {
+                  return (
+                    <NewsContent key={index} href={el.link}>
+                      <NewsTitle>{decodeHtmlEntities(el.title)}</NewsTitle>
+                      <NewsPubDate>{getRelativeTime(el.pubDate)}</NewsPubDate>
+                    </NewsContent>
+                  );
+                })}
+            </NewsColumn>
+          </NewsTransitionContainer>
+          <MoreNewsBtn onClick={handleNextPage}>&gt;</MoreNewsBtn>
+        </NewsContents>
+      )}
     </NewsContainer>
   );
 };
@@ -125,6 +130,7 @@ News.propTypes = {
   keywords: PropTypes.array.isRequired,
   setNewsPage: PropTypes.func.isRequired,
   setKeyword: PropTypes.func.isRequired,
+  isNewsLoading: PropTypes.bool.isRequired,
 };
 
 export default News;
@@ -295,4 +301,14 @@ const MoreNewsBtn = styled.a`
     font-weight: 700;
     color: #333d4b;
   }
+`;
+
+const NewsLoading = styled.div`
+  display: flex;
+  width: 100%;
+  margin-top: 50px;
+  justify-content: center;
+  align-items: center;
+  font-size: 15px;
+  font-weight: 600;
 `;
