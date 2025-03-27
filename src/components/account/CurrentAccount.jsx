@@ -55,6 +55,7 @@ const CurrentAccount = () => {
 
     try {
       await createAccount();
+      openModal();
     } catch (error) {
       if (error.code === "4003") {
         alert(error.message);
@@ -286,6 +287,7 @@ const CheckTitle = styled.div`
 const CheckBtnContainer = styled.div`
   display: flex;
   justify-content: space-between;
+  gap: 10px;
 `;
 
 const ModalBtn = styled.div`
