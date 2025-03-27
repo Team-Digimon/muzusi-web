@@ -67,13 +67,17 @@ const CurrentAccount = () => {
     }
   };
 
+  const currentTotalBalance =
+    currentAccount.balance +
+    (typeof currentAccount.totalEvaluatedAmount === "number"
+      ? currentAccount.totalEvaluatedAmount
+      : 0);
   const accountProfits = currentAccount?.accountProfits || [];
   const hasEnoughData = accountProfits.length >= 2;
 
   const previousBalance = hasEnoughData ? accountProfits[1].totalBalance : 0;
-  const currentBalance = hasEnoughData ? accountProfits[0].totalBalance : 0;
 
-  const balanceChange = currentBalance - previousBalance;
+  const balanceChange = currentTotalBalance - previousBalance;
   const balanceChangeRate = previousBalance
     ? ((balanceChange / previousBalance) * 100).toFixed(2)
     : "0.00";
@@ -94,12 +98,7 @@ const CurrentAccount = () => {
             초기화 및 계좌 재생성
           </CreateAccountBtn>
         </BalanceHeader>
-        <Balance>
-          {accountProfits[0]?.totalBalance
-            ? accountProfits[0].totalBalance.toLocaleString()
-            : currentAccount.balance.toLocaleString()}{" "}
-          원
-        </Balance>
+        <Balance>{currentTotalBalance.toLocaleString()} 원</Balance>
         {hasEnoughData ? (
           <BalanceChange>
             이 전날보다{" "}
