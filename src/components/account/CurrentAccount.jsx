@@ -77,6 +77,16 @@ const CurrentAccount = () => {
   const hasEnoughData = accountProfits.length >= 2;
 
   const previousBalance = hasEnoughData ? accountProfits[1].totalBalance : 0;
+  const updatedAccountProfits =
+    accountProfits.length > 0
+      ? [
+          {
+            ...accountProfits[0],
+            totalBalance: currentTotalBalance,
+          },
+          ...accountProfits.slice(1),
+        ]
+      : [];
 
   const balanceChange = currentTotalBalance - previousBalance;
   const balanceChangeRate = previousBalance
@@ -110,7 +120,7 @@ const CurrentAccount = () => {
           </BalanceChange>
         ) : null}
       </BalanceContainer>
-      <AccountChart chartData={currentAccount.accountProfits} />
+      <AccountChart chartData={updatedAccountProfits} />
       <AssetsContainer>
         <AssetContainer>
           <Title>주문 가능 금액</Title>
