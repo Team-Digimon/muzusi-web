@@ -126,7 +126,8 @@ const RateOfReturn = styled.span`
   font-weight: 500;
   line-height: 1.45;
   font-size: 12px;
-  color: ${({ $profit }) => ($profit > 0 ? "#f04452" : "#3182f6")};
+  color: ${({ $profit }) =>
+    $profit > 0 ? "#f04452" : $profit < 0 ? "#3182f6" : "#4e5968"};
 `;
 
 const NoticeContainer = styled.div`

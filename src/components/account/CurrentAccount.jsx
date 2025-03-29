@@ -55,6 +55,7 @@ const CurrentAccount = () => {
 
     try {
       await createAccount();
+      openModal();
     } catch (error) {
       if (error.code === "4003") {
         alert(error.message);
@@ -67,13 +68,27 @@ const CurrentAccount = () => {
     }
   };
 
+  const currentTotalBalance =
+    currentAccount.balance +
+    (typeof currentAccount.totalEvaluatedAmount === "number"
+      ? currentAccount.totalEvaluatedAmount
+      : 0);
   const accountProfits = currentAccount?.accountProfits || [];
   const hasEnoughData = accountProfits.length >= 2;
 
   const previousBalance = hasEnoughData ? accountProfits[1].totalBalance : 0;
-  const currentBalance = hasEnoughData ? accountProfits[0].totalBalance : 0;
+  const updatedAccountProfits =
+    accountProfits.length > 0
+      ? [
+          {
+            ...accountProfits[0],
+            totalBalance: currentTotalBalance,
+          },
+          ...accountProfits.slice(1),
+        ]
+      : [];
 
-  const balanceChange = currentBalance - previousBalance;
+  const balanceChange = currentTotalBalance - previousBalance;
   const balanceChangeRate = previousBalance
     ? ((balanceChange / previousBalance) * 100).toFixed(2)
     : "0.00";
@@ -94,12 +109,7 @@ const CurrentAccount = () => {
             초기화 및 계좌 재생성
           </CreateAccountBtn>
         </BalanceHeader>
-        <Balance>
-          {accountProfits[0]?.totalBalance
-            ? accountProfits[0].totalBalance.toLocaleString()
-            : currentAccount.balance.toLocaleString()}{" "}
-          원
-        </Balance>
+        <Balance>{currentTotalBalance.toLocaleString()} 원</Balance>
         {hasEnoughData ? (
           <BalanceChange>
             이 전날보다{" "}
@@ -110,7 +120,7 @@ const CurrentAccount = () => {
           </BalanceChange>
         ) : null}
       </BalanceContainer>
-      <AccountChart chartData={currentAccount.accountProfits} />
+      <AccountChart chartData={updatedAccountProfits} />
       <AssetsContainer>
         <AssetContainer>
           <Title>주문 가능 금액</Title>
@@ -287,6 +297,7 @@ const CheckTitle = styled.div`
 const CheckBtnContainer = styled.div`
   display: flex;
   justify-content: space-between;
+  gap: 10px;
 `;
 
 const ModalBtn = styled.div`
