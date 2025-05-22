@@ -29,7 +29,7 @@ jobs:
           VITE_NAVER_REDIRECT_URI: ${{ secrets.VITE_NAVER_REDIRECT_URI }}
           VITE_SERVER_BASE_URL: ${{ secrets.VITE_SERVER_BASE_URL }}
           VITE_WEB_SOCKET_URL: ${{ secrets.VITE_WEB_SOCKET_URL }}
-          
+
         run: |
           npm install
           npm run build
@@ -54,5 +54,4 @@ jobs:
           port: ${{ secrets.SERVER_SSH_PORT }}
           key: ${{ secrets.SERVER_KEY }}
           script: |
-            # 빌드 파일이 준비된 상태에서 서버 설정 및 Nginx 재시작
             sudo systemctl restart nginx
