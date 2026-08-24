@@ -15,6 +15,7 @@ import SignUp from "@/pages/SignUp";
 import AccountLayout from "@/components/layouts/AccountLayout";
 import useAuth from "@/contexts/useAuth";
 import { setUpInterceptors } from "@/api/authApi";
+import ErrorBoundary from "@/components/common/ErrorBoundary";
 
 const App = () => {
   const { logout } = useAuth();
@@ -32,30 +33,38 @@ const App = () => {
   return (
     <>
       <GlobalStyles />
-      <Router>
-        <Routes>
-          {/* Layout이 적용되지 않는 경로 */}
-          <Route path="/signin" element={<SignIn />} />
-          <Route path="/login/oauth2/code/kakao" element={<KakaoRedirect />} />
-          <Route path="/login/oauth2/code/naver" element={<NaverRedirect />} />
-          <Route path="/signup" element={<SignUp />} />
+      <ErrorBoundary>
+        <Router>
+          <Routes>
+            {/* Layout이 적용되지 않는 경로 */}
+            <Route path="/signin" element={<SignIn />} />
+            <Route
+              path="/login/oauth2/code/kakao"
+              element={<KakaoRedirect />}
+            />
+            <Route
+              path="/login/oauth2/code/naver"
+              element={<NaverRedirect />}
+            />
+            <Route path="/signup" element={<SignUp />} />
 
-          {/* Layout이 적용되는 경로 */}
-          <Route path="/" element={<Layout />}>
-            {/* 기본 경로 */}
-            <Route index element={<Home />} />
-            <Route path="stocks/:stockcode" element={<Stocks />} />
-            <Route path="*" element={<AddressError />} />
+            {/* Layout이 적용되는 경로 */}
+            <Route path="/" element={<Layout />}>
+              {/* 기본 경로 */}
+              <Route index element={<Home />} />
+              <Route path="stocks/:stockcode" element={<Stocks />} />
+              <Route path="*" element={<AddressError />} />
 
-            {/* 내 계좌 경로 */}
-            <Route path="account" element={<AccountLayout />}>
-              <Route path="asset" element={<Asset />} />
-              <Route path="transactions" element={<Transactions />} />
-              <Route path="records" element={<Records />} />
+              {/* 내 계좌 경로 */}
+              <Route path="account" element={<AccountLayout />}>
+                <Route path="asset" element={<Asset />} />
+                <Route path="transactions" element={<Transactions />} />
+                <Route path="records" element={<Records />} />
+              </Route>
             </Route>
-          </Route>
-        </Routes>
-      </Router>
+          </Routes>
+        </Router>
+      </ErrorBoundary>
     </>
   );
 };
