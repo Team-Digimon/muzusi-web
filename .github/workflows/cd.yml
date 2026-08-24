@@ -43,10 +43,10 @@ jobs:
           port: ${{ secrets.SERVER_SSH_PORT }}
           key: ${{ secrets.SERVER_KEY }}
           source: dist/*
-          target: /home/ubuntu/muzusi-web/
+          target: /home/${{ secrets.SERVER_USERNAME }}/muzusi-web/
 
-      # 5. EC2 서버 설정 및 Nginx 재시작
-      - name: Deploy to EC2
+      # 5. 서버 설정 및 Nginx 재시작
+      - name: Deploy to server
         uses: appleboy/ssh-action@v0.1.8
         with:
           host: ${{ secrets.SERVER_HOST }}
