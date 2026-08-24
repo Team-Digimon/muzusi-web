@@ -18,7 +18,7 @@ const reissueAccessToken = async (logout) => {
     throw new Error("토큰 재발급 오류");
   } catch (error) {
     if (error.response) {
-      if (error.reponse.data.code === "0008") {
+      if (error.response.data.code === "0008") {
         alert("세션이 만료되었습니다. 다시 로그인해주세요.");
         logout();
         return null;
