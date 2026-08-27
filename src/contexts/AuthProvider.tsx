@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
-import PropTypes from "prop-types";
+import type { ReactNode } from "react";
 import AuthContext from "@/contexts/AuthContext";
 import {
   getStoredUser,
@@ -8,10 +8,15 @@ import {
   clearStorage,
   getNicknameFromToken,
 } from "@/contexts/AuthUtil";
+import type { User } from "@/types/auth";
 
-const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [accessToken, setAccessToken] = useState(null);
+interface AuthProviderProps {
+  children: ReactNode;
+}
+
+const AuthProvider = ({ children }: AuthProviderProps) => {
+  const [user, setUser] = useState<User | null>(null);
+  const [accessToken, setAccessToken] = useState<string | null>(null);
 
   useEffect(() => {
     const storedUser = getStoredUser();
@@ -22,17 +27,24 @@ const AuthProvider = ({ children }) => {
       setAccessToken(storedToken);
       const nickname = getNicknameFromToken(storedToken);
       if (nickname) {
-        setUser((prev) => ({ ...prev, nickname }));
+        setUser((prev) => (prev ? { ...prev, nickname } : { nickname }));
       }
     }
   }, []);
 
-  const login = useCallback(({ user, token }) => {
-    const nickname = getNicknameFromToken(token);
-    setUser({ ...user, nickname });
-    setAccessToken(token);
-    saveUserAndToken({ ...user, nickname }, token);
-  }, []);
+  const login = useCallback(
+    ({ user, token }: { user?: Partial<User>; token: string }) => {
+      // 실제 호출부는 전부 { token }만 넘기고 user는 안 준다(login 시그니처만
+      // 확장 가능하게 열어둔 상태). 토큰 디코딩이 실패하는 극단적 케이스에
+      // 대비해 nickname은 빈 문자열로 폴백한다.
+      const nickname = getNicknameFromToken(token) ?? "";
+      const nextUser: User = { ...user, nickname };
+      setUser(nextUser);
+      setAccessToken(token);
+      saveUserAndToken(nextUser, token);
+    },
+    []
+  );
 
   const logout = useCallback(() => {
     setUser(null);
@@ -47,10 +59,6 @@ const AuthProvider = ({ children }) => {
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-};
-
-AuthProvider.propTypes = {
-  children: PropTypes.node.isRequired,
 };
 
 export default AuthProvider;
