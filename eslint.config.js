@@ -38,4 +38,13 @@ export default [
       ],
     },
   },
+  {
+    // 베이스 no-unused-vars는 interface/type의 파라미터 이름(타입 위치)을
+    // 잘못 미사용으로 잡아낸다. .ts/.tsx는 typescript-eslint가 이미 제공하는
+    // @typescript-eslint/no-unused-vars(tseslint.configs.recommended)에 맡긴다.
+    files: ['**/*.{ts,tsx}'],
+    rules: {
+      'no-unused-vars': 'off',
+    },
+  },
 ]
