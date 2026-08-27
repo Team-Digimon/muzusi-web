@@ -1,7 +1,7 @@
-import axios from "axios";
+import axios, { type AxiosInstance } from "axios";
 import { baseUrl } from "@/config/Env";
 
-const noAuthApi = axios.create({
+const noAuthApi: AxiosInstance = axios.create({
   baseURL: baseUrl,
   withCredentials: true,
 });
