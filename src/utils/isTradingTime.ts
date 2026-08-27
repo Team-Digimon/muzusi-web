@@ -1,4 +1,4 @@
-const isTradingTime = () => {
+const isTradingTime = (): boolean => {
   const now = new Date();
   const day = now.getDay();
   const hours = now.getHours();
