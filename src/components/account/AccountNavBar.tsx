@@ -52,7 +52,7 @@ const AccountNavBtn = styled.li`
   align-items: center;
 `;
 
-const AccountNavAnchor = styled.a`
+const AccountNavAnchor = styled.a<{ $isActive: boolean }>`
   text-decoration: none;
   padding: 8px 14px;
   width: 100%;

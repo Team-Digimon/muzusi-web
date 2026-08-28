@@ -10,3 +10,12 @@ export interface ApiErrorPayload {
   code: string;
   message: string;
 }
+
+// handleApiErrorWithPayload를 쓰는 API는 서버 에러 페이로드를 그대로 던지거나
+// (네트워크 오류 등 페이로드가 없을 때는) 일반 Error를 던진다. 호출부에서
+// catch (error: unknown)의 error가 둘 중 뭔지 구분할 때 쓰는 타입가드.
+export const isApiErrorPayload = (error: unknown): error is ApiErrorPayload =>
+  typeof error === "object" &&
+  error !== null &&
+  "code" in error &&
+  "message" in error;
