@@ -1,26 +1,34 @@
 import { Component } from "react";
-import PropTypes from "prop-types";
+import type { ErrorInfo, ReactNode } from "react";
 import styled from "styled-components";
 import MuLogo from "@/assets/logo/MuLogo.webp";
+
+interface ErrorBoundaryProps {
+  children: ReactNode;
+}
+
+interface ErrorBoundaryState {
+  hasError: boolean;
+}
 
 // 렌더링 중 발생하는 예상치 못한 에러를 잡아내는 전역 경계.
 // 기존 Error 컴포넌트는 API 요청 실패 같은 "예상된" 에러만 처리하므로,
 // 컴포넌트 렌더링 자체에서 던져지는 에러는 이 바운더리가 아니면 화이트스크린으로 이어진다.
-class ErrorBoundary extends Component {
-  constructor(props) {
+class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
+  constructor(props: ErrorBoundaryProps) {
     super(props);
     this.state = { hasError: false };
   }
 
-  static getDerivedStateFromError() {
+  static getDerivedStateFromError(): ErrorBoundaryState {
     return { hasError: true };
   }
 
-  componentDidCatch(error, errorInfo) {
+  componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
     console.error("렌더링 중 예상치 못한 오류가 발생했습니다:", error, errorInfo);
   }
 
-  handleReload = () => {
+  handleReload = (): void => {
     window.location.href = "/";
   };
 
@@ -51,10 +59,6 @@ class ErrorBoundary extends Component {
     return this.props.children;
   }
 }
-
-ErrorBoundary.propTypes = {
-  children: PropTypes.node.isRequired,
-};
 
 export default ErrorBoundary;
 
