@@ -1,6 +1,17 @@
 import { useState } from "react";
+import type { Dispatch, SetStateAction } from "react";
 import styled, { css, keyframes } from "styled-components";
-import PropTypes from "prop-types";
+import type { NewsItem } from "@/types/news";
+
+interface NewsProps {
+  news: NewsItem[];
+  newsPage: number;
+  keyword: string;
+  keywords: string[];
+  setNewsPage: Dispatch<SetStateAction<number>>;
+  setKeyword: Dispatch<SetStateAction<string>>;
+  isNewsLoading: boolean;
+}
 
 const News = ({
   news,
@@ -10,21 +21,23 @@ const News = ({
   setNewsPage,
   setKeyword,
   isNewsLoading,
-}) => {
+}: NewsProps) => {
   const [animatingOut, setAnimatingOut] = useState(false);
   const [animatingIn, setAnimatingIn] = useState(false);
 
-  const decodeHtmlEntities = (text) => {
+  const decodeHtmlEntities = (text: string): string | null => {
     const parser = new DOMParser();
     const decodedString = parser.parseFromString(text, "text/html")
       .documentElement.textContent;
     return decodedString;
   };
 
-  const getRelativeTime = (pubDate) => {
+  const getRelativeTime = (pubDate: string): string => {
     const now = new Date();
     const publishedDate = new Date(pubDate);
-    const diffInSeconds = Math.floor((now - publishedDate) / 1000);
+    const diffInSeconds = Math.floor(
+      (now.getTime() - publishedDate.getTime()) / 1000
+    );
 
     if (diffInSeconds < 60) {
       return `${diffInSeconds}초 전`;
@@ -40,7 +53,7 @@ const News = ({
     }
   };
 
-  const handleKeyword = (keyword) => () => {
+  const handleKeyword = (keyword: string) => () => {
     setKeyword(keyword);
   };
 
@@ -123,16 +136,6 @@ const News = ({
   );
 };
 
-News.propTypes = {
-  news: PropTypes.array.isRequired,
-  newsPage: PropTypes.number.isRequired,
-  keyword: PropTypes.string.isRequired,
-  keywords: PropTypes.array.isRequired,
-  setNewsPage: PropTypes.func.isRequired,
-  setKeyword: PropTypes.func.isRequired,
-  isNewsLoading: PropTypes.bool.isRequired,
-};
-
 export default News;
 
 const NewsContainer = styled.section`
@@ -168,7 +171,7 @@ const NewsKeywords = styled.div`
   margin-left: 10px;
 `;
 
-const NewsKeyword = styled.div`
+const NewsKeyword = styled.div<{ $isActive: boolean }>`
   background: #0220470d;
   line-height: 1.45;
   font-size: 15px;
@@ -191,7 +194,7 @@ const PageIndicators = styled.div`
   padding-right: 35px;
 `;
 
-const PageIndicator = styled.div`
+const PageIndicator = styled.div<{ $isActive: boolean }>`
   width: 5px;
   height: 5px;
   border-radius: 50%;
@@ -227,7 +230,10 @@ const slideInRight = keyframes`
   }
 `;
 
-const NewsTransitionContainer = styled.div`
+const NewsTransitionContainer = styled.div<{
+  $animatingOut: boolean;
+  $animatingIn: boolean;
+}>`
   width: 100%;
   display: grid;
   grid-template-columns: minmax(10px, 1fr) minmax(10px, 1fr);

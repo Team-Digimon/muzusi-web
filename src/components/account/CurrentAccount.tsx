@@ -5,14 +5,19 @@ import styled from "styled-components";
 import Loading from "@/components/common/Loading";
 import Error from "@/components/common/Error";
 import AccountChart from "@/components/account/AccountChart";
+import type { CurrentAccountData } from "@/types/account";
+import { isApiErrorPayload } from "@/types/api";
 
 const CurrentAccount = () => {
-  const [currentAccount, setCurrentAccount] = useState([]);
+  // 원래 useState([])로 시작했는데(실제로는 객체로 다뤄짐), "아직 없음"의
+  // 의미를 정확히 표현하도록 null로 바꾸고 아래 렌더링 직전에 널 체크를 추가했다.
+  const [currentAccount, setCurrentAccount] =
+    useState<CurrentAccountData | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isCheckModalOpen, setIsCheckModalOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<unknown>(null);
 
   const openCheckModal = () => {
     setIsCheckModalOpen(true);
@@ -32,7 +37,10 @@ const CurrentAccount = () => {
       const response = await getCurrentAccount();
       setCurrentAccount(response.data);
     } catch (error) {
-      console.error("현재 계좌 가져오기 실패 : ", error.message);
+      console.error(
+        "현재 계좌 가져오기 실패 : ",
+        error instanceof globalThis.Error ? error.message : error
+      );
       setError(error);
     } finally {
       setIsLoading(false);
@@ -41,11 +49,13 @@ const CurrentAccount = () => {
 
   const handleClickCreateBtn = async () => {
     const now = new Date();
-    const koreaTime = new Intl.DateTimeFormat("en-US", {
-      timeZone: "Asia/Seoul",
-      hour: "numeric",
-      hour12: false,
-    }).format(now);
+    const koreaTime = Number(
+      new Intl.DateTimeFormat("en-US", {
+        timeZone: "Asia/Seoul",
+        hour: "numeric",
+        hour12: false,
+      }).format(now)
+    );
 
     if (koreaTime > 9) {
       setErrorMessage("00:00 ~ 09:00 사이에만 가능합니다.");
@@ -57,20 +67,24 @@ const CurrentAccount = () => {
       await createAccount();
       openModal();
     } catch (error) {
-      if (error.code === "4003") {
-        alert(error.message);
-        setErrorMessage(error.message);
-      } else {
-        setErrorMessage(error.message);
+      const message = isApiErrorPayload(error)
+        ? error.message
+        : error instanceof globalThis.Error
+        ? error.message
+        : "계좌 생성 중 오류가 발생했습니다.";
+
+      if (isApiErrorPayload(error) && error.code === "4003") {
+        alert(message);
       }
+      setErrorMessage(message);
       openModal();
-      console.error("계좌 생성 실패 : ", error.message);
+      console.error("계좌 생성 실패 : ", message);
     }
   };
 
   const currentTotalBalance =
-    currentAccount.balance +
-    (typeof currentAccount.totalEvaluatedAmount === "number"
+    (currentAccount?.balance ?? 0) +
+    (typeof currentAccount?.totalEvaluatedAmount === "number"
       ? currentAccount.totalEvaluatedAmount
       : 0);
   const accountProfits = currentAccount?.accountProfits || [];
@@ -99,6 +113,7 @@ const CurrentAccount = () => {
 
   if (isLoading) return <Loading />;
   if (error) return <Error />;
+  if (!currentAccount) return <Loading />;
 
   return (
     <CurrentAccountContainer>
@@ -221,7 +236,7 @@ const BalanceChange = styled.div`
   line-height: 1.45;
 `;
 
-const BalanceChangeRate = styled.span`
+const BalanceChangeRate = styled.span<{ $change: number }>`
   color: ${({ $change }) =>
     $change > 0 ? "#f04452" : $change < 0 ? "#3182f6" : "#4e5968"};
 `;
@@ -251,7 +266,7 @@ const AvailableBalance = styled.div`
   font-size: 20px;
 `;
 
-const Return = styled.div`
+const Return = styled.div<{ $return: number }>`
   display: flex;
   font-weight: normal;
   line-height: 1.45;

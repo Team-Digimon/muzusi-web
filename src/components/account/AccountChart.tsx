@@ -1,19 +1,26 @@
-import { createChart, LineSeries } from "lightweight-charts";
-import PropTypes from "prop-types";
+import { createChart, LineSeries, ColorType } from "lightweight-charts";
 import { useEffect, useRef } from "react";
 import styled from "styled-components";
+import type { AccountProfit } from "@/types/account";
 
-const AccountChart = ({ chartData }) => {
-  const chartContainerRef = useRef(null);
+interface AccountChartProps {
+  chartData: AccountProfit[];
+}
+
+const AccountChart = ({ chartData }: AccountChartProps) => {
+  const chartContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!chartContainerRef || !chartData.length) return;
+    if (!chartContainerRef.current || !chartData.length) return;
 
     const chart = createChart(chartContainerRef.current, {
-      width: chartContainerRef.current.clientWdith,
+      width: chartContainerRef.current.clientWidth,
       height: 300,
       layout: {
-        backgroundColor: "#ffffff",
+        // lightweight-charts v5부터 배경색 지정 방식이 background:{type,color}
+        // 객체로 바뀌었다. 예전 backgroundColor 플랫 필드는 라이브러리가
+        // 조용히 무시해서, 지금까지 이 옵션은 적용된 적이 없었다.
+        background: { type: ColorType.Solid, color: "#ffffff" },
         textColor: "#000000",
       },
       grid: {
@@ -47,15 +54,6 @@ const AccountChart = ({ chartData }) => {
   }, [chartData]);
 
   return <AccountChartContainer ref={chartContainerRef} />;
-};
-
-AccountChart.propTypes = {
-  chartData: PropTypes.arrayOf(
-    PropTypes.shape({
-      totalBalance: PropTypes.number.isRequired,
-      createdAt: PropTypes.string.isRequired,
-    })
-  ),
 };
 
 export default AccountChart;

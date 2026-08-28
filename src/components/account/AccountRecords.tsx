@@ -3,13 +3,14 @@ import { useEffect, useState } from "react";
 import styled from "styled-components";
 import Loading from "@/components/common/Loading";
 import Error from "@/components/common/Error";
+import type { AccountRecord } from "@/types/account";
 
 const AccountRecords = () => {
-  const [accountRecords, setAccountRecords] = useState([]);
+  const [accountRecords, setAccountRecords] = useState<AccountRecord[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<unknown>(null);
 
-  const formatDateTime = (dateString) => {
+  const formatDateTime = (dateString: string): string => {
     const date = new Date(dateString);
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -26,7 +27,10 @@ const AccountRecords = () => {
       const response = await getAccountRecords();
       setAccountRecords(response.data);
     } catch (error) {
-      console.error("계좌 기록 불러오기 실패 : ", error.message);
+      console.error(
+        "계좌 기록 불러오기 실패 : ",
+        error instanceof globalThis.Error ? error.message : error
+      );
       setError(error);
     } finally {
       setIsLoading(false);
@@ -129,7 +133,7 @@ const RecordTableContent = styled.tbody`
   width: 100%;
 `;
 
-const RecordTableAccount = styled.tr`
+const RecordTableAccount = styled.tr<{ $isOdd: boolean }>`
   display: flex;
   width: 100%;
   height: 56px;
@@ -178,7 +182,7 @@ const AccountPrice = styled.th`
   color: #4e5968;
 `;
 
-const AccountChange = styled.th`
+const AccountChange = styled.th<{ $change: number }>`
   display: flex;
   justify-content: end;
   width: 30%;

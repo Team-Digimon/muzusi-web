@@ -1,21 +1,45 @@
-import PropTypes from "prop-types";
+import type { Dispatch, SetStateAction } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import type { Stock, StockRankItem } from "@/types/stock";
 
-const Rank = ({ rank, rankPage, type, types, time, setRankPage, setType }) => {
+interface RankTypeOption {
+  value: string;
+  korean: string;
+}
+
+interface RankProps {
+  rank: StockRankItem[];
+  rankPage: number;
+  type: string;
+  types: RankTypeOption[];
+  time: string;
+  setRankPage: Dispatch<SetStateAction<number>>;
+  setType: Dispatch<SetStateAction<string>>;
+}
+
+const Rank = ({
+  rank,
+  rankPage,
+  type,
+  types,
+  time,
+  setRankPage,
+  setType,
+}: RankProps) => {
   const navigate = useNavigate();
 
-  const handleType = (type) => () => {
+  const handleType = (type: string) => () => {
     setType(type);
     setRankPage(0);
   };
 
-  const handlePage = (pageNumber) => () => {
+  const handlePage = (pageNumber: number) => () => {
     setRankPage(pageNumber - 1);
   };
 
-  const handleClickStock = (el) => () => {
-    const stock = { stockName: el.name, stockCode: el.code };
+  const handleClickStock = (el: StockRankItem) => () => {
+    const stock: Stock = { stockName: el.name, stockCode: el.code };
     navigate(`stocks/${stock.stockCode}`, { state: { stock } });
   };
 
@@ -93,16 +117,6 @@ const Rank = ({ rank, rankPage, type, types, time, setRankPage, setType }) => {
   );
 };
 
-Rank.propTypes = {
-  rank: PropTypes.array.isRequired,
-  rankPage: PropTypes.number.isRequired,
-  type: PropTypes.string.isRequired,
-  types: PropTypes.array.isRequired,
-  time: PropTypes.string.isRequired,
-  setRankPage: PropTypes.func.isRequired,
-  setType: PropTypes.func.isRequired,
-};
-
 export default Rank;
 
 const RankContainer = styled.section`
@@ -138,7 +152,7 @@ const RankTypes = styled.div`
   gap: 20px;
 `;
 
-const RankType = styled.div`
+const RankType = styled.div<{ $isActive: boolean }>`
   display: flex;
   align-items: center;
   height: 100%;
@@ -183,7 +197,7 @@ const RankTableContent = styled.tbody`
   width: 100%;
 `;
 
-const RankTableStock = styled.tr`
+const RankTableStock = styled.tr<{ $isOdd: boolean }>`
   display: flex;
   width: 100%;
   height: 56px;
@@ -232,7 +246,7 @@ const StockPrice = styled.th`
   color: #4e5968;
 `;
 
-const StockCtrt = styled.th`
+const StockCtrt = styled.th<{ $prdyVrss: number }>`
   display: flex;
   justify-content: end;
   width: 25%;
@@ -271,7 +285,7 @@ const PageBtns = styled.ul`
   gap: 5px;
 `;
 
-const PageBtn = styled.li`
+const PageBtn = styled.li<{ $isActive: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;

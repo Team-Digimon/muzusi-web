@@ -4,13 +4,18 @@ import { useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
 import Loading from "@/components/common/Loading";
 import Error from "@/components/common/Error";
+import type { Transaction } from "@/types/account";
 
 const AccountTransactions = () => {
-  const [transactions, setTransactions] = useState([]);
-  const [transactionDetail, setTransactionDetail] = useState({});
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  // 원래 "선택된 거래 없음"을 {}(빈 객체)로 표현했는데, 그 상태에서도
+  // JSX가 transactionDetail.stockName 등을 참조해 타입이 안 맞았다.
+  // "선택 없음"의 의미가 정확한 null로 바꿔서 옵셔널 체이닝으로 처리.
+  const [transactionDetail, setTransactionDetail] =
+    useState<Transaction | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<unknown>(null);
 
   const currentTransactions = transactions.slice(
     currentPage * 10 - 10,
@@ -18,24 +23,24 @@ const AccountTransactions = () => {
   );
   const totalPages = Math.ceil(transactions.length / 10);
 
-  const handlePageChange = (pageNumber) => {
+  const handlePageChange = (pageNumber: number) => {
     setCurrentPage(pageNumber);
   };
 
-  const openDetail = (transaction) => () => {
+  const openDetail = (transaction: Transaction) => () => {
     setTransactionDetail((prev) =>
-      prev.id === transaction.id ? {} : transaction
+      prev?.id === transaction.id ? null : transaction
     );
   };
 
-  const formatDate = (dateString) => {
+  const formatDate = (dateString: string): string => {
     const date = new Date(dateString);
     const month = String(date.getMonth() + 1).padStart(2, "0");
     const day = String(date.getDate()).padStart(2, "0");
     return `${month}. ${day}`;
   };
 
-  const formatDateTime = (dateString) => {
+  const formatDateTime = (dateString: string): string => {
     const date = new Date(dateString);
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -54,7 +59,10 @@ const AccountTransactions = () => {
       const response = await getAccountTransactions(currentAccount.data.id);
       setTransactions(response.data.reverse());
     } catch (error) {
-      console.error("계좌 거래 내역 가오 실패: ", error.message);
+      console.error(
+        "계좌 거래 내역 가오 실패: ",
+        error instanceof globalThis.Error ? error.message : error
+      );
       setError(error);
     } finally {
       setIsLoading(false);
@@ -73,16 +81,14 @@ const AccountTransactions = () => {
       <Title>거래 내역</Title>
 
       <TransactionsContainer>
-        <TransactionsInfo
-          $isDetailOpen={Object.keys(transactionDetail).length !== 0}
-        >
+        <TransactionsInfo $isDetailOpen={transactionDetail !== null}>
           {currentTransactions.map((transaction, index) => {
             const formattedDate = formatDate(transaction.tradeAt);
             const prevFormattedDate =
               index > 0
                 ? formatDate(currentTransactions[index - 1].tradeAt)
                 : null;
-            const isSelected = transactionDetail.id === transaction.id;
+            const isSelected = transactionDetail?.id === transaction.id;
 
             return (
               <Info
@@ -113,7 +119,7 @@ const AccountTransactions = () => {
             );
           })}
         </TransactionsInfo>
-        {Object.keys(transactionDetail).length !== 0 && (
+        {transactionDetail && (
           <TransactionDetail>
             <DetailStockName>{transactionDetail.stockName}</DetailStockName>
             <DetailType>
@@ -187,7 +193,7 @@ const TransactionsContainer = styled.div`
   padding-bottom: 12px;
 `;
 
-const TransactionsInfo = styled.div`
+const TransactionsInfo = styled.div<{ $isDetailOpen: boolean }>`
   display: flex;
   padding-top: 12px;
   padding-right: 12px;
@@ -197,7 +203,7 @@ const TransactionsInfo = styled.div`
   transition: 0.2s;
 `;
 
-const Info = styled.div`
+const Info = styled.div<{ $isSelected: boolean }>`
   display: flex;
   width: 100%;
   justify-content: space-between;
@@ -237,7 +243,7 @@ const StockName = styled.div`
   line-height: 1.45;
 `;
 
-const TransactionType = styled.div`
+const TransactionType = styled.div<{ $type: boolean }>`
   font-weight: 400;
   font-size: 14px;
   color: ${({ $type }) => ($type ? "#f04452" : "#3182f6")};
@@ -314,7 +320,7 @@ const PaginationContainer = styled.div`
   margin-top: 20px;
 `;
 
-const PageButton = styled.div`
+const PageButton = styled.div<{ $isActive: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
