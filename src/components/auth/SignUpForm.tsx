@@ -16,7 +16,7 @@ const SignUpForm = () => {
     "2~8자의 한글, 영문, 숫자(공백, 특수문자 제외)"
   );
   const [errorMessage, setErrorMessage] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<unknown>(null);
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
