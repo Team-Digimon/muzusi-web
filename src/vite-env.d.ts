@@ -12,3 +12,10 @@ interface ImportMetaEnv {
 interface ImportMeta {
   readonly env: ImportMetaEnv;
 }
+
+// vite-plugin-svgr: "?react" 쿼리로 가져온 SVG를 React 컴포넌트로 취급한다.
+declare module "*.svg?react" {
+  import type { FunctionComponent, SVGProps } from "react";
+  const ReactComponent: FunctionComponent<SVGProps<SVGSVGElement>>;
+  export default ReactComponent;
+}

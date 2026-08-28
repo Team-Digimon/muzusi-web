@@ -10,10 +10,10 @@ const NaverRedirect = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<unknown>(null);
 
   const fetchNaverAccessToken = useCallback(
-    async (code) => {
+    async (code: string) => {
       try {
         const response = await socialSignIn("NAVER", code);
         login({ token: response.data.accessToken });
@@ -23,7 +23,10 @@ const NaverRedirect = () => {
           navigate("/signup");
         }
       } catch (error) {
-        console.error("네이버 로그인 중 오류 발생:", error.message);
+        console.error(
+          "네이버 로그인 중 오류 발생:",
+          error instanceof globalThis.Error ? error.message : error
+        );
         setError(error);
       } finally {
         setIsLoading(false);

@@ -10,10 +10,10 @@ const KakaoRedirect = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<unknown>(null);
 
   const fetchKakaoAccessToken = useCallback(
-    async (code) => {
+    async (code: string) => {
       try {
         const response = await socialSignIn("KAKAO", code);
         login({ token: response.data.accessToken });
@@ -23,7 +23,10 @@ const KakaoRedirect = () => {
           navigate("/signup");
         }
       } catch (error) {
-        console.error("카카오 로그인 중 오류 발생:", error.message);
+        console.error(
+          "카카오 로그인 중 오류 발생:",
+          error instanceof globalThis.Error ? error.message : error
+        );
         setError(error);
       } finally {
         setIsLoading(false);

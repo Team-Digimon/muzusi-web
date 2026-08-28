@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import { useState } from "react";
+import type { ChangeEvent, FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import MuzusiLogo from "@/assets/logo/MuzusiLogo.png";
 import signUp from "@/api/auth/signUp";
@@ -16,9 +17,9 @@ const SignUpForm = () => {
   );
   const [errorMessage, setErrorMessage] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<unknown>(null);
 
-  const handleInputChange = (e) => {
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setNickname(value);
     const regex = /^[a-zA-Z0-9ㄱ-ㅎ|ㅏ-ㅣ|가-힣]{2,8}$/;
@@ -34,7 +35,7 @@ const SignUpForm = () => {
     }
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!errorMessage && nickname.length > 0) {
       try {
@@ -50,9 +51,12 @@ const SignUpForm = () => {
           );
         }
       } catch (apiError) {
-        if (apiError.reponse.status === 422) {
-          alert("닉네임 형식을 확인해주세요.");
-        }
+        // 원래 코드는 apiError.reponse.status로 422를 구분해 별도 알림을
+        // 띄우려 했지만, signUp()이 던지는 에러는 handleApiError를 거치며
+        // 항상 일반화된 Error로 바뀌어 .response 자체가 없다. 즉 오타 여부와
+        // 무관하게 이 분기는 접근하는 순간 예외를 던져 catch 블록 전체가
+        // (아래 setErrorMessage/setError까지) 실행되지 못하고 있었다.
+        // 살릴 수 없는 분기라 제거하고 원래 의도했던 폴백만 남긴다.
         console.error("닉네임 등록 실패", apiError);
         setErrorMessage(
           "닉네임 등록 중 문제가 발생했습니다. 다시 시도해주세요."
@@ -155,7 +159,7 @@ const NicknameForm = styled.form`
   margin: 0 auto;
 `;
 
-const NicknameInput = styled.input`
+const NicknameInput = styled.input<{ $hasError: boolean }>`
   width: 100%;
   height: 60px;
   padding: 8px 12px;
