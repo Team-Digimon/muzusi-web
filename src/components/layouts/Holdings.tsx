@@ -5,15 +5,16 @@ import Loading from "@/components/common/Loading";
 import Error from "@/components/common/Error";
 import MuLogo from "@/assets/logo/MuLogo.webp";
 import { useNavigate } from "react-router-dom";
+import type { Holding } from "@/types/stock";
 
 const Holdings = () => {
-  const [holdings, setHoldings] = useState([]);
+  const [holdings, setHoldings] = useState<Holding[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<unknown>(null);
 
   const navigate = useNavigate();
 
-  const handleClickStockInfo = (info) => () => {
+  const handleClickStockInfo = (info: Holding) => () => {
     const stock = { stockName: info.stockName, stockCode: info.stockCode };
     navigate(`stocks/${stock.stockCode}`, { state: { stock } });
   };
@@ -24,7 +25,10 @@ const Holdings = () => {
       const response = await getAccountHoldings();
       setHoldings(response.data);
     } catch (error) {
-      console.error("보유 주식 가져오기 실패: ", error.message);
+      console.error(
+        "보유 주식 가져오기 실패: ",
+        error instanceof globalThis.Error ? error.message : error
+      );
       setError(error);
     } finally {
       setIsLoading(false);
@@ -122,7 +126,7 @@ const StockCount = styled.span`
   font-size: 12px;
 `;
 
-const RateOfReturn = styled.span`
+const RateOfReturn = styled.span<{ $profit: number }>`
   font-weight: 500;
   line-height: 1.45;
   font-size: 12px;

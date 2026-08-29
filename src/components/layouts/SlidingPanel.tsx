@@ -1,24 +1,27 @@
 import useAuth from "@/contexts/useAuth";
-import PropTypes from "prop-types";
 import styled from "styled-components";
 import MuLogo from "@/assets/logo/MuLogo.webp";
 import Holdings from "@/components/layouts/Holdings";
 import Reservations from "@/components/layouts/Reservations";
 import { useState } from "react";
 
-const SlidingPanel = ({ sideCartegory }) => {
+interface SlidingPanelProps {
+  sideCategory: string;
+}
+
+const SlidingPanel = ({ sideCategory }: SlidingPanelProps) => {
   const { user } = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
     <SlidingPanelContainer
-      $sideCartegory={sideCartegory}
+      $sideCategory={sideCategory}
       $isModalOpen={isModalOpen}
     >
-      <SideBarTitle>{sideCartegory}</SideBarTitle>
+      <SideBarTitle>{sideCategory}</SideBarTitle>
       {user ? (
-        sideCartegory === "내 투자" ? (
-          <Holdings isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} />
+        sideCategory === "내 투자" ? (
+          <Holdings />
         ) : (
           <Reservations
             isModalOpen={isModalOpen}
@@ -35,19 +38,18 @@ const SlidingPanel = ({ sideCartegory }) => {
   );
 };
 
-SlidingPanel.propTypes = {
-  sideCartegory: PropTypes.string.isRequired,
-};
-
 export default SlidingPanel;
 
-const SlidingPanelContainer = styled.div`
+const SlidingPanelContainer = styled.div<{
+  $sideCategory: string;
+  $isModalOpen: boolean;
+}>`
   position: fixed;
   display: flex;
   flex-direction: column;
   background-color: #f6f7f9;
   border-left: 1px solid #001b371a;
-  right: ${({ $sideCartegory }) => ($sideCartegory ? "0px" : "-370px")};
+  right: ${({ $sideCategory }) => ($sideCategory ? "0px" : "-370px")};
   width: 314px;
   min-width: 314px;
   margin-right: 56px;

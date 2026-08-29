@@ -1,21 +1,42 @@
 import getReservations from "@/api/stocks/getReservations";
+import type { Dispatch, SetStateAction } from "react";
 import { useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
 import Loading from "@/components/common/Loading";
 import Error from "@/components/common/Error";
 import MuLogo from "@/assets/logo/MuLogo.webp";
-import PropTypes from "prop-types";
 import deleteReservation from "@/api/stocks/deleteReservation";
+import type { Reservation as ReservationData } from "@/types/stock";
 
-const Reservations = ({ isModalOpen, setIsModalOpen }) => {
-  const [reservations, setReservations] = useState([]);
-  const [reservation, setReservation] = useState(null);
+interface ReservationsProps {
+  isModalOpen: boolean;
+  setIsModalOpen: Dispatch<SetStateAction<boolean>>;
+}
+
+// 모달에 "라벨: 값" 형태로 그대로 뿌리기 위해 만든 표시용 타입.
+// id를 뺀 나머지는 전부 화면에 보여줄 문자열이다.
+interface ReservationDisplay {
+  id: string;
+  "주문 일시": string;
+  "주문 유형": string;
+  종목명: string;
+  "종목 코드": string;
+  "1 주당 가격": string;
+  "주문 개수": string;
+  "총 주문 가격": string;
+}
+
+const Reservations = ({ isModalOpen, setIsModalOpen }: ReservationsProps) => {
+  const [reservations, setReservations] = useState<ReservationData[]>([]);
+  const [reservation, setReservation] = useState<ReservationDisplay | null>(
+    null
+  );
   const [isCheckModalOpen, setIsCheckModalOpen] = useState(false);
   const [isDelete, setIsDelete] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<unknown>(null);
 
-  const openModal = (reservationData) => () => {
+  const openModal = (reservationData: ReservationData) => () => {
     setIsModalOpen(true);
     setReservation({
       id: reservationData.id,
@@ -48,7 +69,7 @@ const Reservations = ({ isModalOpen, setIsModalOpen }) => {
     setIsCheckModalOpen(false);
   };
 
-  const formatDateTime = (dateString) => {
+  const formatDateTime = (dateString: string): string => {
     const date = new Date(dateString);
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1);
@@ -71,7 +92,10 @@ const Reservations = ({ isModalOpen, setIsModalOpen }) => {
         setIsDelete(true);
       }
     } catch (error) {
-      console.error("예약 취소 실패:", error);
+      console.error(
+        "예약 취소 실패:",
+        error instanceof globalThis.Error ? error.message : error
+      );
     }
   };
 
@@ -81,7 +105,10 @@ const Reservations = ({ isModalOpen, setIsModalOpen }) => {
       const response = await getReservations();
       setReservations(response.data);
     } catch (error) {
-      console.error("보유 주식 가져오기 실패: ", error.message);
+      console.error(
+        "보유 주식 가져오기 실패: ",
+        error instanceof globalThis.Error ? error.message : error
+      );
       setError(error);
     } finally {
       setIsLoading(false);
@@ -155,11 +182,6 @@ const Reservations = ({ isModalOpen, setIsModalOpen }) => {
   );
 };
 
-Reservations.propTypes = {
-  isModalOpen: PropTypes.bool.isRequired,
-  setIsModalOpen: PropTypes.func.isRequired,
-};
-
 export default Reservations;
 
 const ReservationsContainer = styled.div`
@@ -207,7 +229,7 @@ const ReservationCount = styled.span`
   font-size: 12px;
 `;
 
-const ReservationType = styled.span`
+const ReservationType = styled.span<{ $type: boolean }>`
   font-weight: 500;
   line-height: 1.45;
   font-size: 12px;
