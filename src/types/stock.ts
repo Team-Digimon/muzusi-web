@@ -67,3 +67,24 @@ export interface CreateTradeData {
   stockCode: string;
   tradeType: TradeType;
 }
+
+// getStockChart의 응답(ChartDataItem)을 캔들차트 라이브러리가 요구하는
+// { time, value } 형태로 변환한 뒤 StockChart 계열 컴포넌트에 전달되는 타입
+export interface StockChartPoint {
+  time: string;
+  open: number;
+  high: number;
+  low: number;
+  close: number;
+  value: number;
+}
+
+// 실시간 시세 웹소켓(STOMP)으로 수신하는 체결 메시지
+export interface LiveStockMessage {
+  price: number;
+  stockCount: number;
+  volume: number;
+  tradeType: TradeType;
+  changeRate: number;
+  time: string;
+}

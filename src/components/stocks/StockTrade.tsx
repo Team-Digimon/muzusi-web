@@ -3,25 +3,50 @@ import getCurrentAccount from "@/api/account/getCurrentAccount";
 import createTrade from "@/api/stocks/createTrade";
 import useAuth from "@/contexts/useAuth";
 import isTradingTime from "@/utils/isTradingTime";
-import PropTypes from "prop-types";
+import type { ChangeEvent, MouseEvent } from "react";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
+import type {
+  CreateTradeData,
+  Holding,
+  Stock,
+  StockChartPoint,
+  TradeType,
+} from "@/types/stock";
 
-const StockTrade = ({ stock, currentPrice, chartData }) => {
+type PriceType = "지정가" | "시장가";
+
+interface StockTradeProps {
+  stock: Stock;
+  currentPrice: number;
+  chartData: StockChartPoint[];
+}
+
+// 주문 확인 모달에 "라벨: 값" 형태로 그대로 뿌리는 표시 전용 타입
+interface TradeDisplay {
+  "주문 유형": string;
+  종목명: string;
+  "종목 코드": string;
+  "1 주당 가격": string;
+  "주문 개수": string;
+  "총 주문 가격": string;
+}
+
+const StockTrade = ({ stock, currentPrice, chartData }: StockTradeProps) => {
   const { user } = useAuth();
-  const [tradeType, setTradeType] = useState("BUY");
-  const [priceType, setPriceType] = useState("지정가");
+  const [tradeType, setTradeType] = useState<TradeType>("BUY");
+  const [priceType, setPriceType] = useState<PriceType>("지정가");
   const [inputPrice, setInputPrice] = useState("");
   const [inputCount, setInputCount] = useState("");
   const [isPriceFocused, setIsPriceFocused] = useState(false);
   const [isCountFocused, setIsCountFocused] = useState(false);
-  const [holdings, setHoldings] = useState([]);
+  const [holdings, setHoldings] = useState<Holding[]>([]);
   const [balance, setBalance] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalTitle, setModalTitle] = useState("");
   const [modalMessage, setModalMessage] = useState("");
-  const [trade, setTrade] = useState(null);
-  const [tradeData, setTradeData] = useState(null);
+  const [trade, setTrade] = useState<TradeDisplay | null>(null);
+  const [tradeData, setTradeData] = useState<CreateTradeData | null>(null);
 
   const currentHolding = holdings?.find(
     (holding) => holding.stockName === stock.stockName
@@ -39,12 +64,12 @@ const StockTrade = ({ stock, currentPrice, chartData }) => {
     window.location.reload();
   };
 
-  const fetchBalance = async () => {
+  const fetchBalance = async (): Promise<void> => {
     const response = await getCurrentAccount();
     setBalance(response.data.balance);
   };
 
-  const fetchHoldings = async () => {
+  const fetchHoldings = async (): Promise<void> => {
     const response = await getAccountHoldings();
     setHoldings(response.data);
   };
@@ -56,7 +81,13 @@ const StockTrade = ({ stock, currentPrice, chartData }) => {
     }
   }, [user]);
 
-  const tradeTypes = [
+  const tradeTypes: {
+    value: TradeType;
+    korean: string;
+    color: string;
+    hoverColor: string;
+    label: string;
+  }[] = [
     {
       value: "BUY",
       korean: "매수",
@@ -73,46 +104,46 @@ const StockTrade = ({ stock, currentPrice, chartData }) => {
     },
   ];
 
-  const priceTypes = ["지정가", "시장가"];
+  const priceTypes: PriceType[] = ["지정가", "시장가"];
 
   const activeTradeIndex = tradeTypes.findIndex((el) => el.value === tradeType);
   const activePriceIndex = priceTypes.findIndex((el) => el === priceType);
 
-  const handleTradeType = (type) => () => {
+  const handleTradeType = (type: TradeType) => () => {
     setTradeType(type);
   };
 
-  const handlePriceType = (type) => () => {
+  const handlePriceType = (type: PriceType) => () => {
     setPriceType(type);
     if (type === "시장가") {
       setInputPrice("");
     }
   };
 
-  const handleInputPriceChange = (e) => {
+  const handleInputPriceChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/[^0-9]/g, "");
     setInputPrice(value);
     setInputCount("1");
   };
 
-  const formatPriceDisplay = () => {
+  const formatPriceDisplay = (): string => {
     return inputPrice ? parseInt(inputPrice, 10).toLocaleString() + " 원" : "";
   };
 
-  const handleInputCountChange = (e) => {
+  const handleInputCountChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/[^0-9]/g, "");
     setInputCount(value);
   };
 
-  const formatCountDisplay = () => {
+  const formatCountDisplay = (): string => {
     return inputCount ? parseInt(inputCount, 10).toLocaleString() + " 주" : "";
   };
 
   const totalPrice =
-    (user && priceType === "시장가" ? currentPrice : inputPrice) * inputCount ||
-    0;
+    (user && priceType === "시장가" ? currentPrice : Number(inputPrice)) *
+      Number(inputCount) || 0;
 
-  const tradeStocks = async (data) => {
+  const tradeStocks = async (data: CreateTradeData): Promise<void> => {
     try {
       const response = await createTrade({ data: data });
       if (response.code === 200) {
@@ -130,32 +161,37 @@ const StockTrade = ({ stock, currentPrice, chartData }) => {
         fetchBalance();
       }
     } catch (error) {
-      console.error("주문 실패: ", error.message);
+      const message =
+        error instanceof Error ? error.message : "주문 처리 중 오류가 발생했습니다.";
+      console.error("주문 실패: ", message);
       setTrade(null);
       setModalTitle("주문 실패");
-      setModalMessage(error.message);
+      setModalMessage(message);
     }
   };
 
-  const handleSubmit = (e) => {
+  // TradeOrderForm(form) 자체에는 onSubmit이 없고, submit 타입 버튼의
+  // onClick에서 preventDefault로 기본 제출을 막는 구조라 이벤트 타입은
+  // form이 아니라 button 기준이다.
+  const handleSubmit = (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    if (!inputCount || inputCount <= 0) {
+    if (!inputCount || Number(inputCount) <= 0) {
       setModalMessage("수량을 입력해주세요.");
       openModal();
       return;
     }
-    if (priceType === "지정가" && (!inputPrice || inputPrice <= 0)) {
+    if (priceType === "지정가" && (!inputPrice || Number(inputPrice) <= 0)) {
       setModalMessage("가격을 입력해주세요.");
       openModal();
       return;
     }
 
-    const tradePrice = inputPrice ? inputPrice : currentPrice;
+    const tradePrice = inputPrice ? Number(inputPrice) : currentPrice;
 
     setTradeData({
       stockPrice: currentPrice,
       inputPrice: tradePrice,
-      stockCount: inputCount,
+      stockCount: Number(inputCount),
       stockName: stock.stockName,
       stockCode: stock.stockCode,
       tradeType: tradeType,
@@ -167,12 +203,13 @@ const StockTrade = ({ stock, currentPrice, chartData }) => {
       "종목 코드": stock.stockCode,
       "1 주당 가격": `${tradePrice.toLocaleString()}원`,
       "주문 개수": `${inputCount.toLocaleString()}주`,
-      "총 주문 가격": `${(tradePrice * inputCount).toLocaleString()}원`,
+      "총 주문 가격": `${(tradePrice * Number(inputCount)).toLocaleString()}원`,
     });
     openModal();
   };
 
   const handleTrade = () => {
+    if (!tradeData) return;
     tradeStocks(tradeData);
   };
 
@@ -183,14 +220,14 @@ const StockTrade = ({ stock, currentPrice, chartData }) => {
         <TradeHighlight $index={activeTradeIndex} />
         {tradeTypes.map((el, index) => {
           return (
-            <TradeType
+            <TradeTypeBtn
               key={index}
               onClick={handleTradeType(el.value)}
               $color={el.color}
               $isActive={tradeType === el.value}
             >
               {el.korean}
-            </TradeType>
+            </TradeTypeBtn>
           );
         })}
       </TradeTypes>
@@ -201,13 +238,13 @@ const StockTrade = ({ stock, currentPrice, chartData }) => {
             <PriceHighlight $index={activePriceIndex} />
             {priceTypes.map((el, index) => {
               return (
-                <PriceType
+                <PriceTypeBtn
                   key={index}
                   onClick={handlePriceType(el)}
                   $isActive={priceType === el}
                 >
                   {el}
-                </PriceType>
+                </PriceTypeBtn>
               );
             })}
           </PriceTypes>
@@ -305,15 +342,6 @@ const StockTrade = ({ stock, currentPrice, chartData }) => {
   );
 };
 
-StockTrade.propTypes = {
-  stock: PropTypes.shape({
-    stockName: PropTypes.string.isRequired,
-    stockCode: PropTypes.string.isRequired,
-  }),
-  currentPrice: PropTypes.number.isRequired,
-  chartData: PropTypes.array.isRequired,
-};
-
 export default StockTrade;
 
 const StockTradeContainer = styled.div`
@@ -345,7 +373,7 @@ const TradeTypes = styled.div`
   margin-bottom: 5px;
 `;
 
-const TradeHighlight = styled.div`
+const TradeHighlight = styled.div<{ $index: number }>`
   position: absolute;
   top: 2px;
   left: 2px;
@@ -358,7 +386,7 @@ const TradeHighlight = styled.div`
   transform: ${({ $index }) => `translateX(${100 * $index}% )`};
 `;
 
-const TradeType = styled.div`
+const TradeTypeBtn = styled.div<{ $isActive: boolean; $color: string }>`
   display: flex;
   justify-content: center;
   align-items: center;
@@ -385,7 +413,7 @@ const PriceTypes = styled.div`
   width: 100%;
 `;
 
-const PriceHighlight = styled.div`
+const PriceHighlight = styled.div<{ $index: number }>`
   position: absolute;
   top: 2px;
   left: 2px;
@@ -398,14 +426,16 @@ const PriceHighlight = styled.div`
   transform: ${({ $index }) => `translateX(${100 * $index}% )`};
 `;
 
-const PriceType = styled.div`
+// 원본 JSX에서도 $color prop이 전달된 적이 없어 활성 탭 색상이 항상
+// 미지정(상속) 상태였다. 동작을 바꾸지 않기 위해 그 상태를 그대로 타입으로 표현한다.
+const PriceTypeBtn = styled.div<{ $isActive: boolean }>`
   display: flex;
   justify-content: center;
   align-items: center;
   font-weight: 600;
   line-height: 1.45;
   font-size: 14px;
-  color: ${({ $isActive, $color }) => ($isActive ? $color : "#4e5968")};
+  color: ${({ $isActive }) => ($isActive ? undefined : "#4e5968")};
   width: 50%;
   height: 100%;
   cursor: pointer;
@@ -494,7 +524,7 @@ const OrderInfo = styled.div`
 
 const OrderInfoSpan = styled.span``;
 
-const TradeBtn = styled.button`
+const TradeBtn = styled.button<{ $color: string; $hoverColor: string }>`
   font-family: pretendard;
   min-height: 40px;
   font-weight: 600;

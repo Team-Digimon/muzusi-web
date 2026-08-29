@@ -1,13 +1,20 @@
-import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
+import type { ChartDataItem, Stock } from "@/types/stock";
 
-const StockHeader = ({ stock, currentPrice, yesterdayData }) => {
+interface StockHeaderProps {
+  stock: Stock;
+  currentPrice: number;
+  // 어제 시세가 아직 없을 때(초기값)는 빈 객체로 내려오므로 전부 옵셔널로 둔다.
+  yesterdayData: Partial<ChartDataItem>;
+}
+
+const StockHeader = ({ stock, currentPrice, yesterdayData }: StockHeaderProps) => {
   const [change, setChange] = useState(0);
   const [changeRate, setChangeRate] = useState(0);
   const [yesterdayPrice, setYesterdayPrice] = useState(0);
 
-  const formatDate = (dateString) => {
+  const formatDate = (dateString: string): string => {
     const date = new Date(dateString);
     const month = String(date.getMonth() + 1);
     const day = String(date.getDate());
@@ -16,7 +23,7 @@ const StockHeader = ({ stock, currentPrice, yesterdayData }) => {
   };
 
   useEffect(() => {
-    setYesterdayPrice(yesterdayData.close);
+    setYesterdayPrice(yesterdayData.close ?? 0);
   }, [yesterdayData.close]);
 
   useEffect(() => {
@@ -34,7 +41,9 @@ const StockHeader = ({ stock, currentPrice, yesterdayData }) => {
         <CurrentPrice>{currentPrice.toLocaleString()}원</CurrentPrice>
         {Object.keys(yesterdayData).length > 0 && (
           <>
-            <PriceText>{formatDate(yesterdayData.date)}보다</PriceText>
+            <PriceText $change={change}>
+              {formatDate(yesterdayData.date ?? "")}보다
+            </PriceText>
             <PriceChange $change={change}>
               {change > 0
                 ? `+${change.toLocaleString()}`
@@ -46,15 +55,6 @@ const StockHeader = ({ stock, currentPrice, yesterdayData }) => {
       </StockPrice>
     </StockHeaderContainer>
   );
-};
-
-StockHeader.propTypes = {
-  stock: PropTypes.shape({
-    stockName: PropTypes.string.isRequired,
-    stockCode: PropTypes.string.isRequired,
-  }),
-  currentPrice: PropTypes.number.isRequired,
-  yesterdayData: PropTypes.object.isRequired,
 };
 
 export default StockHeader;
@@ -96,7 +96,7 @@ const CurrentPrice = styled.span`
   margin-right: 10px;
 `;
 
-const PriceText = styled.span`
+const PriceText = styled.span<{ $change: number }>`
   font-weight: 500;
   font-size: 14px;
   color: ${({ $change }) =>
@@ -104,7 +104,7 @@ const PriceText = styled.span`
   margin-right: 6px;
 `;
 
-const PriceChange = styled.span`
+const PriceChange = styled.span<{ $change: number }>`
   font-weight: 500;
   font-size: 14px;
   color: ${({ $change }) =>
