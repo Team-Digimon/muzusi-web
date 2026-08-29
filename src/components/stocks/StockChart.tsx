@@ -1,16 +1,43 @@
 import { useEffect, useRef, useState } from "react";
-import PropTypes from "prop-types";
 import {
   createChart,
   CandlestickSeries,
   HistogramSeries,
+  ColorType,
+  type IChartApi,
+  type CandlestickData,
+  type HistogramData,
+  type Time,
+  type UTCTimestamp,
 } from "lightweight-charts";
 import styled from "styled-components";
+import type { ChartPeriod, StockChartPoint } from "@/types/stock";
 
-const StockChart = ({ chartData, period }) => {
-  const chartContainerRef = useRef(null);
-  const chartRef = useRef(null);
-  const [tooltipData, setTooltipData] = useState(null);
+interface StockChartProps {
+  chartData: StockChartPoint[];
+  period: ChartPeriod;
+}
+
+// 크로스헤어가 가리키는 캔들의 시가/고가/저가/종가/거래량과, 그 전 캔들 대비
+// 등락률(각 ...Change, 데이터가 없으면 null)을 담는 툴팁 표시용 상태
+interface TooltipData {
+  time: string;
+  open: number;
+  high: number;
+  low: number;
+  close: number;
+  volume: number;
+  openChange: string | null;
+  highChange: string | null;
+  lowChange: string | null;
+  closeChange: string | null;
+  volumeChange: string | null;
+}
+
+const StockChart = ({ chartData, period }: StockChartProps) => {
+  const chartContainerRef = useRef<HTMLDivElement>(null);
+  const chartRef = useRef<IChartApi | null>(null);
+  const [tooltipData, setTooltipData] = useState<TooltipData | null>(null);
   const tooltipCategory = [
     {
       title: "시가",
@@ -52,7 +79,11 @@ const StockChart = ({ chartData, period }) => {
       width: chartContainerRef.current.clientWidth,
       height: chartContainerRef.current.clientHeight,
       layout: {
-        backgroundColor: "#ffffff",
+        // lightweight-charts v5부터 배경색 지정 방식이 background:{type,color}
+        // 객체로 바뀌었다. 예전 backgroundColor 플랫 필드는 라이브러리가
+        // 조용히 무시해서, 지금까지 이 옵션은 적용된 적이 없었다
+        // (AccountChart.tsx 전환 때(4-2차) 발견한 것과 동일한 패턴).
+        background: { type: ColorType.Solid, color: "#ffffff" },
         textColor: "#000000",
       },
       grid: {
@@ -72,6 +103,10 @@ const StockChart = ({ chartData, period }) => {
 
     chartRef.current = chart;
 
+    // 라이브러리가 요구하는 Time(UTCTimestamp) 타입으로 변환하는 헬퍼
+    const toUnixSeconds = (dateString: string): UTCTimestamp =>
+      Math.floor(new Date(dateString).getTime() / 1000) as UTCTimestamp;
+
     const candleSeries = chart.addSeries(CandlestickSeries, {
       upColor: "#f04452",
       downColor: "#3182f6",
@@ -82,7 +117,7 @@ const StockChart = ({ chartData, period }) => {
       priceFormat: {
         type: "custom",
         minMove: 1,
-        formatter: (price) => price.toLocaleString("en-US"),
+        formatter: (price: number) => price.toLocaleString("en-US"),
       },
       priceScaleId: "right",
     });
@@ -95,7 +130,7 @@ const StockChart = ({ chartData, period }) => {
 
     candleSeries.setData(
       chartData.map((el) => ({
-        time: Math.floor(new Date(el.time).getTime() / 1000),
+        time: toUnixSeconds(el.time),
         open: el.open,
         high: el.high,
         low: el.low,
@@ -105,7 +140,7 @@ const StockChart = ({ chartData, period }) => {
 
     volumeSeries.setData(
       chartData.map((el) => ({
-        time: Math.floor(new Date(el.time).getTime() / 1000),
+        time: toUnixSeconds(el.time),
         value: el.value,
         color: el.open < el.close ? "#f04452" : "#3182f6",
       }))
@@ -119,6 +154,7 @@ const StockChart = ({ chartData, period }) => {
     });
 
     const handleResize = () => {
+      if (!chartContainerRef.current) return;
       chart.resize(
         chartContainerRef.current.clientWidth,
         chartContainerRef.current.clientHeight
@@ -129,12 +165,8 @@ const StockChart = ({ chartData, period }) => {
     const totalDataPoints = chartData.length;
     if (totalDataPoints > 75) {
       chart.timeScale().setVisibleRange({
-        from: Math.floor(
-          new Date(chartData[totalDataPoints - 75].time).getTime() / 1000
-        ),
-        to: Math.floor(
-          new Date(chartData[totalDataPoints - 1].time).getTime() / 1000
-        ),
+        from: toUnixSeconds(chartData[totalDataPoints - 75].time),
+        to: toUnixSeconds(chartData[totalDataPoints - 1].time),
       });
     }
 
@@ -168,8 +200,14 @@ const StockChart = ({ chartData, period }) => {
         return;
       }
 
-      const candleData = param.seriesData.get(candleSeries);
-      const volumeData = param.seriesData.get(volumeSeries);
+      // param.seriesData.get()은 시리즈 종류에 관계없이 공용 유니언 타입을
+      // 반환하므로, 이 차트에서 실제로 넣은 형태(캔들/히스토그램)로 단언한다.
+      const candleData = param.seriesData.get(candleSeries) as
+        | CandlestickData<Time>
+        | undefined;
+      const volumeData = param.seriesData.get(volumeSeries) as
+        | HistogramData<Time>
+        | undefined;
       if (!candleData || !volumeData) {
         setTooltipData(null);
         return;
@@ -177,18 +215,22 @@ const StockChart = ({ chartData, period }) => {
       const { open, high, low, close } = candleData;
       const volume = volumeData.value;
 
+      const hoveredTime = param.time as number;
       const currentIndex = chartData.findIndex(
-        (el) => Math.floor(new Date(el.time).getTime() / 1000) === param.time
+        (el) => Math.floor(new Date(el.time).getTime() / 1000) === hoveredTime
       );
       const prevData = currentIndex > 0 ? chartData[currentIndex - 1] : null;
 
-      const calculateChange = (current, previous) => {
+      const calculateChange = (
+        current: number,
+        previous: number | null
+      ): string | null => {
         return previous !== null
           ? (((current - previous) / previous) * 100).toFixed(2)
           : null;
       };
 
-      const formatTimestampToDateTime = (timestamp) => {
+      const formatTimestampToDateTime = (timestamp: number): string => {
         return new Intl.DateTimeFormat("ko-KR", {
           year: "numeric",
           month: "2-digit",
@@ -203,8 +245,8 @@ const StockChart = ({ chartData, period }) => {
       setTooltipData({
         time:
           period === "MINUTES"
-            ? formatTimestampToDateTime(param.time)
-            : formatTimestampToDateTime(param.time).split(". 00")[0],
+            ? formatTimestampToDateTime(hoveredTime)
+            : formatTimestampToDateTime(hoveredTime).split(". 00")[0],
         open,
         high,
         low,
@@ -240,10 +282,12 @@ const StockChart = ({ chartData, period }) => {
             return (
               <TooltipInfo key={index}>
                 <TooltipTitle>{el.title}:</TooltipTitle>
-                <TooltipPrice>{el.price.toLocaleString()}</TooltipPrice>
-                <TooltipChange $change={el.change}>
-                  {el.change !== null
-                    ? `(${el.change > 0 ? "+" : ""}${el.change}%)`
+                <TooltipPrice>{(el.price ?? 0).toLocaleString()}</TooltipPrice>
+                <TooltipChange
+                  $change={el.change != null ? Number(el.change) : null}
+                >
+                  {el.change != null
+                    ? `(${Number(el.change) > 0 ? "+" : ""}${el.change}%)`
                     : ""}
                 </TooltipChange>
               </TooltipInfo>
@@ -253,20 +297,6 @@ const StockChart = ({ chartData, period }) => {
       )}
     </ChartContainer>
   );
-};
-
-StockChart.propTypes = {
-  chartData: PropTypes.arrayOf(
-    PropTypes.shape({
-      time: PropTypes.string.isRequired,
-      open: PropTypes.number.isRequired,
-      high: PropTypes.number.isRequired,
-      low: PropTypes.number.isRequired,
-      close: PropTypes.number.isRequired,
-      value: PropTypes.number.isRequired,
-    })
-  ).isRequired,
-  period: PropTypes.string.isRequired,
 };
 
 export default StockChart;
@@ -305,9 +335,13 @@ const TooltipPrice = styled.span`
   color: #4e5968;
 `;
 
-const TooltipChange = styled.span`
+const TooltipChange = styled.span<{ $change: number | null }>`
   color: ${({ $change }) =>
-    $change > 0 ? "#f04452" : $change < 0 ? "#3182f6" : "#4e5968"};
+    $change !== null && $change > 0
+      ? "#f04452"
+      : $change !== null && $change < 0
+      ? "#3182f6"
+      : "#4e5968"};
 `;
 
 const LoadingChart = styled.div`
