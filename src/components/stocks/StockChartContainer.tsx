@@ -1,8 +1,25 @@
 import StockChart from "./StockChart";
-import PropTypes from "prop-types";
 import styled from "styled-components";
+import type { ChartPeriod, StockChartPoint } from "@/types/stock";
 
-const StockChartContainer = ({ period, periods, handlePeriod, chartData }) => {
+interface PeriodOption {
+  value: ChartPeriod;
+  korean: string;
+}
+
+interface StockChartContainerProps {
+  period: ChartPeriod;
+  periods: PeriodOption[];
+  handlePeriod: (period: ChartPeriod) => () => void;
+  chartData: StockChartPoint[];
+}
+
+const StockChartContainer = ({
+  period,
+  periods,
+  handlePeriod,
+  chartData,
+}: StockChartContainerProps) => {
   return (
     <StockContainer>
       <ChartContainer>
@@ -10,13 +27,13 @@ const StockChartContainer = ({ period, periods, handlePeriod, chartData }) => {
           <ChartPeriods>
             {periods.map((el, index) => {
               return (
-                <ChartPeriod
+                <ChartPeriodBtn
                   key={index}
                   onClick={handlePeriod(el.value)}
                   $isActive={period === el.value}
                 >
                   {el.korean}
-                </ChartPeriod>
+                </ChartPeriodBtn>
               );
             })}
           </ChartPeriods>
@@ -25,13 +42,6 @@ const StockChartContainer = ({ period, periods, handlePeriod, chartData }) => {
       </ChartContainer>
     </StockContainer>
   );
-};
-
-StockChartContainer.propTypes = {
-  period: PropTypes.string.isRequired,
-  periods: PropTypes.array.isRequired,
-  handlePeriod: PropTypes.func.isRequired,
-  chartData: PropTypes.array.isRequired,
 };
 
 export default StockChartContainer;
@@ -62,7 +72,7 @@ const ChartPeriods = styled.div`
   flex-wrap: wrap;
 `;
 
-const ChartPeriod = styled.div`
+const ChartPeriodBtn = styled.div<{ $isActive: boolean }>`
   display: flex;
   justify-content: center;
   align-items: center;
