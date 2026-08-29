@@ -7,6 +7,7 @@ import React, { useCallback, useMemo, useState } from "react";
 import getStocksSearch from "@/api/stocks/getStocksSearch";
 import { debounce } from "lodash";
 import { useNavigate } from "react-router-dom";
+import type { Stock } from "@/types/stock";
 
 const Header = () => {
   const { user, logout } = useAuth();
@@ -14,7 +15,7 @@ const Header = () => {
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchText, setSearchText] = useState("");
-  const [searchedStocks, setSearchedStocks] = useState([]);
+  const [searchedStocks, setSearchedStocks] = useState<Stock[]>([]);
 
   const handleLogout = async () => {
     try {
@@ -38,28 +39,37 @@ const Header = () => {
     setIsModalOpen(false);
   };
 
-  const fetchSearchResults = useCallback(async (keyword) => {
+  const fetchSearchResults = useCallback(async (keyword: string) => {
     if (!keyword) return;
     try {
       const response = await getStocksSearch({ keyword: keyword });
       setSearchedStocks(response.data);
     } catch (error) {
-      console.error("검색 결과 가져오기 실패: ", error.message);
+      console.error(
+        "검색 결과 가져오기 실패: ",
+        error instanceof Error ? error.message : error
+      );
     }
   }, []);
 
   const debouncedFetchSearchResults = useMemo(
-    () => debounce((keyword) => fetchSearchResults(keyword), 500),
+    () => debounce((keyword: string) => fetchSearchResults(keyword), 500),
     [fetchSearchResults]
   );
 
-  const handleInputChange = (e) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
     setSearchText(inputValue);
     debouncedFetchSearchResults(inputValue);
   };
 
-  const HighlightedText = ({ text, highlight }) => {
+  const HighlightedText = ({
+    text,
+    highlight,
+  }: {
+    text: string;
+    highlight: string;
+  }): React.ReactNode => {
     if (!highlight) return text;
 
     const parts = text.split(new RegExp(`(${highlight})`, "gi"));
@@ -72,7 +82,7 @@ const Header = () => {
     );
   };
 
-  const handleClickSearchedStock = (stock) => () => {
+  const handleClickSearchedStock = (stock: Stock) => () => {
     setIsModalOpen(false);
     navigate(`stocks/${stock.stockCode}`, { state: { stock } });
   };
@@ -232,7 +242,7 @@ const GNBBtn = styled.li`
   cursor: pointer;
 `;
 
-const GNBAnchor = styled.a`
+const GNBAnchor = styled.a<{ $isActive: boolean }>`
   color: #6b7684;
   text-decoration: none;
   padding: 10px;

@@ -6,23 +6,23 @@ import SlidingPanel from "@/components/layouts/SlidingPanel";
 import { useState } from "react";
 
 const Layout = () => {
-  const [sideCartegory, setSideCartegory] = useState("");
+  const [sideCategory, setSideCategory] = useState("");
 
   return (
     <Container>
-      <ContentContainer $sideCartegory={sideCartegory}>
-        <HeaderContainer $sideCartegory={sideCartegory}>
+      <ContentContainer $sideCategory={sideCategory}>
+        <HeaderContainer $sideCategory={sideCategory}>
           <Header />
         </HeaderContainer>
         <MainContainer>
           <Outlet />
         </MainContainer>
       </ContentContainer>
-      <SlidingPanel sideCartegory={sideCartegory} />
+      <SlidingPanel sideCategory={sideCategory} />
       <SideBarContainer>
         <SideBar
-          sideCartegory={sideCartegory}
-          setSideCartegory={setSideCartegory}
+          sideCategory={sideCategory}
+          setSideCategory={setSideCategory}
         />
       </SideBarContainer>
     </Container>
@@ -35,21 +35,21 @@ const Container = styled.div`
   display: flex;
 `;
 
-const ContentContainer = styled.div`
+const ContentContainer = styled.div<{ $sideCategory: string }>`
   display: flex;
   flex-direction: column;
-  width: ${({ $sideCartegory }) =>
-    $sideCartegory !== "" ? "calc(100% - 370px)" : "calc(100% - 56px)"};
+  width: ${({ $sideCategory }) =>
+    $sideCategory !== "" ? "calc(100% - 370px)" : "calc(100% - 56px)"};
   height: 100vh;
   transition: 0.2s ease-in-out;
 `;
 
-const HeaderContainer = styled.header`
+const HeaderContainer = styled.header<{ $sideCategory: string }>`
   position: fixed;
   margin: auto;
   top: 0;
-  width: ${({ $sideCartegory }) =>
-    $sideCartegory !== "" ? "calc(100% - 370px)" : "calc(100% - 56px)"};
+  width: ${({ $sideCategory }) =>
+    $sideCategory !== "" ? "calc(100% - 370px)" : "calc(100% - 56px)"};
   min-width: 1000px;
   padding-right: 20px;
   background: white;

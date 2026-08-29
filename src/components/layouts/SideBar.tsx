@@ -1,22 +1,27 @@
+import type { Dispatch, SetStateAction } from "react";
 import styled from "styled-components";
 import InvestIcon from "@/assets/icon/InvestIcon.svg?react";
 import InterestIcon from "@/assets/icon/InterestIcon.svg?react";
-import PropTypes from "prop-types";
 
-const SideBar = ({ sideCartegory, setSideCartegory }) => {
-  const cartegoryHandler = (cartegory) => () => {
-    if (sideCartegory === cartegory) {
-      setSideCartegory("");
+interface SideBarProps {
+  sideCategory: string;
+  setSideCategory: Dispatch<SetStateAction<string>>;
+}
+
+const SideBar = ({ sideCategory, setSideCategory }: SideBarProps) => {
+  const categoryHandler = (category: string) => () => {
+    if (sideCategory === category) {
+      setSideCategory("");
     } else {
-      setSideCartegory(cartegory);
+      setSideCategory(category);
     }
   };
 
   return (
     <GlobalSideBar>
       <SideAnchor
-        $isActive={sideCartegory === "내 투자"}
-        onClick={cartegoryHandler("내 투자")}
+        $isActive={sideCategory === "내 투자"}
+        onClick={categoryHandler("내 투자")}
       >
         <SideBtn>
           <SideIcon>
@@ -26,8 +31,8 @@ const SideBar = ({ sideCartegory, setSideCartegory }) => {
         <span>내 투자</span>
       </SideAnchor>
       <SideAnchor
-        $isActive={sideCartegory === "예약"}
-        onClick={cartegoryHandler("예약")}
+        $isActive={sideCategory === "예약"}
+        onClick={categoryHandler("예약")}
       >
         <SideBtn>
           <SideIcon>
@@ -38,11 +43,6 @@ const SideBar = ({ sideCartegory, setSideCartegory }) => {
       </SideAnchor>
     </GlobalSideBar>
   );
-};
-
-SideBar.propTypes = {
-  sideCartegory: PropTypes.string.isRequired,
-  setSideCartegory: PropTypes.func.isRequired,
 };
 
 export default SideBar;
@@ -63,7 +63,7 @@ const GlobalSideBar = styled.nav`
   z-index: 1;
 `;
 
-const SideAnchor = styled.a`
+const SideAnchor = styled.a<{ $isActive: boolean }>`
   color: #00132b94;
   font-weight: 500;
   text-decoration: none;
