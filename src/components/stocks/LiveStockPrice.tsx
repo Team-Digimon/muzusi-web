@@ -1,9 +1,13 @@
-import PropTypes from "prop-types";
 import styled from "styled-components";
 import MuLogo from "@/assets/logo/MuLogo.webp";
 import isTradingTime from "@/utils/isTradingTime";
+import type { LiveStockMessage, TradeType } from "@/types/stock";
 
-const LiveStockPrice = ({ messages }) => {
+interface LiveStockPriceProps {
+  messages: LiveStockMessage[];
+}
+
+const LiveStockPrice = ({ messages }: LiveStockPriceProps) => {
   return (
     <LivePriceContainer>
       <LiveTitle>실시간 시세</LiveTitle>
@@ -54,10 +58,6 @@ const LiveStockPrice = ({ messages }) => {
       )}
     </LivePriceContainer>
   );
-};
-
-LiveStockPrice.propTypes = {
-  messages: PropTypes.array.isRequired,
 };
 
 export default LiveStockPrice;
@@ -135,7 +135,7 @@ const LivePrice = styled.th`
   color: #4e5968;
 `;
 
-const LiveChange = styled.th`
+const LiveChange = styled.th<{ $tradeType: TradeType }>`
   display: flex;
   justify-content: end;
   width: 23%;
