@@ -15,6 +15,8 @@ export interface Stock {
   stockName: string;
 }
 
+export type RankType = "VOLUME" | "RISING" | "FALLING";
+
 export interface StockRankItem {
   rank: number;
   name: string;
