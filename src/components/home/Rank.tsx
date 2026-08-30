@@ -1,21 +1,21 @@
 import type { Dispatch, SetStateAction } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import type { Stock, StockRankItem } from "@/types/stock";
+import type { RankType, Stock, StockRankItem } from "@/types/stock";
 
 interface RankTypeOption {
-  value: string;
+  value: RankType;
   korean: string;
 }
 
 interface RankProps {
   rank: StockRankItem[];
   rankPage: number;
-  type: string;
+  type: RankType;
   types: RankTypeOption[];
   time: string;
   setRankPage: Dispatch<SetStateAction<number>>;
-  setType: Dispatch<SetStateAction<string>>;
+  setType: Dispatch<SetStateAction<RankType>>;
 }
 
 const Rank = ({
@@ -29,7 +29,7 @@ const Rank = ({
 }: RankProps) => {
   const navigate = useNavigate();
 
-  const handleType = (type: string) => () => {
+  const handleType = (type: RankType) => () => {
     setType(type);
     setRankPage(0);
   };
@@ -52,13 +52,13 @@ const Rank = ({
       <RankTypes>
         {types.map((el, index) => {
           return (
-            <RankType
+            <RankTypeBtn
               key={index}
               onClick={handleType(el.value)}
               $isActive={type === el.value}
             >
               {el.korean}
-            </RankType>
+            </RankTypeBtn>
           );
         })}
       </RankTypes>
@@ -152,7 +152,7 @@ const RankTypes = styled.div`
   gap: 20px;
 `;
 
-const RankType = styled.div<{ $isActive: boolean }>`
+const RankTypeBtn = styled.div<{ $isActive: boolean }>`
   display: flex;
   align-items: center;
   height: 100%;
