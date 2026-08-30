@@ -1,9 +1,7 @@
 import authApi from "@/api/authApi";
 import { handleApiError } from "@/api/handleApiError";
 import type { ApiEnvelope } from "@/types/api";
-import type { StocksRankData } from "@/types/stock";
-
-type RankType = "VOLUME" | "RISING" | "FALLING";
+import type { RankType, StocksRankData } from "@/types/stock";
 
 const getStocksRank = async ({
   type,

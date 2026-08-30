@@ -7,23 +7,25 @@ import News from "@/components/home/News";
 import Rank from "@/components/home/Rank";
 import { useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
+import type { NewsItem } from "@/types/news";
+import type { RankType, StockRankItem } from "@/types/stock";
 
 const Home = () => {
-  const [news, setNews] = useState([]);
+  const [news, setNews] = useState<NewsItem[]>([]);
   const [newsPage, setNewsPage] = useState(0);
   const [keyword, setKeyword] = useState("전체");
 
-  const [rank, setRank] = useState([]);
-  const [type, setType] = useState("VOLUME");
+  const [rank, setRank] = useState<StockRankItem[]>([]);
+  const [type, setType] = useState<RankType>("VOLUME");
   const [time, setTime] = useState("");
   const [rankPage, setRankPage] = useState(0);
 
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<unknown>(null);
   const [isNewsLoading, setIsNewsLoading] = useState(true);
 
   const keywords = ["전체", "코스닥", "코스피"];
-  const types = [
+  const types: { value: RankType; korean: string }[] = [
     { value: "VOLUME", korean: "거래량" },
     { value: "RISING", korean: "급상승" },
     { value: "FALLING", korean: "급하락" },
@@ -40,7 +42,10 @@ const Home = () => {
       setNewsPage(0);
       setNews(response.data.content);
     } catch (error) {
-      console.error("주요 뉴스 가져오기 실패: ", error.message);
+      console.error(
+        "주요 뉴스 가져오기 실패: ",
+        error instanceof globalThis.Error ? error.message : error
+      );
       setError(error);
     } finally {
       setIsNewsLoading(false);
@@ -59,7 +64,10 @@ const Home = () => {
       setNewsPage(0);
       setNews(response.data.content);
     } catch (error) {
-      console.error("키워드 뉴스 가져오기 실패: ", error.message);
+      console.error(
+        "키워드 뉴스 가져오기 실패: ",
+        error instanceof globalThis.Error ? error.message : error
+      );
       setError(error);
     } finally {
       setIsLoading(false);
@@ -75,7 +83,10 @@ const Home = () => {
       setRank(response.data.rank);
       setTime(response.data.time);
     } catch (error) {
-      console.error("주식 순위 가져오기 실패: ", error.message);
+      console.error(
+        "주식 순위 가져오기 실패: ",
+        error instanceof globalThis.Error ? error.message : error
+      );
       setError(error);
     }
     setIsLoading(false);
