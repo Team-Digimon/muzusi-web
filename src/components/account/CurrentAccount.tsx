@@ -1,23 +1,20 @@
 import createAccount from "@/api/account/createAccount";
-import getCurrentAccount from "@/api/account/getCurrentAccount";
-import { useEffect, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 import styled from "styled-components";
 import Loading from "@/components/common/Loading";
 import Error from "@/components/common/Error";
 import AccountChart from "@/components/account/AccountChart";
-import type { CurrentAccountData } from "@/types/account";
 import { isApiErrorPayload } from "@/types/api";
+import useCurrentAccount from "@/hooks/useCurrentAccount";
+import { accountQueryKeys } from "@/hooks/queryKeys";
 
 const CurrentAccount = () => {
-  // 원래 useState([])로 시작했는데(실제로는 객체로 다뤄짐), "아직 없음"의
-  // 의미를 정확히 표현하도록 null로 바꾸고 아래 렌더링 직전에 널 체크를 추가했다.
-  const [currentAccount, setCurrentAccount] =
-    useState<CurrentAccountData | null>(null);
+  const { data: currentAccount, isPending, error } = useCurrentAccount();
+  const queryClient = useQueryClient();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isCheckModalOpen, setIsCheckModalOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<unknown>(null);
 
   const openCheckModal = () => {
     setIsCheckModalOpen(true);
@@ -30,21 +27,6 @@ const CurrentAccount = () => {
   const closeModals = () => {
     setIsCheckModalOpen(false);
     setIsModalOpen(false);
-  };
-
-  const fetchCurrentAccount = async () => {
-    try {
-      const response = await getCurrentAccount();
-      setCurrentAccount(response.data);
-    } catch (error) {
-      console.error(
-        "현재 계좌 가져오기 실패 : ",
-        error instanceof globalThis.Error ? error.message : error
-      );
-      setError(error);
-    } finally {
-      setIsLoading(false);
-    }
   };
 
   const handleClickCreateBtn = async () => {
@@ -65,6 +47,12 @@ const CurrentAccount = () => {
 
     try {
       await createAccount();
+      // 원래는 여기서 캐시/상태를 갱신하는 코드가 없어서, 재생성 성공
+      // 모달을 닫아도 화면엔 예전 계좌 정보가 그대로 남아있었다(새로고침
+      // 해야 반영됨). invalidateQueries로 "currentAccount" 쿼리를
+      // 무효화하면, 이 캐시를 쓰는 모든 컴포넌트(StockTrade 등 포함)가
+      // 자동으로 최신 데이터를 다시 받아온다.
+      queryClient.invalidateQueries({ queryKey: accountQueryKeys.current });
       openModal();
     } catch (error) {
       const message = isApiErrorPayload(error)
@@ -107,13 +95,8 @@ const CurrentAccount = () => {
     ? ((balanceChange / previousBalance) * 100).toFixed(2)
     : "0.00";
 
-  useEffect(() => {
-    fetchCurrentAccount();
-  }, []);
-
-  if (isLoading) return <Loading />;
+  if (isPending) return <Loading />;
   if (error) return <Error />;
-  if (!currentAccount) return <Loading />;
 
   return (
     <CurrentAccountContainer>

@@ -1,18 +1,19 @@
-import getAccountHoldings from "@/api/account/getAccountHoldings";
-import getCurrentAccount from "@/api/account/getCurrentAccount";
 import createTrade from "@/api/stocks/createTrade";
 import useAuth from "@/contexts/useAuth";
 import isTradingTime from "@/utils/isTradingTime";
 import type { ChangeEvent, MouseEvent } from "react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import styled from "styled-components";
 import type {
   CreateTradeData,
-  Holding,
   Stock,
   StockChartPoint,
   TradeType,
 } from "@/types/stock";
+import { useQueryClient } from "@tanstack/react-query";
+import useCurrentAccount from "@/hooks/useCurrentAccount";
+import useAccountHoldings from "@/hooks/useAccountHoldings";
+import { accountQueryKeys } from "@/hooks/queryKeys";
 
 type PriceType = "지정가" | "시장가";
 
@@ -34,14 +35,19 @@ interface TradeDisplay {
 
 const StockTrade = ({ stock, currentPrice, chartData }: StockTradeProps) => {
   const { user } = useAuth();
+  const queryClient = useQueryClient();
+  // 로그인 안 했으면 애초에 요청할 필요가 없으니 enabled: !!user로 막는다
+  // (기존 useEffect의 if (user) 분기와 동일한 조건).
+  const { data: currentAccount } = useCurrentAccount({ enabled: !!user });
+  const { data: holdings } = useAccountHoldings({ enabled: !!user });
+  const balance = currentAccount?.balance ?? 0;
+
   const [tradeType, setTradeType] = useState<TradeType>("BUY");
   const [priceType, setPriceType] = useState<PriceType>("지정가");
   const [inputPrice, setInputPrice] = useState("");
   const [inputCount, setInputCount] = useState("");
   const [isPriceFocused, setIsPriceFocused] = useState(false);
   const [isCountFocused, setIsCountFocused] = useState(false);
-  const [holdings, setHoldings] = useState<Holding[]>([]);
-  const [balance, setBalance] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalTitle, setModalTitle] = useState("");
   const [modalMessage, setModalMessage] = useState("");
@@ -63,23 +69,6 @@ const StockTrade = ({ stock, currentPrice, chartData }: StockTradeProps) => {
     setModalMessage("");
     window.location.reload();
   };
-
-  const fetchBalance = async (): Promise<void> => {
-    const response = await getCurrentAccount();
-    setBalance(response.data.balance);
-  };
-
-  const fetchHoldings = async (): Promise<void> => {
-    const response = await getAccountHoldings();
-    setHoldings(response.data);
-  };
-
-  useEffect(() => {
-    if (user) {
-      fetchHoldings();
-      fetchBalance();
-    }
-  }, [user]);
 
   const tradeTypes: {
     value: TradeType;
@@ -157,8 +146,12 @@ const StockTrade = ({ stock, currentPrice, chartData }: StockTradeProps) => {
         } else {
           setModalMessage("정상적으로 주문이 체결되었습니다.");
         }
-        fetchHoldings();
-        fetchBalance();
+        // 원래는 이 컴포넌트 안의 상태만 다시 채웠는데, 이러면 같은 화면의
+        // Holdings(사이드 패널) 등 같은 데이터를 쓰는 다른 컴포넌트는
+        // 갱신되지 않았다. invalidateQueries로 캐시를 무효화하면 이
+        // 데이터를 구독 중인 모든 컴포넌트가 자동으로 다시 최신화된다.
+        queryClient.invalidateQueries({ queryKey: accountQueryKeys.current });
+        queryClient.invalidateQueries({ queryKey: accountQueryKeys.holdings });
       }
     } catch (error) {
       const message =

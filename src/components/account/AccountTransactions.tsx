@@ -1,27 +1,51 @@
 import getAccountTransactions from "@/api/account/getAccountTransactions";
-import getCurrentAccount from "@/api/account/getCurrentAccount";
-import { useCallback, useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import styled from "styled-components";
 import Loading from "@/components/common/Loading";
 import Error from "@/components/common/Error";
 import type { Transaction } from "@/types/account";
+import useCurrentAccount from "@/hooks/useCurrentAccount";
+import { accountQueryKeys } from "@/hooks/queryKeys";
 
 const AccountTransactions = () => {
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  // 거래 내역을 조회하려면 먼저 계좌 id가 있어야 한다(getAccountTransactions가
+  // accountId를 받음). currentAccount 쿼리가 다른 화면(예: 자산 페이지)에서
+  // 이미 캐시돼 있었다면 이 조회는 네트워크 요청 없이 즉시 값을 받는다.
+  const {
+    data: currentAccount,
+    isPending: isCurrentAccountPending,
+    error: currentAccountError,
+  } = useCurrentAccount();
+
+  const {
+    data: transactions,
+    isPending: isTransactionsPending,
+    error: transactionsError,
+  } = useQuery({
+    queryKey: accountQueryKeys.transactions(currentAccount?.id),
+    queryFn: async () => {
+      const response = await getAccountTransactions(currentAccount!.id);
+      // reverse()는 원본 배열을 직접 뒤집는데, 캐시에 저장된 배열을
+      // 그대로 변형하면 안 되므로 얕은 복사본을 만든 뒤 뒤집는다.
+      return [...response.data].reverse();
+    },
+    // currentAccount.id가 아직 없으면(로딩 중이거나 실패) 요청을 보내지 않는다.
+    enabled: !!currentAccount?.id,
+  });
+
   // 원래 "선택된 거래 없음"을 {}(빈 객체)로 표현했는데, 그 상태에서도
   // JSX가 transactionDetail.stockName 등을 참조해 타입이 안 맞았다.
   // "선택 없음"의 의미가 정확한 null로 바꿔서 옵셔널 체이닝으로 처리.
   const [transactionDetail, setTransactionDetail] =
     useState<Transaction | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<unknown>(null);
 
-  const currentTransactions = transactions.slice(
+  const currentTransactions = (transactions ?? []).slice(
     currentPage * 10 - 10,
     currentPage * 10
   );
-  const totalPages = Math.ceil(transactions.length / 10);
+  const totalPages = Math.ceil((transactions ?? []).length / 10);
 
   const handlePageChange = (pageNumber: number) => {
     setCurrentPage(pageNumber);
@@ -52,29 +76,10 @@ const AccountTransactions = () => {
     return `${year}년 ${month}월 ${day}일 ${hours}:${minutes}:${seconds}`;
   };
 
-  const fetchAccountTransactions = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      const currentAccount = await getCurrentAccount();
-      const response = await getAccountTransactions(currentAccount.data.id);
-      setTransactions(response.data.reverse());
-    } catch (error) {
-      console.error(
-        "계좌 거래 내역 가오 실패: ",
-        error instanceof globalThis.Error ? error.message : error
-      );
-      setError(error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchAccountTransactions();
-  }, [fetchAccountTransactions]);
-
-  if (isLoading) return <Loading />;
-  if (error) return <Error />;
+  // currentAccount 쿼리와 transactions 쿼리 둘 다 확인해야 한다 —
+  // currentAccount 자체가 아직 로딩 중이거나 실패했을 수도 있기 때문.
+  if (isCurrentAccountPending || isTransactionsPending) return <Loading />;
+  if (currentAccountError || transactionsError) return <Error />;
 
   return (
     <AccountTransactionsContainer>

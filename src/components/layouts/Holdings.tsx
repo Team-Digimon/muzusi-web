@@ -1,16 +1,13 @@
-import getAccountHoldings from "@/api/account/getAccountHoldings";
-import { useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
 import Loading from "@/components/common/Loading";
 import Error from "@/components/common/Error";
 import MuLogo from "@/assets/logo/MuLogo.webp";
 import { useNavigate } from "react-router-dom";
 import type { Holding } from "@/types/stock";
+import useAccountHoldings from "@/hooks/useAccountHoldings";
 
 const Holdings = () => {
-  const [holdings, setHoldings] = useState<Holding[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<unknown>(null);
+  const { data: holdings, isPending, error } = useAccountHoldings();
 
   const navigate = useNavigate();
 
@@ -19,27 +16,7 @@ const Holdings = () => {
     navigate(`stocks/${stock.stockCode}`, { state: { stock } });
   };
 
-  const fetchHoldings = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const response = await getAccountHoldings();
-      setHoldings(response.data);
-    } catch (error) {
-      console.error(
-        "보유 주식 가져오기 실패: ",
-        error instanceof globalThis.Error ? error.message : error
-      );
-      setError(error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchHoldings();
-  }, [fetchHoldings]);
-
-  if (isLoading) return <Loading />;
+  if (isPending) return <Loading />;
   if (error) return <Error />;
 
   return holdings.length > 0 ? (
