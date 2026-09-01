@@ -1,3 +1,4 @@
+import { memo } from "react";
 import type { Dispatch, SetStateAction } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
@@ -117,7 +118,9 @@ const Rank = ({
   );
 };
 
-export default Rank;
+// News 쪽과 반대 방향: newsPage/keyword 등이 바뀌어 Home이 리렌더돼도
+// Rank의 props는 그대로라 memo가 그 렌더를 건너뛴다.
+export default memo(Rank);
 
 const RankContainer = styled.section`
   width: 100%;

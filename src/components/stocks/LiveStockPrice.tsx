@@ -1,3 +1,4 @@
+import { memo } from "react";
 import styled from "styled-components";
 import MuLogo from "@/assets/logo/MuLogo.webp";
 import isTradingTime from "@/utils/isTradingTime";
@@ -60,7 +61,11 @@ const LiveStockPrice = ({ messages }: LiveStockPriceProps) => {
   );
 };
 
-export default LiveStockPrice;
+// 주의: messages는 웹소켓 메시지가 올 때마다 항상 새 배열이라, 그
+// 트리거에 대해서는 memo가 렌더를 못 막는다(어차피 다시 그려야 하는 게
+// 맞음). 대신 period 전환처럼 messages와 무관한 다른 리렌더에서만
+// 건너뛰는 효과가 있다 — 다른 4곳보다 이득이 작다.
+export default memo(LiveStockPrice);
 
 const LivePriceContainer = styled.div`
   display: flex;

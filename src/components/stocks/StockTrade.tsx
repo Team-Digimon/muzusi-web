@@ -2,7 +2,7 @@ import createTrade from "@/api/stocks/createTrade";
 import useAuth from "@/contexts/useAuth";
 import isTradingTime from "@/utils/isTradingTime";
 import type { ChangeEvent, MouseEvent } from "react";
-import { useState } from "react";
+import { memo, useState } from "react";
 import styled from "styled-components";
 import type {
   CreateTradeData,
@@ -335,7 +335,11 @@ const StockTrade = ({ stock, currentPrice, chartData }: StockTradeProps) => {
   );
 };
 
-export default StockTrade;
+// StockHeader와 같은 이유(웹소켓 메시지 수신마다 부모가 리렌더됨) +
+// 이 컴포넌트 자신의 내부 state(inputPrice 등)로 인한 리렌더는 memo와
+// 무관하게 그대로 일어난다 — memo가 막아주는 건 "부모발 리렌더인데
+// props는 그대로인" 경우뿐이다.
+export default memo(StockTrade);
 
 const StockTradeContainer = styled.div`
   display: flex;

@@ -10,6 +10,15 @@ import styled from "styled-components";
 import type { NewsItem } from "@/types/news";
 import type { RankType, StockRankItem } from "@/types/stock";
 
+// 컴포넌트 안에 두면 렌더마다 새 배열이 만들어져서, News/Rank를
+// React.memo로 감싸도 메모이제이션이 무력화된다. 고정 데이터라 바깥으로 뺐다.
+const keywords = ["전체", "코스닥", "코스피"];
+const types: { value: RankType; korean: string }[] = [
+  { value: "VOLUME", korean: "거래량" },
+  { value: "RISING", korean: "급상승" },
+  { value: "FALLING", korean: "급하락" },
+];
+
 const Home = () => {
   const [news, setNews] = useState<NewsItem[]>([]);
   const [newsPage, setNewsPage] = useState(0);
@@ -23,13 +32,6 @@ const Home = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<unknown>(null);
   const [isNewsLoading, setIsNewsLoading] = useState(true);
-
-  const keywords = ["전체", "코스닥", "코스피"];
-  const types: { value: RankType; korean: string }[] = [
-    { value: "VOLUME", korean: "거래량" },
-    { value: "RISING", korean: "급상승" },
-    { value: "FALLING", korean: "급하락" },
-  ];
 
   const fetchNews = useCallback(async () => {
     setIsNewsLoading(true);

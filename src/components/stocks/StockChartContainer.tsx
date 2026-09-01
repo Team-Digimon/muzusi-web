@@ -1,4 +1,5 @@
 import StockChart from "./StockChart";
+import { memo } from "react";
 import styled from "styled-components";
 import type { ChartPeriod, StockChartPoint } from "@/types/stock";
 
@@ -44,7 +45,10 @@ const StockChartContainer = ({
   );
 };
 
-export default StockChartContainer;
+// Stocks.tsx가 웹소켓 메시지 수신마다 리렌더되는데, 이 컴포넌트의 props
+// (period, periods, handlePeriod, chartData)는 그때 전혀 안 바뀐다 —
+// 그래서 이 memo는 부수적 효과가 아니라 매 틱마다 100% 렌더를 건너뛴다.
+export default memo(StockChartContainer);
 
 const StockContainer = styled.div`
   display: flex;

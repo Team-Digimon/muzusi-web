@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import styled from "styled-components";
 import type { ChartDataItem, Stock } from "@/types/stock";
 
@@ -57,7 +57,10 @@ const StockHeader = ({ stock, currentPrice, yesterdayData }: StockHeaderProps) =
   );
 };
 
-export default StockHeader;
+// Stocks.tsx가 웹소켓 메시지 수신마다 리렌더되는데, StockHeader의 props
+// (stock, yesterdayData)는 그때 안 바뀌는 경우가 많다. currentPrice만
+// 실제로 자주 바뀌므로 memo의 효과는 "가격이 그대로인 틱"에서 발휘된다.
+export default memo(StockHeader);
 
 const StockHeaderContainer = styled.div`
   display: flex;

@@ -10,7 +10,7 @@ import { webSocketUrl } from "@/config/Env";
 import isTradingTime from "@/utils/isTradingTime";
 import { Client } from "@stomp/stompjs";
 import type { StompSubscription } from "@stomp/stompjs";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import SockJS from "sockjs-client";
 import styled from "styled-components";
@@ -25,6 +25,17 @@ import type {
 // 실시간 시세 테이블에 쌓아둘 체결 메시지 최대 개수. 상한이 없으면 장시간
 // 접속 시 배열이 끝없이 늘어나 메모리/렌더 비용이 계속 커진다.
 const MAX_LIVE_MESSAGES = 50;
+
+// 컴포넌트 안에 두면 렌더될 때마다 새 배열이 만들어져서, StockChartContainer를
+// React.memo로 감싸도 "props가 바뀐 것"으로 보여 메모이제이션이 무력화된다.
+// 값이 절대 안 바뀌는 고정 데이터라 컴포넌트 바깥으로 뺐다.
+const periods: { value: ChartPeriod; korean: string }[] = [
+  { value: "MINUTES", korean: "10분" },
+  { value: "DAILY", korean: "일" },
+  { value: "WEEKLY", korean: "주" },
+  { value: "MONTHLY", korean: "월" },
+  { value: "YEARLY", korean: "년" },
+];
 
 const Stocks = () => {
   const { stockcode } = useParams<{ stockcode: string }>();
@@ -49,14 +60,6 @@ const Stocks = () => {
     {}
   );
   const [currentPrice, setCurrentPrice] = useState(0);
-
-  const periods: { value: ChartPeriod; korean: string }[] = [
-    { value: "MINUTES", korean: "10분" },
-    { value: "DAILY", korean: "일" },
-    { value: "WEEKLY", korean: "주" },
-    { value: "MONTHLY", korean: "월" },
-    { value: "YEARLY", korean: "년" },
-  ];
 
   // location.state로 종목 정보가 없을 때(새로고침, URL 직접 접속, 외부 링크)
   // stockcode 파라미터로 종목 정보를 다시 조회한다.
@@ -268,9 +271,15 @@ const Stocks = () => {
     fetchChartData();
   }, [stock, period]);
 
-  const handlePeriod = (period: ChartPeriod) => () => {
-    setPeriod(period);
-  };
+  // StockChartContainer가 React.memo로 감싸져 있어서, 이 함수도 렌더마다
+  // 새로 만들어지면 memo 비교에서 "prop이 바뀌었다"고 오인된다.
+  // setPeriod는 useState가 보장하는 안정적인 참조라 deps는 빈 배열로 둔다.
+  const handlePeriod = useCallback(
+    (period: ChartPeriod) => () => {
+      setPeriod(period);
+    },
+    []
+  );
 
   if (error) return <Error />;
   if (isLoading || !stock) return <Loading />;
