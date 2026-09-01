@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { memo, useState } from "react";
 import type { Dispatch, SetStateAction } from "react";
 import styled, { css, keyframes } from "styled-components";
 import type { NewsItem } from "@/types/news";
@@ -136,7 +136,9 @@ const News = ({
   );
 };
 
-export default News;
+// Home.tsx에서 rankPage/type 등 Rank 쪽 state가 바뀌어도 News까지 같이
+// 리렌더되는데, News의 props는 그때 안 바뀌므로 memo가 그 렌더를 건너뛴다.
+export default memo(News);
 
 const NewsContainer = styled.section`
   margin-bottom: 56px;
