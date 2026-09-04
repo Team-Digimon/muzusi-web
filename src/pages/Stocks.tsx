@@ -6,25 +6,17 @@ import LiveStockPrice from "@/components/stocks/LiveStockPrice";
 import StockChartContainer from "@/components/stocks/StockChartContainer";
 import StockHeader from "@/components/stocks/StockHeader";
 import StockTrade from "@/components/stocks/StockTrade";
-import { webSocketUrl } from "@/config/Env";
+import useStockSocket from "@/hooks/useStockSocket";
 import isTradingTime from "@/utils/isTradingTime";
-import { Client } from "@stomp/stompjs";
-import type { StompSubscription } from "@stomp/stompjs";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
-import SockJS from "sockjs-client";
 import styled from "styled-components";
 import type {
   ChartDataItem,
   ChartPeriod,
-  LiveStockMessage,
   Stock as StockType,
   StockChartPoint,
 } from "@/types/stock";
-
-// 실시간 시세 테이블에 쌓아둘 체결 메시지 최대 개수. 상한이 없으면 장시간
-// 접속 시 배열이 끝없이 늘어나 메모리/렌더 비용이 계속 커진다.
-const MAX_LIVE_MESSAGES = 50;
 
 // 컴포넌트 안에 두면 렌더될 때마다 새 배열이 만들어져서, StockChartContainer를
 // React.memo로 감싸도 "props가 바뀐 것"으로 보여 메모이제이션이 무력화된다.
@@ -52,14 +44,17 @@ const Stocks = () => {
   const [error, setError] = useState<unknown>(null);
   const [chartData, setChartData] = useState<StockChartPoint[]>([]);
   const [period, setPeriod] = useState<ChartPeriod>("MINUTES");
-  const [messages, setMessages] = useState<LiveStockMessage[]>([]);
-  const subscriptionRef = useRef<StompSubscription | null>(null);
-  const clientRef = useRef<Client | null>(null);
   const isFirstSet = useRef(true);
   const [yesterdayData, setYesterdayData] = useState<Partial<ChartDataItem>>(
     {}
   );
-  const [currentPrice, setCurrentPrice] = useState(0);
+  // 웹소켓 연결·구독·해제 로직은 useStockSocket으로 분리했다(테스트
+  // 가능한 구조로 만들기 위함). currentPrice는 실시간 체결가지만,
+  // 아래 effect에서 차트 데이터가 먼저 도착했을 때의 종가로도 세팅되므로
+  // 두 출처가 공유하는 값이라 훅이 내보내는 setter를 그대로 받아 쓴다.
+  const { messages, currentPrice, setCurrentPrice } = useStockSocket(
+    stock?.stockCode
+  );
 
   // location.state로 종목 정보가 없을 때(새로고침, URL 직접 접속, 외부 링크)
   // stockcode 파라미터로 종목 정보를 다시 조회한다.
@@ -135,67 +130,10 @@ const Stocks = () => {
       isFirstSet.current = false;
       setCurrentPrice(chartData[chartData.length - 1].close);
     }
-  }, [chartData]);
-
-  useEffect(() => {
-    if (!stock || !isTradingTime()) return;
-
-    const socket = new SockJS(webSocketUrl.replace(/^ws/, "http"));
-    const client = new Client({
-      webSocketFactory: () => socket,
-      reconnectDelay: 5000,
-
-      onConnect: () => {
-        if (subscriptionRef.current) {
-          subscriptionRef.current.unsubscribe();
-        }
-
-        subscriptionRef.current = client.subscribe(
-          `/sub/${stock.stockCode}`,
-          (message) => {
-            const parsedMessage: LiveStockMessage = JSON.parse(message.body);
-            setMessages((prev) =>
-              [parsedMessage, ...prev].slice(0, MAX_LIVE_MESSAGES)
-            );
-            setCurrentPrice(parsedMessage.price);
-          },
-          {
-            stockCode: stock.stockCode,
-          }
-        );
-      },
-      onStompError: (frame) => {
-        console.error("STOMP Error 발생:", frame);
-      },
-    });
-
-    client.activate();
-    clientRef.current = client;
-
-    const unsubscribeAndDisconnect = () => {
-      if (subscriptionRef.current && clientRef.current) {
-        clientRef.current.unsubscribe(subscriptionRef.current.id, {
-          stockCode: stock.stockCode,
-        });
-        subscriptionRef.current = null;
-      }
-
-      if (clientRef.current?.connected) {
-        clientRef.current.deactivate();
-      }
-    };
-
-    const handleBeforeUnload = () => {
-      unsubscribeAndDisconnect();
-    };
-
-    window.addEventListener("beforeunload", handleBeforeUnload);
-
-    return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-      unsubscribeAndDisconnect();
-    };
-  }, [stock]);
+    // setCurrentPrice는 useStockSocket 내부의 useState가 보장하는 안정적인
+    // 참조라 deps에 넣어도 재실행 트리거가 되지 않는다. ESLint가 커스텀
+    // 훅 반환값까지는 안정성을 추론 못 해 경고하는 것뿐이라 명시적으로 추가.
+  }, [chartData, setCurrentPrice]);
 
   useEffect(() => {
     if (!stock) return;
