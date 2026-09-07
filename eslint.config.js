@@ -6,7 +6,7 @@ import reactRefresh from 'eslint-plugin-react-refresh'
 import tseslint from 'typescript-eslint'
 
 export default [
-  { ignores: ['dist'] },
+  { ignores: ['dist', 'coverage'] },
   // TypeScript 마이그레이션 진행 중: .ts/.tsx는 타입스크립트 권장 규칙 적용
   ...tseslint.configs.recommended,
   {
