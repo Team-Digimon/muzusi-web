@@ -1,10 +1,13 @@
 import axios from "axios";
 import { isApiErrorPayload } from "@/types/api";
 
-// 17개 API 함수에 중복되어 있던 에러 처리 블록을 공용 헬퍼로 추출.
-// 두 가지 변형이 필요한 이유: 일부 호출부(CurrentAccount.jsx 등)는 서버가 내려준
-// 실제 에러 코드(error.code)를 참조해 분기하므로, 그 경우엔 원본 페이로드를 그대로
-// 던져야 한다. 나머지는 사용자에게 보여줄 일반 에러 메시지만 필요하다.
+/**
+ * 17개 API 함수에 중복되던 에러 처리 블록을 추출한 공용 헬퍼 모듈.
+ * 두 가지 변형이 있는 이유는 호출부의 필요가 다르기 때문이다.
+ * - `handleApiError`: 사용자에게 보여줄 일반 에러 메시지만 필요한 호출부용
+ * - `handleApiErrorWithPayload`: 서버가 내려준 실제 에러 코드(`error.code`)로
+ *   분기해야 하는 호출부(예: 계좌 관련 API)용 — 원본 페이로드를 그대로 던진다
+ */
 
 const logApiError = (error: unknown): void => {
   console.error("API 요청 중 오류 발생", error);

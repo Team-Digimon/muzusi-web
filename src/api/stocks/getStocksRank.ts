@@ -3,6 +3,7 @@ import { handleApiError } from "@/api/handleApiError";
 import type { ApiEnvelope } from "@/types/api";
 import type { RankType, StocksRankData } from "@/types/stock";
 
+/** 거래량/상승률/하락률 등 기준(`type`)별 종목 랭킹을 조회한다. */
 const getStocksRank = async ({
   type,
 }: {

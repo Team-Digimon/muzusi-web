@@ -1,8 +1,11 @@
 import { QueryClient } from "@tanstack/react-query";
 
-// 앱 전체가 공유하는 단 하나의 QueryClient 인스턴스. 컴포넌트 안에서
-// new QueryClient()를 만들면 리렌더될 때마다 캐시가 초기화돼버리므로,
-// 반드시 모듈 최상단에서 한 번만 생성해서 내보낸다.
+/**
+ * 앱 전체가 공유하는 단 하나의 QueryClient 인스턴스. 컴포넌트 안에서
+ * `new QueryClient()`를 만들면 리렌더될 때마다 캐시가 초기화돼버리므로,
+ * 반드시 모듈 최상단에서 한 번만 생성해서 내보낸다. `main.tsx`에서
+ * `QueryClientProvider`에 주입한다.
+ */
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {

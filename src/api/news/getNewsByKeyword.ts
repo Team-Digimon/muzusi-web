@@ -10,6 +10,7 @@ interface GetNewsByKeywordParams {
   keyword: string;
 }
 
+/** 키워드로 뉴스를 검색해 페이지 단위로 조회한다. */
 const getNewsByKeyword = async ({
   page,
   size,

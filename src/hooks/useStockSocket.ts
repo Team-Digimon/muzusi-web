@@ -20,9 +20,14 @@ interface UseStockSocketResult {
   setCurrentPrice: Dispatch<SetStateAction<number>>;
 }
 
-// Stocks.tsx에 있던 웹소켓 연결·구독·해제 로직을 그대로 옮긴 커스텀 훅.
-// 컴포넌트에서 분리해두면 renderHook으로 컴포넌트 렌더링 없이 이 로직만
-// 단독으로 테스트할 수 있다.
+/**
+ * 특정 종목의 실시간 체결가를 STOMP over SockJS로 구독하는 훅.
+ * `Stocks.tsx`에 있던 웹소켓 연결·구독·해제 로직을 그대로 옮긴
+ * 것으로, 컴포넌트에서 분리해두면 `renderHook`으로 컴포넌트
+ * 렌더링 없이 이 로직만 단독으로 테스트할 수 있다.
+ * @param stockCode - `undefined`거나 장중이 아니면(`isTradingTime`)
+ *   연결을 아예 시도하지 않는다.
+ */
 const useStockSocket = (
   stockCode: string | undefined
 ): UseStockSocketResult => {

@@ -9,6 +9,7 @@ interface GetNewsParams {
   sort: string;
 }
 
+/** 최신 뉴스 목록을 페이지 단위로 조회한다. */
 const getNews = async ({
   page,
   size,
