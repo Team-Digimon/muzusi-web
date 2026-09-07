@@ -19,10 +19,13 @@ jobs:
         uses: actions/checkout@v3
 
       # 2. Node.js 환경 설정
+      # ci.yml과 동일한 버전으로 맞춤 (ci.yml에서 jsdom 관련 의존성이
+      # Node 18을 지원 안 해 22로 올린 것과 같은 이유 - 두 워크플로우가
+      # 서로 다른 Node 버전을 쓰면 나중에 또 버전 불일치 문제가 생길 수 있음)
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: 22
 
       # 3. 환경 변수 적용 후 의존성 설치 및 빌드
       - name: Install dependencies and build with environment variables
