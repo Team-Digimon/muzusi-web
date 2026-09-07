@@ -13,11 +13,20 @@ interface RetriableRequestConfig extends InternalAxiosRequestConfig {
   _retry?: boolean;
 }
 
+/**
+ * 인증이 필요한 API 전용 axios 인스턴스. 로그인/토큰 재발급처럼
+ * 인증 없이 호출해야 하는 요청은 `noAuthApi`를 대신 쓴다.
+ */
 const authApi: AxiosInstance = axios.create({
   baseURL: baseUrl,
   withCredentials: true,
 });
 
+/**
+ * accessToken을 만료 응답(에러 코드 "0004")을 받았을 때 새로 발급받는다.
+ * 재발급에 쓰는 리프레시 토큰 자체가 만료됐으면(에러 코드 "0008")
+ * 재시도하지 않고 바로 로그아웃시킨다.
+ */
 const reissueAccessToken = async (
   logout: () => void
 ): Promise<string | null> => {
@@ -53,6 +62,12 @@ const reissueAccessToken = async (
   }
 };
 
+/**
+ * `authApi`에 요청/응답 인터셉터를 등록한다. 요청 시 sessionStorage의
+ * accessToken을 자동으로 헤더에 붙이고, 토큰 만료 응답을 가로채
+ * `reissueAccessToken`으로 재발급 후 원래 요청을 한 번 재시도한다.
+ * `AuthProvider`가 마운트 시 한 번 호출해 등록한다.
+ */
 export const setUpInterceptors = (logout: () => void): void => {
   authApi.interceptors.request.use(
     (config) => {

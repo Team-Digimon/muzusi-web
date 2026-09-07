@@ -3,6 +3,7 @@ import { handleApiErrorWithPayload } from "@/api/handleApiError";
 import type { ApiEnvelope } from "@/types/api";
 import type { Transaction } from "@/types/account";
 
+/** 지정한 계좌(`accountId`)의 매수/매도 거래 내역을 조회한다. */
 const getAccountTransactions = async (
   accountId: string
 ): Promise<ApiEnvelope<Transaction[]>> => {

@@ -8,6 +8,10 @@ interface GetStocksChartParams {
   period: ChartPeriod;
 }
 
+/**
+ * 종목의 기간별(분/일/주/월/년) 캔들 차트 데이터를 조회한다.
+ * `Stocks` 페이지가 어제 종가 조회와 차트 렌더링 양쪽에 이 함수를 쓴다.
+ */
 const getStocksChart = async ({
   stockCode,
   period,
