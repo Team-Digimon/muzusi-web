@@ -1,13 +1,6 @@
 export type TradeType = "BUY" | "SELL";
 
-export type ChartPeriod =
-  | "MINUTES"
-  | "MINUTES_WEEK"
-  | "MINUTES_TODAY"
-  | "DAILY"
-  | "WEEKLY"
-  | "MONTHLY"
-  | "YEARLY";
+export type ChartPeriod = "MINUTES" | "DAILY" | "WEEKLY" | "MONTHLY" | "YEARLY";
 
 // 검색 결과·순위·보유 목록 등에서 종목 상세로 이동할 때 쓰이는 최소 정보
 export interface Stock {
@@ -33,7 +26,7 @@ export interface StocksRankData {
 }
 
 export interface ChartDataItem {
-  date: string;
+  dateTime: string;
   open: number;
   high: number;
   low: number;
@@ -81,11 +74,14 @@ export interface StockChartPoint {
   value: number;
 }
 
-// 실시간 시세 웹소켓(STOMP)으로 수신하는 체결 메시지
+// 실시간 시세 웹소켓(STOMP)으로 수신하는 체결 메시지. 필드명은
+// 백엔드 TradeNotificationDto와 맞춘 것(muzusi-was #141) —
+// stockCount/volume이라는 모호한 이름을 체결량/누적거래량이 명확히
+// 구분되도록 리네이밍했다.
 export interface LiveStockMessage {
   price: number;
-  stockCount: number;
-  volume: number;
+  contingentVolume: number;
+  accumulatedVolume: number;
   tradeType: TradeType;
   changeRate: number;
   time: string;

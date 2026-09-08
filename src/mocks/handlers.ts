@@ -51,7 +51,7 @@ const mockStock: Stock = {
 
 const mockChartData: ChartDataItem[] = [
   {
-    date: '2026-09-01T09:00:00',
+    dateTime: '2026-09-01T09:00:00',
     open: 70_000,
     high: 71_000,
     low: 69_500,
@@ -59,7 +59,7 @@ const mockChartData: ChartDataItem[] = [
     volume: 12_345,
   },
   {
-    date: '2026-09-02T09:00:00',
+    dateTime: '2026-09-02T09:00:00',
     open: 70_500,
     high: 72_000,
     low: 70_000,
@@ -104,7 +104,7 @@ export const handlers = [
     })
   }),
 
-  // 어제 시세(DAILY)/차트(MINUTES_WEEK 등) 조회에 공통으로 쓰인다.
+  // 어제 시세(DAILY)/차트(MINUTES 등) 조회에 공통으로 쓰인다.
   // period별로 다른 데이터를 구분할 필요가 없어 하나의 핸들러로 커버.
   http.get(url('stocks/:stockCode'), () => {
     return HttpResponse.json<ApiEnvelope<ChartDataItem[]>>({

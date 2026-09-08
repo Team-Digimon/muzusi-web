@@ -17,8 +17,8 @@ const buildMessage = (
   overrides: Partial<LiveStockMessage> = {}
 ): LiveStockMessage => ({
   price: 71_000,
-  stockCount: 10,
-  volume: 123_456,
+  contingentVolume: 10,
+  accumulatedVolume: 123_456,
   tradeType: "BUY",
   changeRate: 1.5,
   time: "10:00:00",

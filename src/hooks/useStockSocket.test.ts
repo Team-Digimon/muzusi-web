@@ -85,8 +85,8 @@ describe("useStockSocket", () => {
     const messageHandler = subscribeMock.mock.calls[0][1];
     const fakeMessage: LiveStockMessage = {
       price: 71_000,
-      stockCount: 10,
-      volume: 123_456,
+      contingentVolume: 10,
+      accumulatedVolume: 123_456,
       tradeType: "BUY",
       changeRate: 1.5,
       time: "2026-09-03T10:00:00",
