@@ -28,8 +28,8 @@ const LiveStockPrice = ({ messages }: LiveStockPriceProps) => {
           <LiveTableContent>
             {messages.map((el, index) => {
               const formattedPrice = el.price.toLocaleString();
-              const formattedStockCount = el.stockCount.toLocaleString();
-              const formattedVolume = el.volume.toLocaleString();
+              const formattedStockCount = el.contingentVolume.toLocaleString();
+              const formattedVolume = el.accumulatedVolume.toLocaleString();
               return (
                 <LiveElement key={index}>
                   <LivePrice>{formattedPrice}</LivePrice>

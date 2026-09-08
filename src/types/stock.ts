@@ -74,11 +74,14 @@ export interface StockChartPoint {
   value: number;
 }
 
-// 실시간 시세 웹소켓(STOMP)으로 수신하는 체결 메시지
+// 실시간 시세 웹소켓(STOMP)으로 수신하는 체결 메시지. 필드명은
+// 백엔드 TradeNotificationDto와 맞춘 것(muzusi-was #141) —
+// stockCount/volume이라는 모호한 이름을 체결량/누적거래량이 명확히
+// 구분되도록 리네이밍했다.
 export interface LiveStockMessage {
   price: number;
-  stockCount: number;
-  volume: number;
+  contingentVolume: number;
+  accumulatedVolume: number;
   tradeType: TradeType;
   changeRate: number;
   time: string;
