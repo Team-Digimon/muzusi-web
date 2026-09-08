@@ -1,13 +1,6 @@
 export type TradeType = "BUY" | "SELL";
 
-export type ChartPeriod =
-  | "MINUTES"
-  | "MINUTES_WEEK"
-  | "MINUTES_TODAY"
-  | "DAILY"
-  | "WEEKLY"
-  | "MONTHLY"
-  | "YEARLY";
+export type ChartPeriod = "MINUTES" | "DAILY" | "WEEKLY" | "MONTHLY" | "YEARLY";
 
 // 검색 결과·순위·보유 목록 등에서 종목 상세로 이동할 때 쓰이는 최소 정보
 export interface Stock {
@@ -33,7 +26,7 @@ export interface StocksRankData {
 }
 
 export interface ChartDataItem {
-  date: string;
+  dateTime: string;
   open: number;
   high: number;
   low: number;

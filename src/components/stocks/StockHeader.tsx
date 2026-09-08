@@ -42,7 +42,7 @@ const StockHeader = ({ stock, currentPrice, yesterdayData }: StockHeaderProps) =
         {Object.keys(yesterdayData).length > 0 && (
           <>
             <PriceText $change={change}>
-              {formatDate(yesterdayData.date ?? "")}보다
+              {formatDate(yesterdayData.dateTime ?? "")}보다
             </PriceText>
             <PriceChange $change={change}>
               {change > 0

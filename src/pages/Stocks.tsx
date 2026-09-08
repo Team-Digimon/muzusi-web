@@ -7,7 +7,6 @@ import StockChartContainer from "@/components/stocks/StockChartContainer";
 import StockHeader from "@/components/stocks/StockHeader";
 import StockTrade from "@/components/stocks/StockTrade";
 import useStockSocket from "@/hooks/useStockSocket";
-import isTradingTime from "@/utils/isTradingTime";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import styled from "styled-components";
@@ -140,61 +139,25 @@ const Stocks = () => {
 
     const fetchChartData = async () => {
       try {
-        if (period === "MINUTES") {
-          const requests = [
-            getStocksChart({
-              stockCode: stock.stockCode,
-              period: "MINUTES_WEEK",
-            }),
-          ];
-
-          if (isTradingTime()) {
-            requests.push(
-              getStocksChart({
-                stockCode: stock.stockCode,
-                period: "MINUTES_TODAY",
-              })
-            );
-          }
-
-          const responses = await Promise.all(requests);
-
-          const transformData = (data: ChartDataItem[]): StockChartPoint[] =>
-            data?.map((el) => ({
-              time: el.date,
-              open: el.open,
-              high: el.high,
-              low: el.low,
-              close: el.close,
-              value: el.volume,
-            })) || [];
-
-          const combinedData = responses.flatMap((response) =>
-            transformData(response.data)
-          );
-          // el.time은 날짜 문자열이라 그대로 빼면(NaN - NaN) 정렬이 사실상
-          // 동작하지 않는다. Date로 변환해 실제 시간순으로 비교하도록 수정.
-          combinedData.sort(
-            (a, b) => new Date(a.time).getTime() - new Date(b.time).getTime()
-          );
-
-          setChartData(combinedData);
-        } else {
-          const response = await getStocksChart({
-            stockCode: stock.stockCode,
-            period,
-          });
-          const transformedData: StockChartPoint[] =
-            response?.data.map((el) => ({
-              time: el.date,
-              open: el.open,
-              high: el.high,
-              low: el.low,
-              close: el.close,
-              value: el.volume,
-            })) || [];
-          setChartData(transformedData);
-        }
+        // 예전엔 "MINUTES" 탭에서 서버가 지원하지도 않는
+        // "MINUTES_WEEK"/"MINUTES_TODAY"를 따로 두 번 조회해 합치고
+        // 정렬했는데, 지금 서버 API는 "MINUTES" 하나로 당일 + 지난 7일
+        // 분봉을 이미 정렬된 상태로 한 번에 내려준다. 다른 기간(DAILY 등)과
+        // 동일하게 단일 요청으로 통일.
+        const response = await getStocksChart({
+          stockCode: stock.stockCode,
+          period,
+        });
+        const transformedData: StockChartPoint[] =
+          response?.data.map((el) => ({
+            time: el.dateTime,
+            open: el.open,
+            high: el.high,
+            low: el.low,
+            close: el.close,
+            value: el.volume,
+          })) || [];
+        setChartData(transformedData);
       } catch (error) {
         console.error(
           "주식 차트 데이터 가져오기 실패:",
