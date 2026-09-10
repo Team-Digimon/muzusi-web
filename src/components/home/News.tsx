@@ -53,18 +53,13 @@ const News = ({
     }
   };
 
-  const handleKeyword = (keyword: NewsKeyword) => () => {
-    setKeyword(keyword);
-    setNewsPage(0);
-  };
-
-  const handleNextPage = () => {
+  const animationTransition = (updateContent: () => void) => {
     if (animatingOut || animatingIn) return;
 
     setAnimatingOut(true);
 
     setTimeout(() => {
-      setNewsPage((prevPage) => (prevPage < 4 ? prevPage + 1 : 0));
+      updateContent();
       setAnimatingOut(false);
       setAnimatingIn(true);
 
@@ -72,6 +67,19 @@ const News = ({
         setAnimatingIn(false);
       }, 500);
     }, 500);
+  };
+
+  const handleKeyword = (keyword: NewsKeyword) => () => {
+    animationTransition(() => {
+      setKeyword(keyword);
+      setNewsPage(0);
+    });
+  };
+
+  const handleNextPage = () => {
+    animationTransition(() => {
+      setNewsPage((prevPage) => (prevPage < 4 ? prevPage + 1 : 0));
+    });
   };
 
   return (
