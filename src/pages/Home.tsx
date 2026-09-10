@@ -7,22 +7,27 @@ import News from "@/components/home/News";
 import Rank from "@/components/home/Rank";
 import { useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
-import type { NewsItem } from "@/types/news";
+import type { NewsItem, NewsKeyword } from "@/types/news";
 import type { RankType, StockRankItem } from "@/types/stock";
 
 // 컴포넌트 안에 두면 렌더마다 새 배열이 만들어져서, News/Rank를
 // React.memo로 감싸도 메모이제이션이 무력화된다. 고정 데이터라 바깥으로 뺐다.
-const keywords = ["전체", "코스닥", "코스피"];
-const types: { value: RankType; korean: string }[] = [
+const keywords: NewsKeyword[] = ["전체", "코스닥", "코스피"];
+const types: {
+  value: RankType;
+  korean: string;
+}[] = [
   { value: "VOLUME", korean: "거래량" },
   { value: "RISING", korean: "급상승" },
   { value: "FALLING", korean: "급하락" },
 ];
 
 const Home = () => {
-  const [news, setNews] = useState<NewsItem[]>([]);
+  const [newsByKeyword, setNewsByKeyword] = useState<
+    Record<NewsKeyword, NewsItem[]>
+  >({ 전체: [], 코스닥: [], 코스피: [] });
   const [newsPage, setNewsPage] = useState(0);
-  const [keyword, setKeyword] = useState("전체");
+  const [keyword, setKeyword] = useState<NewsKeyword>("전체");
 
   const [rank, setRank] = useState<StockRankItem[]>([]);
   const [type, setType] = useState<RankType>("VOLUME");
@@ -33,38 +38,33 @@ const Home = () => {
   const [error, setError] = useState<unknown>(null);
   const [isNewsLoading, setIsNewsLoading] = useState(true);
 
-  const fetchNews = useCallback(async () => {
+  const fetchAllKeywordsNews = useCallback(async () => {
     setIsNewsLoading(true);
     try {
-      const response = await getNews({
-        page: 0,
-        size: 50,
-        sort: "pubDate,desc",
+      const [all, kosdaq, kospi] = await Promise.all([
+        getNews({
+          page: 0,
+          size: 50,
+          sort: "pubDate,desc",
+        }),
+        getNewsByKeyword({
+          page: 0,
+          size: 50,
+          sort: "pubDate,desc",
+          keyword: "코스닥",
+        }),
+        getNewsByKeyword({
+          page: 0,
+          size: 50,
+          sort: "pubDate,desc",
+          keyword: "코스피",
+        }),
+      ]);
+      setNewsByKeyword({
+        전체: all.data.content,
+        코스닥: kosdaq.data.content,
+        코스피: kospi.data.content,
       });
-      setNewsPage(0);
-      setNews(response.data.content);
-    } catch (error) {
-      console.error(
-        "주요 뉴스 가져오기 실패: ",
-        error instanceof globalThis.Error ? error.message : error
-      );
-      setError(error);
-    } finally {
-      setIsNewsLoading(false);
-    }
-  }, []);
-
-  const fetchNewsByKeyword = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const response = await getNewsByKeyword({
-        page: 0,
-        size: 50,
-        sort: "pubDate,desc",
-        keyword: keyword,
-      });
-      setNewsPage(0);
-      setNews(response.data.content);
     } catch (error) {
       console.error(
         "키워드 뉴스 가져오기 실패: ",
@@ -72,9 +72,9 @@ const Home = () => {
       );
       setError(error);
     } finally {
-      setIsLoading(false);
+      setIsNewsLoading(false);
     }
-  }, [keyword]);
+  }, []);
 
   const fetchRank = useCallback(async () => {
     setIsLoading(true);
@@ -95,13 +95,12 @@ const Home = () => {
   }, [type]);
 
   useEffect(() => {
-    if (keyword === "전체") {
-      fetchNews();
-    } else {
-      fetchNewsByKeyword();
-    }
+    fetchAllKeywordsNews();
+  }, [fetchAllKeywordsNews]);
+
+  useEffect(() => {
     fetchRank();
-  }, [fetchNews, fetchNewsByKeyword, keyword, fetchRank]);
+  }, [fetchRank]);
 
   if (isLoading) return <Loading />;
   if (error) return <Error />;
@@ -109,7 +108,7 @@ const Home = () => {
   return (
     <Container>
       <News
-        news={news}
+        newsByKeyword={newsByKeyword}
         newsPage={newsPage}
         keyword={keyword}
         keywords={keywords}
