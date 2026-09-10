@@ -7,3 +7,5 @@ export interface NewsItem {
 export interface NewsListData {
   content: NewsItem[];
 }
+
+export type NewsKeyword = "전체" | "코스닥" | "코스피";
