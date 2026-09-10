@@ -6,7 +6,7 @@ import useAuth from "@/contexts/useAuth";
 import React, { useCallback, useMemo, useState } from "react";
 import getStocksSearch from "@/api/stocks/getStocksSearch";
 import { debounce } from "lodash";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import type { Stock } from "@/types/stock";
 
 const Header = () => {
@@ -96,31 +96,31 @@ const Header = () => {
   return (
     <GlobalNavBar>
       <NavBar>
-        <NavLogo href="/">
+        <NavLogo href='/'>
           <LogoImg
-            alt="무주시"
-            loading="lazy"
-            decoding="async"
+            alt='무주시'
+            loading='lazy'
+            decoding='async'
             src={MuzusiLogo}
           />
         </NavLogo>
         <NavCenter>
           <GNBControl>
             <GNBBtn>
-              <GNBAnchor href="/" $isActive={currentPath === "/"}>
+              <GNBAnchor to='/' $isActive={currentPath === "/"}>
                 홈
               </GNBAnchor>
             </GNBBtn>
             <GNBBtn>
               <GNBAnchor
-                href="/account/asset"
+                to='/account/asset'
                 $isActive={currentPath.startsWith("/account")}
               >
                 내 계좌
               </GNBAnchor>
             </GNBBtn>
             <SearchBtn onClick={openSearchModal}>
-              <SearchIconBox role="presentation">
+              <SearchIconBox role='presentation'>
                 <SearchIcon />
               </SearchIconBox>
               <SearchText>이 곳을 눌러 검색하세요</SearchText>
@@ -134,14 +134,14 @@ const Header = () => {
                 반갑습니다,
                 <Nickname>{user?.nickname}</Nickname>님!
               </LoginText>
-              <LoginBtn type="button" onClick={handleLogout}>
+              <LoginBtn type='button' onClick={handleLogout}>
                 로그아웃
               </LoginBtn>
             </>
           ) : (
             <>
               <LoginText>로그인하고 투자하기</LoginText>
-              <LoginBtn type="button" href="/signin">
+              <LoginBtn type='button' href='/signin'>
                 로그인
               </LoginBtn>
             </>
@@ -152,11 +152,11 @@ const Header = () => {
         <ModalBackground onClick={closeSearchModal}>
           <ModalContent onClick={(e) => e.stopPropagation()}>
             <ModalSearchBox>
-              <SearchIconBox role="presentation">
+              <SearchIconBox role='presentation'>
                 <SearchIcon />
               </SearchIconBox>
               <ModalSearchText
-                placeholder="검색어를 입력해주세요"
+                placeholder='검색어를 입력해주세요'
                 value={searchText}
                 onChange={handleInputChange}
               />
@@ -242,7 +242,7 @@ const GNBBtn = styled.li`
   cursor: pointer;
 `;
 
-const GNBAnchor = styled.a<{ $isActive: boolean }>`
+const GNBAnchor = styled(Link)<{ $isActive: boolean }>`
   color: #6b7684;
   text-decoration: none;
   padding: 10px;
