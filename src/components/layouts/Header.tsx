@@ -6,12 +6,14 @@ import useAuth from "@/contexts/useAuth";
 import React, { useCallback, useMemo, useState } from "react";
 import getStocksSearch from "@/api/stocks/getStocksSearch";
 import { debounce } from "lodash";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import type { Stock } from "@/types/stock";
 
 const Header = () => {
+  const location = useLocation();
+  const currentPath = location.pathname;
+
   const { user, logout } = useAuth();
-  const currentPath = window.location.pathname;
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchText, setSearchText] = useState("");
