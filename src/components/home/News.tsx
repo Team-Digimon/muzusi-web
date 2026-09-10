@@ -1,20 +1,20 @@
 import { memo, useState } from "react";
 import type { Dispatch, SetStateAction } from "react";
 import styled, { css, keyframes } from "styled-components";
-import type { NewsItem } from "@/types/news";
+import type { NewsItem, NewsKeyword } from "@/types/news";
 
 interface NewsProps {
-  news: NewsItem[];
+  newsByKeyword: Record<NewsKeyword, NewsItem[]>;
   newsPage: number;
-  keyword: string;
-  keywords: string[];
+  keyword: NewsKeyword;
+  keywords: NewsKeyword[];
   setNewsPage: Dispatch<SetStateAction<number>>;
-  setKeyword: Dispatch<SetStateAction<string>>;
+  setKeyword: Dispatch<SetStateAction<NewsKeyword>>;
   isNewsLoading: boolean;
 }
 
 const News = ({
-  news,
+  newsByKeyword,
   newsPage,
   keyword,
   keywords,
@@ -53,17 +53,13 @@ const News = ({
     }
   };
 
-  const handleKeyword = (keyword: string) => () => {
-    setKeyword(keyword);
-  };
-
-  const handleNextPage = () => {
+  const animationTransition = (updateContent: () => void) => {
     if (animatingOut || animatingIn) return;
 
     setAnimatingOut(true);
 
     setTimeout(() => {
-      setNewsPage((prevPage) => (prevPage < 4 ? prevPage + 1 : 0));
+      updateContent();
       setAnimatingOut(false);
       setAnimatingIn(true);
 
@@ -71,6 +67,19 @@ const News = ({
         setAnimatingIn(false);
       }, 500);
     }, 500);
+  };
+
+  const handleKeyword = (keyword: NewsKeyword) => () => {
+    animationTransition(() => {
+      setKeyword(keyword);
+      setNewsPage(0);
+    });
+  };
+
+  const handleNextPage = () => {
+    animationTransition(() => {
+      setNewsPage((prevPage) => (prevPage < 4 ? prevPage + 1 : 0));
+    });
   };
 
   return (
@@ -81,13 +90,13 @@ const News = ({
           <NewsKeywords>
             {keywords.map((el, index) => {
               return (
-                <NewsKeyword
+                <NewsKeywordText
                   key={index}
                   $isActive={el === keyword}
                   onClick={handleKeyword(el)}
                 >
                   {el}
-                </NewsKeyword>
+                </NewsKeywordText>
               );
             })}
           </NewsKeywords>
@@ -107,17 +116,19 @@ const News = ({
             $animatingIn={animatingIn}
           >
             <NewsColumn>
-              {news.slice(newsPage * 10, newsPage * 10 + 5).map((el, index) => {
-                return (
-                  <NewsContent key={index} href={el.link}>
-                    <NewsTitle>{decodeHtmlEntities(el.title)}</NewsTitle>
-                    <NewsPubDate>{getRelativeTime(el.pubDate)}</NewsPubDate>
-                  </NewsContent>
-                );
-              })}
+              {newsByKeyword[keyword]
+                .slice(newsPage * 10, newsPage * 10 + 5)
+                .map((el, index) => {
+                  return (
+                    <NewsContent key={index} href={el.link}>
+                      <NewsTitle>{decodeHtmlEntities(el.title)}</NewsTitle>
+                      <NewsPubDate>{getRelativeTime(el.pubDate)}</NewsPubDate>
+                    </NewsContent>
+                  );
+                })}
             </NewsColumn>
             <NewsColumn>
-              {news
+              {newsByKeyword[keyword]
                 .slice(newsPage * 10 + 5, newsPage * 10 + 10)
                 .map((el, index) => {
                   return (
@@ -173,7 +184,7 @@ const NewsKeywords = styled.div`
   margin-left: 10px;
 `;
 
-const NewsKeyword = styled.div<{ $isActive: boolean }>`
+const NewsKeywordText = styled.div<{ $isActive: boolean }>`
   background: #0220470d;
   line-height: 1.45;
   font-size: 15px;
