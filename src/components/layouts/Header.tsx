@@ -9,7 +9,11 @@ import { debounce } from "lodash";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import type { Stock } from "@/types/stock";
 
-const Header = () => {
+interface HeaderProps {
+  sideCategory: string;
+}
+
+const Header = ({ sideCategory }: HeaderProps) => {
   const location = useLocation();
   const currentPath = location.pathname;
 
@@ -96,7 +100,7 @@ const Header = () => {
   }, [debouncedFetchSearchResults]);
 
   return (
-    <GlobalNavBar>
+    <GlobalNavBar $sideCategory={sideCategory}>
       <NavBar>
         <NavLogo href='/'>
           <LogoImg
@@ -194,14 +198,17 @@ const Header = () => {
 
 export default Header;
 
-const GlobalNavBar = styled.div`
+const GlobalNavBar = styled.div<{ $sideCategory: string }>`
   top: 0;
   height: 60px;
   position: sticky;
   width: 100%;
   z-index: 99;
-  max-width: 1280px;
-  margin: auto;
+  padding-left: 20px;
+  max-width: ${({ $sideCategory }) =>
+    $sideCategory !== "" ? "1080px" : "1280px"};
+  margin-left: max(0px, calc((100vw - 56px - 1280px) / 2));
+  transition: 0.2s ease-in-out;
 `;
 
 const NavBar = styled.nav`

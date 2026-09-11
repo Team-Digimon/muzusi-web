@@ -13,9 +13,9 @@ const Layout = () => {
     <Container>
       <ContentContainer $sideCategory={sideCategory}>
         <HeaderContainer $sideCategory={sideCategory}>
-          <Header />
+          <Header sideCategory={sideCategory} />
         </HeaderContainer>
-        <MainContainer>
+        <MainContainer $sideCategory={sideCategory}>
           <Suspense fallback={<Loading />}>
             <Outlet />
           </Suspense>
@@ -60,12 +60,15 @@ const HeaderContainer = styled.header<{ $sideCategory: string }>`
   transition: 0.2s ease-in-out;
 `;
 
-const MainContainer = styled.div`
+const MainContainer = styled.div<{ $sideCategory: string }>`
   width: 100%;
-  max-width: 1280px;
+  max-width: ${({ $sideCategory }) =>
+    $sideCategory !== "" ? "1080px" : "1280px"};
   min-width: 1000px;
-  padding-right: 20px;
-  margin: 60px auto 0 auto;
+  margin-top: 60px;
+  padding-left: 20px;
+  margin-left: max(0px, calc((100vw - 56px - 1280px) / 2));
+  transition: 0.2s ease-in-out;
 `;
 
 const SideBarContainer = styled.div`
