@@ -35,8 +35,10 @@ const Home = () => {
   const [rankPage, setRankPage] = useState(0);
 
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<unknown>(null);
   const [isNewsLoading, setIsNewsLoading] = useState(true);
+
+  const [newsError, setNewsError] = useState<unknown>(null);
+  const [rankError, setRankError] = useState<unknown>(null);
 
   const fetchAllKeywordsNews = useCallback(async () => {
     setIsNewsLoading(true);
@@ -70,14 +72,13 @@ const Home = () => {
         "키워드 뉴스 가져오기 실패: ",
         error instanceof globalThis.Error ? error.message : error
       );
-      setError(error);
+      setNewsError(error);
     } finally {
       setIsNewsLoading(false);
     }
   }, []);
 
   const fetchRank = useCallback(async () => {
-    setIsLoading(true);
     try {
       const response = await getStocksRank({
         type: type,
@@ -89,42 +90,47 @@ const Home = () => {
         "주식 순위 가져오기 실패: ",
         error instanceof globalThis.Error ? error.message : error
       );
-      setError(error);
+      setRankError(error);
     }
-    setIsLoading(false);
   }, [type]);
 
   useEffect(() => {
-    fetchAllKeywordsNews();
-  }, [fetchAllKeywordsNews]);
-
-  useEffect(() => {
-    fetchRank();
-  }, [fetchRank]);
+    Promise.all([fetchAllKeywordsNews(), fetchRank()]).finally(() => {
+      setIsLoading(false);
+    });
+  }, [fetchAllKeywordsNews, fetchRank]);
 
   if (isLoading) return <Loading />;
-  if (error) return <Error />;
 
   return (
     <Container>
-      <News
-        newsByKeyword={newsByKeyword}
-        newsPage={newsPage}
-        keyword={keyword}
-        keywords={keywords}
-        setNewsPage={setNewsPage}
-        setKeyword={setKeyword}
-        isNewsLoading={isNewsLoading}
-      />
-      <Rank
-        rank={rank}
-        rankPage={rankPage}
-        type={type}
-        types={types}
-        time={time}
-        setRankPage={setRankPage}
-        setType={setType}
-      />
+      {newsError ? (
+        <Error />
+      ) : (
+        <News
+          newsByKeyword={newsByKeyword}
+          newsPage={newsPage}
+          keyword={keyword}
+          keywords={keywords}
+          setNewsPage={setNewsPage}
+          setKeyword={setKeyword}
+          isNewsLoading={isNewsLoading}
+        />
+      )}
+
+      {rankError ? (
+        <Error />
+      ) : (
+        <Rank
+          rank={rank}
+          rankPage={rankPage}
+          type={type}
+          types={types}
+          time={time}
+          setRankPage={setRankPage}
+          setType={setType}
+        />
+      )}
     </Container>
   );
 };
