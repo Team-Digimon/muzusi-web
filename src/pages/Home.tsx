@@ -5,7 +5,7 @@ import Error from "@/components/common/Error";
 import Loading from "@/components/common/Loading";
 import News from "@/components/home/News";
 import Rank from "@/components/home/Rank";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import type { NewsItem, NewsKeyword } from "@/types/news";
 import type { RankType, StockRankItem } from "@/types/stock";
@@ -94,10 +94,17 @@ const Home = () => {
     }
   }, [type]);
 
+  const isFirstRun = useRef(true);
+
   useEffect(() => {
-    Promise.all([fetchAllKeywordsNews(), fetchRank()]).finally(() => {
-      setIsLoading(false);
-    });
+    if (isFirstRun.current) {
+      isFirstRun.current = false;
+      Promise.all([fetchAllKeywordsNews(), fetchRank()]).finally(() => {
+        setIsLoading(false);
+      });
+    } else {
+      fetchRank();
+    }
   }, [fetchAllKeywordsNews, fetchRank]);
 
   if (isLoading) return <Loading />;
