@@ -3,7 +3,8 @@ import Header from "@/components/layouts/Header";
 import styled from "styled-components";
 import SideBar from "@/components/layouts/SideBar";
 import SlidingPanel from "@/components/layouts/SlidingPanel";
-import { useState } from "react";
+import { Suspense, useState } from "react";
+import Loading from "@/components/common/Loading";
 
 const Layout = () => {
   const [sideCategory, setSideCategory] = useState("");
@@ -15,7 +16,9 @@ const Layout = () => {
           <Header />
         </HeaderContainer>
         <MainContainer>
-          <Outlet />
+          <Suspense fallback={<Loading />}>
+            <Outlet />
+          </Suspense>
         </MainContainer>
       </ContentContainer>
       <SlidingPanel sideCategory={sideCategory} />
