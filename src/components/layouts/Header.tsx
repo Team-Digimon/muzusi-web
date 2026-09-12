@@ -3,7 +3,7 @@ import MuzusiLogo from "@/assets/logo/MuzusiLogo.png";
 import SearchIcon from "@/assets/icon/SearchIcon.svg?react";
 import signOut from "@/api/auth/signOut";
 import useAuth from "@/contexts/useAuth";
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import getStocksSearch from "@/api/stocks/getStocksSearch";
 import { debounce } from "lodash";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -36,14 +36,40 @@ const Header = ({ sideCategory }: HeaderProps) => {
     }
   };
 
-  const openSearchModal = () => {
+  const openSearchModal = useCallback(() => {
     setIsModalOpen(true);
     setSearchText("");
-  };
+  }, []);
 
-  const closeSearchModal = () => {
+  const closeSearchModal = useCallback(() => {
     setIsModalOpen(false);
-  };
+  }, []);
+
+  const handleGlobalKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement;
+      const isTyping =
+        ["INPUT", "TEXTAREA"].includes(target.tagName) ||
+        target.isContentEditable;
+
+      if (e.key === "/" && !isModalOpen && !isTyping) {
+        e.preventDefault();
+        openSearchModal();
+      }
+
+      if (e.key === "Escape" && isModalOpen) {
+        closeSearchModal();
+      }
+    },
+    [isModalOpen, openSearchModal, closeSearchModal]
+  );
+
+  useEffect(() => {
+    window.addEventListener("keydown", handleGlobalKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleGlobalKeyDown);
+    };
+  }, [handleGlobalKeyDown]);
 
   const fetchSearchResults = useCallback(async (keyword: string) => {
     if (!keyword) return;
@@ -165,6 +191,7 @@ const Header = ({ sideCategory }: HeaderProps) => {
                 placeholder='검색어를 입력해주세요'
                 value={searchText}
                 onChange={handleInputChange}
+                autoFocus
               />
             </ModalSearchBox>
             {searchText ? (
