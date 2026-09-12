@@ -155,7 +155,9 @@ const Header = ({ sideCategory }: HeaderProps) => {
               <SearchIconBox role='presentation'>
                 <SearchIcon />
               </SearchIconBox>
-              <SearchText>이 곳을 눌러 검색하세요</SearchText>
+              <SearchText>
+                <Kbd>/</Kbd> 를 눌러 검색하세요
+              </SearchText>
             </SearchBtn>
           </GNBControl>
         </NavCenter>
@@ -193,6 +195,9 @@ const Header = ({ sideCategory }: HeaderProps) => {
                 onChange={handleInputChange}
                 autoFocus
               />
+              <ModalSearchHint>
+                <Kbd>ESC</Kbd> 를 눌러 닫으세요
+              </ModalSearchHint>
             </ModalSearchBox>
             {searchText ? (
               <SearchedStocks>
@@ -313,12 +318,33 @@ const SearchIconBox = styled.span`
 `;
 
 const SearchText = styled.span`
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   margin: 0;
   padding: 0;
   font-weight: 500;
   font-size: 15px;
   color: #8b95a1;
   line-height: 1.45;
+`;
+
+const Kbd = styled.kbd`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 5px;
+  background: #ffffff;
+  border: 1px solid #dddddd;
+  border-radius: 4px;
+  box-shadow: inset 0 -1px 0 #001b370a;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  color: #8b95a1;
+  line-height: 1;
 `;
 
 const NavLogin = styled.div`
@@ -392,6 +418,7 @@ const ModalSearchBox = styled.div`
   height: 40px;
   min-height: 40px;
   margin: 12px 12px 16px;
+  padding-right: 16px;
   background-color: #0220470d;
   border-radius: 50px;
   display: flex;
@@ -400,7 +427,8 @@ const ModalSearchBox = styled.div`
 
 const ModalSearchText = styled.input`
   display: block;
-  width: 100%;
+  flex: 1;
+  min-width: 0;
   height: 100%;
   border: none;
   outline: none;
@@ -409,6 +437,16 @@ const ModalSearchText = styled.input`
   color: #191f28;
   &::placeholder {
     color: #8b95a1;
+  }
+`;
+
+const ModalSearchHint = styled(SearchText)`
+  flex-shrink: 0;
+  white-space: nowrap;
+  font-size: 12px;
+  ${Kbd} {
+    font-size: 12px;
+    font-weight: 400;
   }
 `;
 

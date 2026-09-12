@@ -25,7 +25,7 @@ describe("Header", () => {
   it("'/' 키를 누르면 모달이 열리고, 'ESC' 키를 누르면 닫힌다.", () => {
     renderHeader();
 
-    expect(screen.getByText("이 곳을 눌러 검색하세요")).toBeInTheDocument();
+    expect(screen.getByText(/를 눌러 검색하세요/)).toBeInTheDocument();
 
     fireEvent.keyDown(window, { key: "/" });
 
