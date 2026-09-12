@@ -185,7 +185,7 @@ const NewsKeywords = styled.div`
 `;
 
 const NewsKeywordText = styled.div<{ $isActive: boolean }>`
-  background: #0220470d;
+  background: ${({ $isActive }) => ($isActive ? "#0220471a" : "#0220470d")};
   line-height: 1.45;
   font-size: 15px;
   text-decoration: none;
@@ -198,7 +198,7 @@ const NewsKeywordText = styled.div<{ $isActive: boolean }>`
     color: #333d4b;
   }
   font-weight: ${({ $isActive }) => ($isActive ? 700 : 500)};
-  color: ${({ $isActive }) => ($isActive ? "#333d4b" : "#4e5968")};
+  color: ${({ $isActive }) => ($isActive ? "#333d4b" : "#8b95a1")};
 `;
 const PageIndicators = styled.div`
   display: flex;
