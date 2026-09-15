@@ -13,6 +13,7 @@ interface StockChartContainerProps {
   periods: PeriodOption[];
   handlePeriod: (period: ChartPeriod) => () => void;
   chartData: StockChartPoint[];
+  isLoading: boolean;
 }
 
 const StockChartContainer = ({
@@ -20,6 +21,7 @@ const StockChartContainer = ({
   periods,
   handlePeriod,
   chartData,
+  isLoading,
 }: StockChartContainerProps) => {
   return (
     <StockContainer>
@@ -39,7 +41,7 @@ const StockChartContainer = ({
             })}
           </ChartPeriods>
         </ChartHeader>
-        <StockChart chartData={chartData} period={period} />
+        <StockChart chartData={chartData} period={period} isLoading={isLoading} />
       </ChartContainer>
     </StockContainer>
   );

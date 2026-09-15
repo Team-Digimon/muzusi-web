@@ -42,6 +42,7 @@ const Stocks = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<unknown>(null);
   const [chartData, setChartData] = useState<StockChartPoint[]>([]);
+  const [isChartLoading, setIsChartLoading] = useState(true);
   const [period, setPeriod] = useState<ChartPeriod>("MINUTES");
   const isFirstSet = useRef(true);
   const [yesterdayData, setYesterdayData] = useState<Partial<ChartDataItem>>(
@@ -65,9 +66,7 @@ const Stocks = () => {
     const resolveStock = async () => {
       try {
         const response = await getStocksSearch({ keyword: stockcode ?? "" });
-        const matched = response.data?.find(
-          (el) => el.stockCode === stockcode
-        );
+        const matched = response.data?.find((el) => el.stockCode === stockcode);
         if (cancelled) return;
 
         if (matched) {
@@ -166,6 +165,7 @@ const Stocks = () => {
         setError(error);
       } finally {
         setIsLoading(false);
+        setIsChartLoading(false);
       }
     };
 
@@ -198,6 +198,7 @@ const Stocks = () => {
           periods={periods}
           handlePeriod={handlePeriod}
           chartData={chartData}
+          isLoading={isChartLoading}
         />
         <StockTrade
           stock={stock}
