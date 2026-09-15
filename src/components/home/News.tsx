@@ -120,8 +120,10 @@ const News = ({
                 .slice(newsPage * 10, newsPage * 10 + 5)
                 .map((el, index) => {
                   return (
-                    <NewsContent key={index} href={el.link}>
-                      <NewsTitle>{decodeHtmlEntities(el.title)}</NewsTitle>
+                    <NewsContent key={index}>
+                      <NewsTitle href={el.link}>
+                        {decodeHtmlEntities(el.title)}
+                      </NewsTitle>
                       <NewsPubDate>{getRelativeTime(el.pubDate)}</NewsPubDate>
                     </NewsContent>
                   );
@@ -132,8 +134,10 @@ const News = ({
                 .slice(newsPage * 10 + 5, newsPage * 10 + 10)
                 .map((el, index) => {
                   return (
-                    <NewsContent key={index} href={el.link}>
-                      <NewsTitle>{decodeHtmlEntities(el.title)}</NewsTitle>
+                    <NewsContent key={index}>
+                      <NewsTitle href={el.link}>
+                        {decodeHtmlEntities(el.title)}
+                      </NewsTitle>
                       <NewsPubDate>{getRelativeTime(el.pubDate)}</NewsPubDate>
                     </NewsContent>
                   );
@@ -273,14 +277,13 @@ const NewsColumn = styled.ul`
   gap: 5px;
 `;
 
-const NewsContent = styled.a`
+const NewsContent = styled.div`
   display: flex;
   gap: 12px;
   align-items: center;
-  text-decoration: none;
 `;
 
-const NewsTitle = styled.span`
+const NewsTitle = styled.a`
   font-weight: 500;
   color: #333d4b;
   line-height: 1.45;
@@ -289,6 +292,7 @@ const NewsTitle = styled.span`
   text-overflow: ellipsis;
   overflow: hidden;
   word-break: break-all;
+  text-decoration: none;
   &:hover {
     font-weight: 700;
     color: #333d4b;
