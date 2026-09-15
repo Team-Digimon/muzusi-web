@@ -11,12 +11,17 @@ import {
   type Time,
   type UTCTimestamp,
 } from "lightweight-charts";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
+import MuLogo from "@/assets/logo/MuLogo.webp";
 import type { ChartPeriod, StockChartPoint } from "@/types/stock";
 
 interface StockChartProps {
   chartData: StockChartPoint[];
   period: ChartPeriod;
+  // 차트 데이터 fetch가 아직 끝나지 않은 상태. 이 값을 안 넘기는 기존
+  // 테스트/호출부는 기본값 false로 지금까지의 "데이터 없음 = 미지원"
+  // 동작을 그대로 유지한다.
+  isLoading?: boolean;
 }
 
 // 크로스헤어가 가리키는 캔들의 시가/고가/저가/종가/거래량과, 그 전 캔들 대비
@@ -35,7 +40,7 @@ interface TooltipData {
   volumeChange: string | null;
 }
 
-const StockChart = ({ chartData, period }: StockChartProps) => {
+const StockChart = ({ chartData, period, isLoading = false }: StockChartProps) => {
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
   const candleSeriesRef = useRef<ISeriesApi<"Candlestick"> | null>(null);
@@ -312,12 +317,27 @@ const StockChart = ({ chartData, period }: StockChartProps) => {
     }
   }, [chartData, period]);
 
+  const renderChartStatus = () => {
+    if (isLoading) {
+      return (
+        <ChartLoading>
+          <ChartLoadingLogo src={MuLogo} alt="차트 불러오는 중" />
+        </ChartLoading>
+      );
+    }
+    if (chartData.length === 0) {
+      return <LoadingChart>지원하지 않는 차트입니다.</LoadingChart>;
+    }
+    return null;
+  };
+
   return (
     <ChartContainer>
-      <Chart ref={chartContainerRef} $hidden={chartData.length === 0} />
-      {chartData.length === 0 && (
-        <LoadingChart>지원하지 않는 차트입니다.</LoadingChart>
-      )}
+      <Chart
+        ref={chartContainerRef}
+        $hidden={isLoading || chartData.length === 0}
+      />
+      {renderChartStatus()}
       {tooltipData && (
         <TooltipContainer>
           <TooltipPrice>
@@ -402,4 +422,24 @@ const LoadingChart = styled.div`
   align-items: center;
   font-weight: bold;
   color: #333d4b;
+`;
+
+const chartLogoBlink = keyframes`
+  0%, 100% {width: 60px; opacity: 1;}
+  50% {width: 50px; opacity: 0.2;}
+`;
+
+const ChartLoading = styled.div`
+  position: absolute;
+  inset: 0;
+  height: 500px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const ChartLoadingLogo = styled.img`
+  width: 50px;
+  height: auto;
+  animation: ${chartLogoBlink} 1s infinite;
 `;
