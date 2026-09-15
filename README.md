@@ -41,7 +41,6 @@
 - [테스트](#테스트)
 - [CI/CD](#cicd)
 - [트러블슈팅](#트러블슈팅)
-- [시작하기](#시작하기)
 - [기타](#기타)
 
 ## Key Features
@@ -115,32 +114,6 @@ npm run test:coverage # 커버리지 리포트 생성 (coverage/index.html)
 - **`??` 연산자가 에러 처리를 무력화시킨 버그**: 공용 에러 핸들러가 서버 에러 페이로드를 `error.response.data ?? new Error(...)` 형태로 처리하고 있었는데, 서버가 빈 바디로 500을 내려주면 `error.response.data`가 빈 문자열(`''`)이 됩니다. `??`는 `null`/`undefined`일 때만 대체값을 쓰는 연산자라 `''`처럼 falsy하지만 nullish는 아닌 값은 그대로 통과시켜 `throw ''`가 됐고, 이 값을 받는 쪽의 `if (error) return <Error />` 체크가 빈 문자열은 falsy라는 이유로 무력화됐습니다. 계좌 조회/보유종목/거래내역 3곳이 이 헬퍼를 공유하고 있어 영향 범위가 넓었던 버그로, 런타임 타입가드로 페이로드 형태를 직접 검증하도록 수정했습니다.
 - **CI에서만 재현되는 테스트 크래시**: 로컬에서는 통과하던 테스트가 CI에서만 `ERR_REQUIRE_ESM`으로 실패했습니다. 스택 트레이스를 vitest → jsdom → `html-encoding-sniffer` → `@exodus/bytes`까지 따라가보니, ESM 전용으로 배포된 `@exodus/bytes`를 Node의 `require()`가 동기적으로 불러오지 못해 발생한 문제였습니다. `html-encoding-sniffer`가 요구하는 Node 버전(20.19+/22.12+)과 CI에 고정돼 있던 Node 18의 불일치가 원인이었고, 기존 CI는 빌드만 수행해 이 코드 경로를 한 번도 실행한 적이 없어 지금까지 드러나지 않았던 것이었습니다. CI Node 버전을 22로 올려 해결했습니다.
 - **배포 전환(AWS → Azure) 중 500 에러**: nginx 에러 로그를 근거로 Ubuntu 홈 디렉터리 권한 문제를 특정, 배포 경로를 nginx 표준 위치로 이전해 해결했습니다.
-
-## 시작하기
-
-### 요구사항
-
-- Node.js 22 이상 (jsdom이 의존하는 패키지의 엔진 요구사항 및 CI 환경과 동일)
-
-### 환경 변수
-
-프로젝트 루트에 `.env.development`를 만들고 아래 값을 채워주세요 (gitignore 대상이라 저장소엔 포함돼 있지 않습니다).
-
-```bash
-VITE_SERVER_BASE_URL=
-VITE_WEB_SOCKET_URL=
-VITE_KAKAO_REST_API_KEY=
-VITE_KAKAO_REDIRECT_URI=
-VITE_NAVER_REST_API_KEY=
-VITE_NAVER_REDIRECT_URI=
-```
-
-### 실행
-
-```bash
-npm install
-npm run dev
-```
 
 ## 기타
 
