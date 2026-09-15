@@ -1,0 +1,14 @@
+changelog:
+  categories:
+    - title: Features
+      labels: [feat]
+    - title: Performance & Refactoring
+      labels: [refact]
+    - title: Bug Fixes
+      labels: [fix]
+    - title: Tests
+      labels: [test]
+    - title: Chore
+      labels: [chore]
+    - title: Docs
+      labels: [docs]
