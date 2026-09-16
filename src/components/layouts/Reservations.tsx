@@ -1,7 +1,8 @@
 import getReservations from "@/api/stocks/getReservations";
 import type { Dispatch, SetStateAction } from "react";
 import { useCallback, useEffect, useState } from "react";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
+import { darkModeStyles } from "@/styles/darkMode";
 import Loading from "@/components/common/Loading";
 import Error from "@/components/common/Error";
 import MuLogo from "@/assets/logo/MuLogo.webp";
@@ -198,7 +199,7 @@ const HoldingReservation = styled.div`
   cursor: pointer;
 
   &:hover {
-    background-color: #021f470d;
+    background-color: var(--color-hover-tint);
   }
 `;
 
@@ -210,21 +211,21 @@ const ReservationInfo = styled.div`
 
 const ReservationName = styled.span`
   font-weight: 500;
-  color: #4e5968;
+  color: var(--color-neutral);
   line-height: 1.45;
   font-size: 14px;
 `;
 
 const ReservationPrice = styled.span`
   font-weight: 600;
-  color: #333d4b;
+  color: var(--color-ink);
   line-height: 1.45;
   font-size: 14px;
 `;
 
 const ReservationCount = styled.span`
   font-weight: 500;
-  color: #6b7684;
+  color: var(--color-ink-mute);
   line-height: 1.45;
   font-size: 12px;
 `;
@@ -233,7 +234,7 @@ const ReservationType = styled.span<{ $type: boolean }>`
   font-weight: 500;
   line-height: 1.45;
   font-size: 12px;
-  color: ${({ $type }) => ($type ? "#f04452" : "#3182f6")};
+  color: ${({ $type }) => ($type ? "var(--color-up)" : "var(--color-down)")};
 `;
 
 const NoticeContainer = styled.div`
@@ -249,6 +250,9 @@ const NoticeContainer = styled.div`
 const Logo = styled.img`
   width: 100px;
   height: auto;
+  ${darkModeStyles(css`
+    filter: invert(1);
+  `)}
 `;
 
 const NoticeDescription = styled.div`
@@ -274,7 +278,7 @@ const ModalBackground = styled.div`
 const ModalContent = styled.div`
   display: flex;
   flex-direction: column;
-  background: #fff;
+  background: var(--color-canvas);
   border-radius: 20px;
   min-width: 300px;
   max-height: 500px;
@@ -286,7 +290,7 @@ const ModalTitle = styled.div`
   font-weight: 600;
   font-size: 18px;
   line-height: 1.45;
-  color: #333d4b;
+  color: var(--color-ink);
   margin-bottom: 10px;
 `;
 
@@ -300,14 +304,14 @@ const ModalLabel = styled.span`
   font-weight: 600;
   font-size: 14px;
   line-height: 1.45;
-  color: #333d4b;
+  color: var(--color-ink);
 `;
 
 const ModalInfo = styled.span`
   font-weight: 500;
   font-size: 14px;
   line-height: 1.45;
-  color: #6b7684;
+  color: var(--color-ink-mute);
 `;
 
 const ModalBtn = styled.div`
@@ -316,14 +320,14 @@ const ModalBtn = styled.div`
   justify-content: center;
   width: 100%;
   border-radius: 20px;
-  background: #000;
-  color: #fff;
+  background: var(--color-primary);
+  color: var(--color-on-primary);
   font-weight: 600;
   line-height: 1.45;
   font-size: 14px;
   padding: 5px;
   margin-top: 15px;
-  border: 1px solid #000;
+  border: 1px solid var(--color-primary);
   cursor: pointer;
 `;
 
@@ -332,7 +336,7 @@ const CheckTitle = styled.div`
   font-weight: 600;
   font-size: 16px;
   line-height: 1.45;
-  color: #444d4b;
+  color: var(--color-ink);
   margin-top: 10px;
 `;
 
@@ -347,13 +351,13 @@ const CheckBtn = styled.div`
   justify-content: center;
   width: 100%;
   border-radius: 20px;
-  background: #fff;
-  color: #000;
+  background: var(--color-on-primary);
+  color: var(--color-primary);
   font-weight: 600;
   line-height: 1.45;
   font-size: 14px;
   padding: 5px;
   margin-top: 15px;
-  border: 1px solid #000;
+  border: 1px solid var(--color-primary);
   cursor: pointer;
 `;

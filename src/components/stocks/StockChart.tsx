@@ -11,7 +11,9 @@ import {
   type Time,
   type UTCTimestamp,
 } from "lightweight-charts";
-import styled, { keyframes } from "styled-components";
+import styled, { css, keyframes } from "styled-components";
+import { darkModeStyles } from "@/styles/darkMode";
+import { getChartThemeColors, subscribeToChartTheme } from "@/styles/chartTheme";
 import MuLogo from "@/assets/logo/MuLogo.webp";
 import type { ChartPeriod, StockChartPoint } from "@/types/stock";
 
@@ -93,6 +95,11 @@ const StockChart = ({ chartData, period, isLoading = false }: StockChartProps) =
   useEffect(() => {
     if (!chartContainerRef.current) return;
 
+    // 캔버스는 CSS 변수를 못 읽으므로, 마운트 시점의 실제 계산된 색상값을
+    // 넘긴다. 이후 테마가 바뀌면 차트를 재생성하지 않고 아래 구독으로
+    // chart.applyOptions()만 호출해 갱신한다.
+    const initialTheme = getChartThemeColors();
+
     const chart = createChart(chartContainerRef.current, {
       width: chartContainerRef.current.clientWidth,
       height: chartContainerRef.current.clientHeight,
@@ -101,12 +108,12 @@ const StockChart = ({ chartData, period, isLoading = false }: StockChartProps) =
         // 객체로 바뀌었다. 예전 backgroundColor 플랫 필드는 라이브러리가
         // 조용히 무시해서, 지금까지 이 옵션은 적용된 적이 없었다
         // (AccountChart.tsx 전환 때(4-2차) 발견한 것과 동일한 패턴).
-        background: { type: ColorType.Solid, color: "#ffffff" },
-        textColor: "#000000",
+        background: { type: ColorType.Solid, color: initialTheme.background },
+        textColor: initialTheme.textColor,
       },
       grid: {
-        vertLines: { color: "#e1e1e1" },
-        horzLines: { color: "#e1e1e1" },
+        vertLines: { color: initialTheme.gridColor },
+        horzLines: { color: initialTheme.gridColor },
       },
       timeScale: {
         visible: true,
@@ -259,8 +266,22 @@ const StockChart = ({ chartData, period, isLoading = false }: StockChartProps) =
       });
     });
 
+    const unsubscribeChartTheme = subscribeToChartTheme((colors) => {
+      chart.applyOptions({
+        layout: {
+          background: { type: ColorType.Solid, color: colors.background },
+          textColor: colors.textColor,
+        },
+        grid: {
+          vertLines: { color: colors.gridColor },
+          horzLines: { color: colors.gridColor },
+        },
+      });
+    });
+
     return () => {
       window.removeEventListener("resize", handleResize);
+      unsubscribeChartTheme();
       chart.remove();
       chartRef.current = null;
       candleSeriesRef.current = null;
@@ -397,20 +418,20 @@ const TooltipInfo = styled.div`
 
 const TooltipTitle = styled.span`
   font-weight: 500;
-  color: #000;
+  color: var(--color-ink-heading);
 `;
 
 const TooltipPrice = styled.span`
-  color: #4e5968;
+  color: var(--color-neutral);
 `;
 
 const TooltipChange = styled.span<{ $change: number | null }>`
   color: ${({ $change }) =>
     $change !== null && $change > 0
-      ? "#f04452"
+      ? "var(--color-up)"
       : $change !== null && $change < 0
-      ? "#3182f6"
-      : "#4e5968"};
+      ? "var(--color-down)"
+      : "var(--color-neutral)"};
 `;
 
 const LoadingChart = styled.div`
@@ -421,7 +442,7 @@ const LoadingChart = styled.div`
   justify-content: center;
   align-items: center;
   font-weight: bold;
-  color: #333d4b;
+  color: var(--color-ink);
 `;
 
 const chartLogoBlink = keyframes`
@@ -442,4 +463,7 @@ const ChartLoadingLogo = styled.img`
   width: 50px;
   height: auto;
   animation: ${chartLogoBlink} 1s infinite;
+  ${darkModeStyles(css`
+    filter: invert(1);
+  `)}
 `;

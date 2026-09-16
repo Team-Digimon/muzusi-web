@@ -13,7 +13,7 @@ const SignUp = () => {
 
 const Container = styled.div`
   display: flex;
-  background: linear-gradient(to bottom, #bbbbbb, white);
+  background: linear-gradient(to bottom, var(--color-hairline), var(--color-canvas));
   height: 50vh;
   width: 100%;
 `;

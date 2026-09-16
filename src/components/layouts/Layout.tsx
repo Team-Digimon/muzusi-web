@@ -44,7 +44,10 @@ const ContentContainer = styled.div<{ $sideCategory: string }>`
   width: ${({ $sideCategory }) =>
     $sideCategory !== "" ? "calc(100% - 370px)" : "calc(100% - 56px)"};
   height: 100vh;
-  transition: 0.2s ease-in-out;
+  /* width만 애니메이션 대상으로 좁힌다. "all"(속성 미지정)로 두면
+     background-color(테마 토큰) 변경까지 이 트랜지션을 타서, 다크/라이트
+     전환 시 이 요소만 서서히 바뀌고 나머지는 즉시 바뀌어 어긋나 보인다. */
+  transition: width 0.2s ease-in-out;
 `;
 
 const HeaderContainer = styled.header<{ $sideCategory: string }>`
@@ -55,9 +58,9 @@ const HeaderContainer = styled.header<{ $sideCategory: string }>`
     $sideCategory !== "" ? "calc(100% - 370px)" : "calc(100% - 56px)"};
   min-width: 1000px;
   padding-right: 20px;
-  background: white;
+  background: var(--color-canvas);
   z-index: 99;
-  transition: 0.2s ease-in-out;
+  transition: width 0.2s ease-in-out;
 `;
 
 const MainContainer = styled.div<{ $sideCategory: string }>`
@@ -68,7 +71,7 @@ const MainContainer = styled.div<{ $sideCategory: string }>`
   margin-top: 60px;
   padding-left: 20px;
   margin-left: max(0px, calc((100vw - 56px - 1280px) / 2));
-  transition: 0.2s ease-in-out;
+  transition: max-width 0.2s ease-in-out;
 `;
 
 const SideBarContainer = styled.div`

@@ -62,9 +62,9 @@ const AccountNavAnchor = styled.a<{ $isActive: boolean }>`
   transition: 0.3s;
   cursor: pointer;
   font-weight: ${({ $isActive }) => ($isActive ? "bold" : 500)};
-  color: ${({ $isActive }) => ($isActive ? "#000c1ecc" : "#031228b2")};
-  background: ${({ $isActive }) => ($isActive ? "#0220470D" : "#fff")};
+  color: ${({ $isActive }) => ($isActive ? "var(--color-ink-nav-active)" : "var(--color-ink-nav)")};
+  background: ${({ $isActive }) => ($isActive ? "var(--color-hover-tint)" : "var(--color-canvas)")};
   &:hover {
-    background: #0220470d;
+    background: var(--color-hover-tint);
   }
 `;

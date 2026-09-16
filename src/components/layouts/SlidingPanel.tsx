@@ -1,5 +1,6 @@
 import useAuth from "@/contexts/useAuth";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
+import { darkModeStyles } from "@/styles/darkMode";
 import MuLogo from "@/assets/logo/MuLogo.webp";
 import Holdings from "@/components/layouts/Holdings";
 import Reservations from "@/components/layouts/Reservations";
@@ -47,8 +48,8 @@ const SlidingPanelContainer = styled.div<{
   position: fixed;
   display: flex;
   flex-direction: column;
-  background-color: #f6f7f9;
-  border-left: 1px solid #001b371a;
+  background-color: var(--color-canvas-soft);
+  border-left: 1px solid var(--color-hairline);
   right: ${({ $sideCategory }) => ($sideCategory ? "0px" : "-370px")};
   width: 314px;
   min-width: 314px;
@@ -62,11 +63,11 @@ const SlidingPanelContainer = styled.div<{
 const SideBarTitle = styled.div`
   height: 40px;
   font-weight: 600;
-  color: #333d4b;
+  color: var(--color-ink);
   line-height: 1.45;
   font-size: 17px;
   margin-bottom: 15px;
-  border-bottom: 1px solid #001b371a;
+  border-bottom: 1px solid var(--color-hairline);
 `;
 
 const ErrorContainer = styled.div`
@@ -82,6 +83,9 @@ const ErrorContainer = styled.div`
 const Logo = styled.img`
   width: 100px;
   height: auto;
+  ${darkModeStyles(css`
+    filter: invert(1);
+  `)}
 `;
 
 const ErrorDescription = styled.div`

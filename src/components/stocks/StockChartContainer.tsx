@@ -84,14 +84,14 @@ const ChartPeriodBtn = styled.div<{ $isActive: boolean }>`
   align-items: center;
   font-weight: 600;
   font-size: 14px;
-  color: #031228b2;
+  color: var(--color-ink-nav);
   min-height: 32px;
   min-width: 16px;
   padding: 4px 12px;
   border-radius: 8px;
-  background: ${({ $isActive }) => ($isActive ? "#0220470d" : " #fff")};
+  background: ${({ $isActive }) => ($isActive ? "var(--color-hover-tint)" : " var(--color-canvas)")};
   cursor: pointer;
   &:hover {
-    background: #0220470d;
+    background: var(--color-hover-tint);
   }
 `;

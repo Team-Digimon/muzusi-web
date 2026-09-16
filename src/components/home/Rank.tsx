@@ -134,7 +134,7 @@ const RankHeader = styled.header`
 
 const RankTitle = styled.span`
   font-weight: bold;
-  color: #333d4b;
+  color: var(--color-ink);
   font-size: 20px;
   line-height: 1.45;
   margin-right: 16px;
@@ -142,7 +142,7 @@ const RankTitle = styled.span`
 
 const RankTime = styled.span`
   font-weight: normal;
-  color: #6b7684;
+  color: var(--color-ink-mute);
   font-size: 14px;
   line-height: 1.45;
 `;
@@ -163,15 +163,15 @@ const RankTypeBtn = styled.div<{ $isActive: boolean }>`
   font-size: 17px;
   line-height: 1.45;
   cursor: pointer;
-  color: ${({ $isActive }) => ($isActive ? "#000" : "#4e5968")};
-  border-bottom: ${({ $isActive }) => ($isActive ? "2px solid #000" : "none")};
+  color: ${({ $isActive }) => ($isActive ? "var(--color-ink-heading)" : "var(--color-neutral)")};
+  border-bottom: ${({ $isActive }) => ($isActive ? "2px solid var(--color-ink-heading)" : "none")};
 `;
 
 const RankTable = styled.table`
   display: table;
   border-collapse: separate;
   width: 100%;
-  border-top: 1px solid #001b371a;
+  border-top: 1px solid var(--color-hairline);
   margin-bottom: 20px;
 `;
 
@@ -185,7 +185,7 @@ const RankTheadTr = styled.tr`
 `;
 
 const RankTheadTh = styled.th`
-  color: #6b7684;
+  color: var(--color-ink-mute);
   display: flex;
   justify-content: end;
   align-items: center;
@@ -206,9 +206,9 @@ const RankTableStock = styled.tr<{ $isOdd: boolean }>`
   height: 56px;
   align-items: center;
   cursor: pointer;
-  background: ${({ $isOdd }) => ($isOdd ? "#f9f9f9" : "#ffffff")};
+  background: ${({ $isOdd }) => ($isOdd ? "var(--color-canvas-soft)" : "var(--color-canvas)")};
   &:hover {
-    background: #0220470d;
+    background: var(--color-hover-tint);
   }
 `;
 
@@ -217,7 +217,7 @@ const StockRanking = styled.th`
   justify-content: center;
   width: 5%;
   font-weight: bold;
-  color: #333d4b;
+  color: var(--color-ink);
   line-height: 1.45;
   font-size: 15px;
 `;
@@ -232,7 +232,7 @@ const StockName = styled.th`
   font-weight: 600;
   font-size: 15px;
   line-height: 1.45;
-  color: #4e5968;
+  color: var(--color-neutral);
 `;
 
 const StockPrice = styled.th`
@@ -246,7 +246,7 @@ const StockPrice = styled.th`
   font-weight: 600;
   font-size: 15px;
   line-height: 1.45;
-  color: #4e5968;
+  color: var(--color-neutral);
 `;
 
 const StockCtrt = styled.th<{ $prdyVrss: number }>`
@@ -261,7 +261,7 @@ const StockCtrt = styled.th<{ $prdyVrss: number }>`
   font-size: 15px;
   line-height: 1.45;
   color: ${({ $prdyVrss }) =>
-    $prdyVrss > 0 ? "#f04452" : $prdyVrss < 0 ? "#3182f6" : "#4e5968"};
+    $prdyVrss > 0 ? "var(--color-up)" : $prdyVrss < 0 ? "var(--color-down)" : "var(--color-neutral)"};
 `;
 
 const StockAvrgVol = styled.th`
@@ -275,7 +275,7 @@ const StockAvrgVol = styled.th`
   font-weight: 600;
   font-size: 15px;
   line-height: 1.45;
-  color: #4e5968;
+  color: var(--color-neutral);
 `;
 
 const RankTablePageController = styled.nav`
@@ -298,13 +298,13 @@ const PageBtn = styled.li<{ $isActive: boolean }>`
   padding: 0px 6px;
   border-radius: 18px;
   font-size: 17px;
-  color: #6b7684;
+  color: var(--color-ink-mute);
   font-weight: 600;
   line-height: 1.15;
   cursor: pointer;
-  color: ${({ $isActive }) => ($isActive ? "#333d4b" : "#6b7684")};
-  background: ${({ $isActive }) => ($isActive ? "#001B371A" : "none")};
+  color: ${({ $isActive }) => ($isActive ? "var(--color-ink)" : "var(--color-ink-mute)")};
+  background: ${({ $isActive }) => ($isActive ? "var(--color-hairline)" : "none")};
   &:hover {
-    background: #0220470d;
+    background: var(--color-hover-tint);
   }
 `;

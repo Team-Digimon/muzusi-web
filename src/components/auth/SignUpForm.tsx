@@ -1,4 +1,5 @@
-import styled from "styled-components";
+import styled, { css } from "styled-components";
+import { darkModeStyles } from "@/styles/darkMode";
 import { useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
@@ -116,14 +117,14 @@ const SignUpFormContainer = styled.div`
   height: 450px;
   flex-shrink: 0;
   border-radius: 12px;
-  background: #fff;
+  background: var(--color-canvas);
   box-shadow: 0px 10px 60px 2px rgba(0, 0, 0, 0.1);
   margin: auto;
   padding: 80px 50px 60px 50px;
 `;
 
 const SignUpText = styled.div`
-  color: #747474;
+  color: var(--color-ink-mute);
   font-size: 20px;
   font-style: normal;
   font-weight: 600;
@@ -141,6 +142,9 @@ const SignUpFormLogoImg = styled.img`
   height: auto;
   border: none;
   background: none;
+  ${darkModeStyles(css`
+    filter: invert(1);
+  `)}
 `;
 
 const NicknameText = styled.div`
@@ -163,17 +167,19 @@ const NicknameInput = styled.input<{ $hasError: boolean }>`
   width: 100%;
   height: 60px;
   padding: 8px 12px;
-  border: 2px solid ${({ $hasError }) => ($hasError ? "#FF0000" : "#000")};
+  background: var(--color-canvas);
+  color: var(--color-ink);
+  border: 2px solid ${({ $hasError }) => ($hasError ? "var(--color-danger-outlier)" : "var(--color-ink-heading)")};
   border-radius: 8px;
   font-size: 20px;
   font-weight: 600;
   font-family: pretendard;
   outline: none;
   &:focus {
-    border-color: ${({ $hasError }) => ($hasError ? "#FF0000" : "#000")};
+    border-color: ${({ $hasError }) => ($hasError ? "var(--color-danger-outlier)" : "var(--color-ink-heading)")};
   }
   &::placeholder {
-    color: #aaaaaa;
+    color: var(--color-ink-mute);
     font-weight: 400;
   }
 `;
@@ -186,7 +192,7 @@ const AvailableText = styled.div`
 
 const ErrorText = styled.div`
   width: 100%;
-  color: #ff0000;
+  color: var(--color-danger-outlier);
   font-size: 14px;
   padding-left: 5px;
 `;
@@ -201,9 +207,9 @@ const NicknameBtns = styled.div`
 const SubmitBtn = styled.button`
   width: 100%;
   height: 50px;
-  background-color: #000;
-  color: #fff;
-  border: 2px solid #fff;
+  background-color: var(--color-primary);
+  color: var(--color-on-primary);
+  border: 2px solid var(--color-on-primary);
   border-radius: 10px;
   font-size: 16px;
   font-weight: 500;
@@ -212,9 +218,9 @@ const SubmitBtn = styled.button`
   cursor: pointer;
 
   &:hover {
-    background-color: #fff;
-    color: #000;
-    border-color: #000;
+    background-color: var(--color-on-primary);
+    color: var(--color-primary);
+    border-color: var(--color-primary);
   }
 `;
 
@@ -227,7 +233,7 @@ const SkipBtnContainer = styled.div`
 
 const SkipBtn = styled.a`
   text-decoration: none;
-  color: #cccccc;
+  color: var(--color-hairline);
   border-radius: 10px;
   font-size: 16px;
   font-weight: 500;

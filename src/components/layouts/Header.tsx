@@ -1,5 +1,6 @@
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import MuzusiLogo from "@/assets/logo/MuzusiLogo.png";
+import { darkModeStyles } from "@/styles/darkMode";
 import SearchIcon from "@/assets/icon/SearchIcon.svg?react";
 import signOut from "@/api/auth/signOut";
 import useAuth from "@/contexts/useAuth";
@@ -240,7 +241,9 @@ const GlobalNavBar = styled.div<{ $sideCategory: string }>`
   max-width: ${({ $sideCategory }) =>
     $sideCategory !== "" ? "1080px" : "1280px"};
   margin-left: max(0px, calc((100vw - 56px - 1280px) / 2));
-  transition: 0.2s ease-in-out;
+  /* max-width만 애니메이션 대상으로 좁힌다 — Layout.tsx의 HeaderContainer와
+     같은 이유(색 관련 속성이 "all"에 딸려가 테마 전환 시 어긋나 보이는 것 방지). */
+  transition: max-width 0.2s ease-in-out;
 `;
 
 const NavBar = styled.nav`
@@ -259,6 +262,11 @@ const LogoImg = styled.img`
   height: 40px;
   size: 100vh;
   border: none;
+  /* 투명 배경 + 검정 서예체 로고라, 다크 배경에선 그대로 두면 거의
+     안 보인다. 흑백 로고라 invert가 깔끔하게 검정↔흰색을 뒤집어준다. */
+  ${darkModeStyles(css`
+    filter: invert(1);
+  `)}
 `;
 
 const NavCenter = styled.div`
@@ -284,20 +292,20 @@ const GNBBtn = styled.li`
 `;
 
 const GNBAnchor = styled(Link)<{ $isActive: boolean }>`
-  color: #6b7684;
+  color: var(--color-ink-mute);
   text-decoration: none;
   padding: 10px;
   font-weight: 500;
   &:hover {
     font-weight: 700;
-    color: #333d4b;
+    color: var(--color-ink);
   }
   font-weight: ${({ $isActive }) => ($isActive ? 700 : 500)};
-  color: ${({ $isActive }) => ($isActive ? "#333d4b" : "#4e5968")};
+  color: ${({ $isActive }) => ($isActive ? "var(--color-ink)" : "var(--color-neutral)")};
 `;
 
 const SearchBtn = styled.button`
-  background-color: #0220470d;
+  background-color: var(--color-hover-tint);
   border-radius: 38px;
   height: 38px;
   width: 230px;
@@ -315,6 +323,7 @@ const SearchIconBox = styled.span`
   width: 16px;
   margin-left: 16px;
   margin-right: 12px;
+  color: var(--color-ink-mute);
 `;
 
 const SearchText = styled.span`
@@ -325,7 +334,7 @@ const SearchText = styled.span`
   padding: 0;
   font-weight: 500;
   font-size: 15px;
-  color: #8b95a1;
+  color: var(--color-ink-mute);
   line-height: 1.45;
 `;
 
@@ -336,14 +345,14 @@ const Kbd = styled.kbd`
   min-width: 18px;
   height: 18px;
   padding: 5px;
-  background: #ffffff;
-  border: 1px solid #dddddd;
+  background: var(--color-canvas);
+  border: 1px solid var(--color-hairline);
   border-radius: 4px;
-  box-shadow: inset 0 -1px 0 #001b370a;
+  box-shadow: inset 0 -1px 0 var(--color-shadow-tint);
   font-family: inherit;
   font-size: 15px;
   font-weight: 600;
-  color: #8b95a1;
+  color: var(--color-ink-mute);
   line-height: 1;
 `;
 
@@ -359,13 +368,13 @@ const LoginText = styled.span`
   padding: 0;
   font-weight: 600;
   font-size: 14px;
-  color: #00132b94;
+  color: var(--color-ink-nav);
   line-height: 1.45;
 `;
 
 const Nickname = styled.span`
   font-weight: 700;
-  color: #000;
+  color: var(--color-ink-heading);
 `;
 
 const LoginBtn = styled.a`
@@ -386,8 +395,8 @@ const LoginBtn = styled.a`
   border-radius: 8px;
   font-size: 14px;
   line-height: 16px;
-  color: #fff;
-  background-color: #000;
+  color: var(--color-on-primary);
+  background-color: var(--color-primary);
 `;
 
 const ModalBackground = styled.div`
@@ -405,7 +414,7 @@ const ModalBackground = styled.div`
 const ModalContent = styled.div`
   display: flex;
   flex-direction: column;
-  background: #fff;
+  background: var(--color-canvas);
   border-radius: 20px;
   width: 40%;
   min-width: 600px;
@@ -419,7 +428,7 @@ const ModalSearchBox = styled.div`
   min-height: 40px;
   margin: 12px 12px 16px;
   padding-right: 16px;
-  background-color: #0220470d;
+  background-color: var(--color-hover-tint);
   border-radius: 50px;
   display: flex;
   align-items: center;
@@ -434,9 +443,9 @@ const ModalSearchText = styled.input`
   outline: none;
   background-color: transparent;
   font-size: 14px;
-  color: #191f28;
+  color: var(--color-ink-heading);
   &::placeholder {
-    color: #8b95a1;
+    color: var(--color-ink-mute);
   }
 `;
 
@@ -467,13 +476,13 @@ const SearchedStock = styled.div`
   justify-content: center;
   cursor: pointer;
   &:hover {
-    background-color: #0220470d;
+    background-color: var(--color-hover-tint);
   }
 `;
 
 const SearchedStockName = styled.div`
   font-weight: bold;
-  color: #333d4b;
+  color: var(--color-ink);
   line-height: 1.45;
   font-size: 14px;
   white-space: nowrap;
@@ -484,7 +493,7 @@ const SearchedStockName = styled.div`
 
 const SearchedStockCode = styled.div`
   font-weight: 500;
-  color: #6b7684;
+  color: var(--color-ink-mute);
   line-height: 1.45;
   font-size: 12px;
   white-space: nowrap;
@@ -494,7 +503,7 @@ const SearchedStockCode = styled.div`
 `;
 
 const Highlighted = styled.span`
-  color: #f04452;
+  color: var(--color-up);
 `;
 
 const SearchNotice = styled.div`
@@ -504,5 +513,5 @@ const SearchNotice = styled.div`
   justify-content: center;
   font-weight: 600;
   font-size: 16px;
-  color: #191f28;
+  color: var(--color-ink-heading);
 `;

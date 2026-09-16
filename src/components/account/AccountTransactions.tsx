@@ -148,7 +148,7 @@ const AccountTransactions = () => {
               <DetailLabel>구매 수량</DetailLabel>
               <DetailInfo>{transactionDetail.stockCount}주</DetailInfo>
             </DetailLine>
-            <DetailLine style={{ borderTop: "1px solid #001b371a" }}>
+            <DetailLine style={{ borderTop: "1px solid var(--color-hairline)" }}>
               <DetailLabel>총 구매 금액</DetailLabel>
               <DetailInfo>
                 {(
@@ -185,7 +185,7 @@ const AccountTransactionsContainer = styled.div`
 const Title = styled.div`
   font-weight: 600;
   font-size: 24px;
-  color: #333d4b;
+  color: var(--color-ink);
   line-height: 1.45;
   margin-bottom: 24px;
 `;
@@ -193,8 +193,8 @@ const Title = styled.div`
 const TransactionsContainer = styled.div`
   display: flex;
   min-height: 500px;
-  border-top: 1px solid #001b371a;
-  border-bottom: 1px solid #001b371a;
+  border-top: 1px solid var(--color-hairline);
+  border-bottom: 1px solid var(--color-hairline);
   padding-bottom: 12px;
 `;
 
@@ -215,12 +215,12 @@ const Info = styled.div<{ $isSelected: boolean }>`
   border-radius: 8px;
   padding: 8px 0px;
   background-color: ${({ $isSelected }) =>
-    $isSelected ? "#f9fafb" : "transparent"};
+    $isSelected ? "var(--color-canvas-soft)" : "transparent"};
 
   cursor: pointer;
 
   &:hover {
-    background-color: #0220470d;
+    background-color: var(--color-hover-tint);
   }
 `;
 
@@ -229,7 +229,7 @@ const TradeDate = styled.div`
   justify-content: center;
   align-items: center;
   width: 65px;
-  color: #333d4b;
+  color: var(--color-ink);
   line-height: 1.45px;
   font-weight: 500;
   font-size: 15px;
@@ -244,21 +244,21 @@ const TradeBody = styled.div`
 const StockName = styled.div`
   font-weight: 600;
   font-size: 15px;
-  color: #4e5968;
+  color: var(--color-neutral);
   line-height: 1.45;
 `;
 
 const TransactionType = styled.div<{ $type: boolean }>`
   font-weight: 400;
   font-size: 14px;
-  color: ${({ $type }) => ($type ? "#f04452" : "#3182f6")};
+  color: ${({ $type }) => ($type ? "var(--color-up)" : "var(--color-down)")};
   line-height: 1.45;
 `;
 
 const StockCount = styled.span`
   font-weight: 400;
   font-size: 14px;
-  color: #6b7684;
+  color: var(--color-ink-mute);
   line-height: 1.45;
 `;
 
@@ -269,7 +269,7 @@ const TradeInfo = styled.div`
 const StockPrice = styled.div`
   font-weight: 600;
   font-size: 15px;
-  color: #4e5968;
+  color: var(--color-neutral);
   line-height: 1.45;
   display: flex;
   align-items: center;
@@ -280,7 +280,7 @@ const StockPrice = styled.div`
 const TransactionDetail = styled.div`
   display: flex;
   flex-direction: column;
-  border-left: 1px solid #001b371a;
+  border-left: 1px solid var(--color-hairline);
   padding: 12px;
   width: 300px;
 `;
@@ -288,14 +288,14 @@ const TransactionDetail = styled.div`
 const DetailStockName = styled.div`
   font-weight: 400;
   font-size: 12px;
-  color: #4e5968;
+  color: var(--color-neutral);
   line-height: 1.45;
 `;
 
 const DetailType = styled.div`
   font-weight: 600;
   font-size: 17px;
-  color: #191f28;
+  color: var(--color-ink-heading);
   line-height: 1.45;
   margin-bottom: 12px;
 `;
@@ -311,11 +311,11 @@ const DetailLine = styled.div`
 `;
 
 const DetailLabel = styled.span`
-  color: #4e5968;
+  color: var(--color-neutral);
 `;
 
 const DetailInfo = styled.span`
-  color: #333d4b;
+  color: var(--color-ink);
 `;
 
 const PaginationContainer = styled.div`
@@ -335,13 +335,13 @@ const PageButton = styled.div<{ $isActive: boolean }>`
   padding: 0px 6px;
   border-radius: 18px;
   font-size: 17px;
-  color: #6b7684;
+  color: var(--color-ink-mute);
   font-weight: 600;
   line-height: 1.15;
   cursor: pointer;
-  color: ${({ $isActive }) => ($isActive ? "#333d4b" : "#6b7684")};
-  background: ${({ $isActive }) => ($isActive ? "#001B371A" : "none")};
+  color: ${({ $isActive }) => ($isActive ? "var(--color-ink)" : "var(--color-ink-mute)")};
+  background: ${({ $isActive }) => ($isActive ? "var(--color-hairline)" : "none")};
   &:hover {
-    background: #0220470d;
+    background: var(--color-hover-tint);
   }
 `;

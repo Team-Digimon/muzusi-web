@@ -1,5 +1,6 @@
-import styled, { keyframes } from "styled-components";
+import styled, { css, keyframes } from "styled-components";
 import MuLogo from "@/assets/logo/MuLogo.webp";
+import { darkModeStyles } from "@/styles/darkMode";
 
 const Loading = () => {
   return (
@@ -27,4 +28,7 @@ const Logo = styled.img`
   width: 50px;
   height: auto;
   animation: ${blink} 1s infinite;
+  ${darkModeStyles(css`
+    filter: invert(1);
+  `)}
 `;

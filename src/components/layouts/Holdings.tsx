@@ -1,4 +1,5 @@
-import styled from "styled-components";
+import styled, { css } from "styled-components";
+import { darkModeStyles } from "@/styles/darkMode";
 import Loading from "@/components/common/Loading";
 import Error from "@/components/common/Error";
 import MuLogo from "@/assets/logo/MuLogo.webp";
@@ -72,7 +73,7 @@ const HoldingStock = styled.div`
   cursor: pointer;
 
   &:hover {
-    background-color: #021f470d;
+    background-color: var(--color-hover-tint);
   }
 `;
 
@@ -84,21 +85,21 @@ const StockInfo = styled.div`
 
 const StockName = styled.span`
   font-weight: 500;
-  color: #4e5968;
+  color: var(--color-neutral);
   line-height: 1.45;
   font-size: 14px;
 `;
 
 const StockPrice = styled.span`
   font-weight: 600;
-  color: #333d4b;
+  color: var(--color-ink);
   line-height: 1.45;
   font-size: 14px;
 `;
 
 const StockCount = styled.span`
   font-weight: 500;
-  color: #6b7684;
+  color: var(--color-ink-mute);
   line-height: 1.45;
   font-size: 12px;
 `;
@@ -108,7 +109,7 @@ const RateOfReturn = styled.span<{ $profit: number }>`
   line-height: 1.45;
   font-size: 12px;
   color: ${({ $profit }) =>
-    $profit > 0 ? "#f04452" : $profit < 0 ? "#3182f6" : "#4e5968"};
+    $profit > 0 ? "var(--color-up)" : $profit < 0 ? "var(--color-down)" : "var(--color-neutral)"};
 `;
 
 const NoticeContainer = styled.div`
@@ -124,6 +125,9 @@ const NoticeContainer = styled.div`
 const Logo = styled.img`
   width: 100px;
   height: auto;
+  ${darkModeStyles(css`
+    filter: invert(1);
+  `)}
 `;
 
 const NoticeDescription = styled.div`

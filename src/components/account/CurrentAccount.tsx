@@ -184,7 +184,7 @@ const BalanceHeader = styled.div`
 const Title = styled.div`
   font-weight: normal;
   font-size: 15px;
-  color: #4e5968;
+  color: var(--color-neutral);
   line-height: 1.45;
 `;
 
@@ -193,35 +193,35 @@ const CreateAccountBtn = styled.div`
   font-size: 14px;
   line-height: 20px;
   padding: 2px 12px;
-  color: #333d4b;
+  color: var(--color-ink);
   border-radius: 8px;
-  border: 1px solid #333d4b;
+  border: 1px solid var(--color-ink);
   transition: 0.2s;
   cursor: pointer;
   &:hover {
-    color: #fff;
-    background: #000;
-    border: 1px solid #000;
+    color: var(--color-on-primary);
+    background: var(--color-primary);
+    border: 1px solid var(--color-primary);
   }
 `;
 
 const Balance = styled.div`
   font-weight: 600;
-  color: #333d4b;
+  color: var(--color-ink);
   line-height: 1.45;
   font-size: 24px;
 `;
 
 const BalanceChange = styled.div`
   font-weight: 500;
-  color: #4e5968;
+  color: var(--color-neutral);
   font-size: 15px;
   line-height: 1.45;
 `;
 
 const BalanceChangeRate = styled.span<{ $change: number }>`
   color: ${({ $change }) =>
-    $change > 0 ? "#f04452" : $change < 0 ? "#3182f6" : "#4e5968"};
+    $change > 0 ? "var(--color-up)" : $change < 0 ? "var(--color-down)" : "var(--color-neutral)"};
 `;
 
 const AssetsContainer = styled.div`
@@ -236,7 +236,7 @@ const AssetContainer = styled.div`
   min-width: 270px;
   height: 100%;
   padding: 20px 24px;
-  background: #f9fafb;
+  background: var(--color-canvas-soft);
   border-radius: 15px;
 `;
 
@@ -244,7 +244,7 @@ const AvailableBalance = styled.div`
   display: flex;
   flex-direction: column;
   font-weight: 500;
-  color: #333d4b;
+  color: var(--color-ink);
   line-height: 1.45;
   font-size: 20px;
 `;
@@ -255,7 +255,7 @@ const Return = styled.div<{ $return: number }>`
   line-height: 1.45;
   font-size: 14px;
   color: ${({ $return }) =>
-    $return > 0 ? "#f04452" : $return < 0 ? "#3182f6" : "#4e5968"};
+    $return > 0 ? "var(--color-up)" : $return < 0 ? "var(--color-down)" : "var(--color-neutral)"};
 `;
 
 const ModalBackground = styled.div`
@@ -276,7 +276,7 @@ const ModalBackground = styled.div`
 const ModalContent = styled.div`
   display: flex;
   flex-direction: column;
-  background: #fff;
+  background: var(--color-canvas);
   border-radius: 20px;
   min-width: 300px;
   max-height: 500px;
@@ -289,7 +289,7 @@ const CheckTitle = styled.div`
   font-weight: 600;
   font-size: 16px;
   line-height: 1.45;
-  color: #444d4b;
+  color: var(--color-ink);
 `;
 
 const CheckBtnContainer = styled.div`
@@ -304,14 +304,14 @@ const ModalBtn = styled.div`
   justify-content: center;
   width: 100%;
   border-radius: 20px;
-  background: #000;
-  color: #fff;
+  background: var(--color-primary);
+  color: var(--color-on-primary);
   font-weight: 600;
   line-height: 1.45;
   font-size: 14px;
   padding: 5px;
   margin-top: 15px;
-  border: 1px solid #000;
+  border: 1px solid var(--color-primary);
   cursor: pointer;
 `;
 
@@ -321,13 +321,13 @@ const CheckBtn = styled.div`
   justify-content: center;
   width: 100%;
   border-radius: 20px;
-  background: #fff;
-  color: #000;
+  background: var(--color-on-primary);
+  color: var(--color-primary);
   font-weight: 600;
   line-height: 1.45;
   font-size: 14px;
   padding: 5px;
   margin-top: 15px;
-  border: 1px solid #000;
+  border: 1px solid var(--color-primary);
   cursor: pointer;
 `;

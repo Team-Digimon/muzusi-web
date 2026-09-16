@@ -1,6 +1,7 @@
 import { createChart, LineSeries, ColorType } from "lightweight-charts";
 import { useEffect, useRef } from "react";
 import styled from "styled-components";
+import { getChartThemeColors, subscribeToChartTheme } from "@/styles/chartTheme";
 import type { AccountProfit } from "@/types/account";
 
 interface AccountChartProps {
@@ -13,6 +14,8 @@ const AccountChart = ({ chartData }: AccountChartProps) => {
   useEffect(() => {
     if (!chartContainerRef.current || !chartData.length) return;
 
+    const initialTheme = getChartThemeColors();
+
     const chart = createChart(chartContainerRef.current, {
       width: chartContainerRef.current.clientWidth,
       height: 300,
@@ -20,8 +23,8 @@ const AccountChart = ({ chartData }: AccountChartProps) => {
         // lightweight-charts v5부터 배경색 지정 방식이 background:{type,color}
         // 객체로 바뀌었다. 예전 backgroundColor 플랫 필드는 라이브러리가
         // 조용히 무시해서, 지금까지 이 옵션은 적용된 적이 없었다.
-        background: { type: ColorType.Solid, color: "#ffffff" },
-        textColor: "#000000",
+        background: { type: ColorType.Solid, color: initialTheme.background },
+        textColor: initialTheme.textColor,
       },
       grid: {
         vertLines: { visible: false },
@@ -48,7 +51,17 @@ const AccountChart = ({ chartData }: AccountChartProps) => {
     lineSeries.setData(formattedData);
     chart.timeScale().fitContent();
 
+    const unsubscribeChartTheme = subscribeToChartTheme((colors) => {
+      chart.applyOptions({
+        layout: {
+          background: { type: ColorType.Solid, color: colors.background },
+          textColor: colors.textColor,
+        },
+      });
+    });
+
     return () => {
+      unsubscribeChartTheme();
       chart.remove();
     };
   }, [chartData]);
