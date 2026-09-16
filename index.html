@@ -2,6 +2,25 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <!-- useDarkMode 훅이 React 마운트 후 useEffect로 테마를 적용하면
+         첫 페인트는 무조건 기본(라이트)로 그려진 뒤에야 다크로 바뀌어
+         깜빡임(FOUC)이 생긴다. HTML 파싱 중 동기적으로 실행되는 이
+         스크립트가 페인트 전에 미리 data-theme을 붙여서 막는다.
+         localStorage에 명시적으로 저장된 선택이 없으면 아무것도 안 하고
+         GlobalStyles의 prefers-color-scheme 미디어쿼리(순수 CSS,
+         지연 없음)에 그대로 맡긴다. useDarkMode.ts의 getStoredTheme/
+         applyTheme과 동일한 로직이라, 저장 키("theme")를 바꾸면 여기도
+         같이 바꿔야 한다. -->
+    <script>
+      (function () {
+        try {
+          var stored = localStorage.getItem("theme");
+          if (stored === "light" || stored === "dark") {
+            document.documentElement.setAttribute("data-theme", stored);
+          }
+        } catch (e) {}
+      })();
+    </script>
     <link rel="icon" type="image/svg+xml" href="/logo.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>무주시</title>
