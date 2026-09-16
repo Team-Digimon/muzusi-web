@@ -1,5 +1,6 @@
 import { memo } from "react";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
+import { darkModeStyles } from "@/styles/darkMode";
 import MuLogo from "@/assets/logo/MuLogo.webp";
 import isTradingTime from "@/utils/isTradingTime";
 import type { LiveStockMessage, TradeType } from "@/types/stock";
@@ -74,7 +75,7 @@ const LivePriceContainer = styled.div`
 
 const LiveTitle = styled.div`
   font-weight: bold;
-  color: #333d4b;
+  color: var(--color-ink);
   font-size: 14px;
   margin-top: 20px;
 `;
@@ -92,11 +93,11 @@ const LiveThead = styled.thead`
 const LiveTheadTr = styled.tr`
   display: flex;
   width: 100%;
-  border-bottom: 1px solid #dddddd;
+  border-bottom: 1px solid var(--color-hairline);
 `;
 
 const LiveTheadTh = styled.th`
-  color: #6b7684;
+  color: var(--color-ink-mute);
   display: flex;
   justify-content: end;
   align-items: center;
@@ -124,7 +125,7 @@ const LiveElement = styled.tr`
   border-radius: 5px;
   cursor: pointer;
   &:hover {
-    background: #f6f7f9;
+    background: var(--color-canvas-soft);
   }
 `;
 
@@ -137,7 +138,7 @@ const LivePrice = styled.th`
   word-break: break-all;
   font-weight: 400;
   font-size: 12px;
-  color: #4e5968;
+  color: var(--color-neutral);
 `;
 
 const LiveChange = styled.th<{ $tradeType: TradeType }>`
@@ -150,7 +151,7 @@ const LiveChange = styled.th<{ $tradeType: TradeType }>`
   word-break: break-all;
   font-weight: 400;
   font-size: 12px;
-  color: ${({ $tradeType }) => ($tradeType === "BUY" ? "#f04452" : "#3182f6")};
+  color: ${({ $tradeType }) => ($tradeType === "BUY" ? "var(--color-up)" : "var(--color-down)")};
 `;
 
 const LiveEnd = styled.th`
@@ -163,7 +164,7 @@ const LiveEnd = styled.th`
   word-break: break-all;
   font-weight: 400;
   font-size: 12px;
-  color: #4e5968;
+  color: var(--color-neutral);
 `;
 
 const Notice = styled.div`
@@ -180,4 +181,7 @@ const Notice = styled.div`
 const Logo = styled.img`
   width: 50px;
   height: auto;
+  ${darkModeStyles(css`
+    filter: invert(1);
+  `)}
 `;

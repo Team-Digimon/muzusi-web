@@ -177,7 +177,7 @@ const NewsTitleContainer = styled.div`
 const NewsContainerTitle = styled.div`
   font-weight: bold;
   font-size: 20px;
-  color: #333d4b;
+  color: var(--color-ink);
   line-height: 1.45;
 `;
 
@@ -189,7 +189,7 @@ const NewsKeywords = styled.div`
 `;
 
 const NewsKeywordText = styled.div<{ $isActive: boolean }>`
-  background: ${({ $isActive }) => ($isActive ? "#0220471a" : "#0220470d")};
+  background: ${({ $isActive }) => ($isActive ? "var(--color-active-tint)" : "var(--color-hover-tint)")};
   line-height: 1.45;
   font-size: 15px;
   text-decoration: none;
@@ -199,10 +199,10 @@ const NewsKeywordText = styled.div<{ $isActive: boolean }>`
   border-radius: 20px;
   &:hover {
     font-weight: 700;
-    color: #333d4b;
+    color: var(--color-ink);
   }
   font-weight: ${({ $isActive }) => ($isActive ? 700 : 500)};
-  color: ${({ $isActive }) => ($isActive ? "#333d4b" : "#8b95a1")};
+  color: ${({ $isActive }) => ($isActive ? "var(--color-ink)" : "var(--color-ink-mute)")};
 `;
 const PageIndicators = styled.div`
   display: flex;
@@ -215,7 +215,7 @@ const PageIndicator = styled.div<{ $isActive: boolean }>`
   width: 5px;
   height: 5px;
   border-radius: 50%;
-  background-color: ${({ $isActive }) => ($isActive ? "#333d4b" : "#ccc")};
+  background-color: ${({ $isActive }) => ($isActive ? "var(--color-ink)" : "var(--color-hairline)")};
   transition: background-color 0.3s ease;
 `;
 
@@ -285,7 +285,7 @@ const NewsContent = styled.div`
 
 const NewsTitle = styled.a`
   font-weight: 500;
-  color: #333d4b;
+  color: var(--color-ink);
   line-height: 1.45;
   font-size: 15px;
   white-space: nowrap;
@@ -295,13 +295,13 @@ const NewsTitle = styled.a`
   text-decoration: none;
   &:hover {
     font-weight: 700;
-    color: #333d4b;
+    color: var(--color-ink);
   }
 `;
 
 const NewsPubDate = styled.span`
   font-weight: 500;
-  color: #6b7684;
+  color: var(--color-ink-mute);
   line-height: 1.45;
   font-size: 14px;
   padding-right: 28px;
@@ -312,7 +312,7 @@ const NewsPubDate = styled.span`
 
 const MoreNewsBtn = styled.a`
   font-weight: 500;
-  color: #4e5968;
+  color: var(--color-neutral);
   line-height: 1.45;
   font-size: 25px;
   text-decoration: none;
@@ -322,7 +322,7 @@ const MoreNewsBtn = styled.a`
   border-radius: 6px;
   &:hover {
     font-weight: 700;
-    color: #333d4b;
+    color: var(--color-ink);
   }
 `;
 

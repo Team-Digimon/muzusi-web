@@ -78,12 +78,12 @@ const StockInfo = styled.div`
 
 const StockName = styled.span`
   font-weight: 500;
-  color: #333d4b;
+  color: var(--color-ink);
 `;
 
 const StockCode = styled.span`
   font-weight: 400;
-  color: #8b95a1;
+  color: var(--color-ink-mute);
 `;
 
 const StockPrice = styled.div`
@@ -95,7 +95,7 @@ const StockPrice = styled.div`
 const CurrentPrice = styled.span`
   font-weight: 600;
   font-size: 25px;
-  color: #333d4b;
+  color: var(--color-ink);
   margin-right: 10px;
 `;
 
@@ -103,7 +103,7 @@ const PriceText = styled.span<{ $change: number }>`
   font-weight: 500;
   font-size: 14px;
   color: ${({ $change }) =>
-    $change > 0 ? "#f04452" : $change < 0 ? "#3182f6" : "#4e5968"};
+    $change > 0 ? "var(--color-up)" : $change < 0 ? "var(--color-down)" : "var(--color-neutral)"};
   margin-right: 6px;
 `;
 
@@ -111,5 +111,5 @@ const PriceChange = styled.span<{ $change: number }>`
   font-weight: 500;
   font-size: 14px;
   color: ${({ $change }) =>
-    $change > 0 ? "#f04452" : $change < 0 ? "#3182f6" : "#4e5968"};
+    $change > 0 ? "var(--color-up)" : $change < 0 ? "var(--color-down)" : "var(--color-neutral)"};
 `;

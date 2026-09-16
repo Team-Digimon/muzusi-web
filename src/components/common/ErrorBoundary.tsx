@@ -1,6 +1,7 @@
 import { Component } from "react";
 import type { ErrorInfo, ReactNode } from "react";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
+import { darkModeStyles } from "@/styles/darkMode";
 import MuLogo from "@/assets/logo/MuLogo.webp";
 
 interface ErrorBoundaryProps {
@@ -73,6 +74,9 @@ const ErrorContainer = styled.div`
 const Logo = styled.img`
   width: 175px;
   height: auto;
+  ${darkModeStyles(css`
+    filter: invert(1);
+  `)}
 `;
 
 const TextContainer = styled.div`

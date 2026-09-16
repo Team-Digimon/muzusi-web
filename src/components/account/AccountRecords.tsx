@@ -95,7 +95,7 @@ const AccountRecordsContainer = styled.div`
 const Title = styled.div`
   font-weight: 600;
   font-size: 24px;
-  color: #333d4b;
+  color: var(--color-ink);
   line-height: 1.45;
   margin-bottom: 24px;
 `;
@@ -104,7 +104,7 @@ const RecordTable = styled.table`
   display: table;
   border-collapse: separate;
   width: 100%;
-  border-top: 1px solid #001b371a;
+  border-top: 1px solid var(--color-hairline);
   margin-bottom: 20px;
 `;
 
@@ -118,7 +118,7 @@ const RecordTheadTr = styled.tr`
 `;
 
 const RecordTheadTh = styled.th`
-  color: #6b7684;
+  color: var(--color-ink-mute);
   display: flex;
   justify-content: end;
   align-items: center;
@@ -139,9 +139,9 @@ const RecordTableAccount = styled.tr<{ $isOdd: boolean }>`
   height: 56px;
   align-items: center;
   cursor: pointer;
-  background: ${({ $isOdd }) => ($isOdd ? "#f9f9f9" : "#ffffff")};
+  background: ${({ $isOdd }) => ($isOdd ? "var(--color-canvas-soft)" : "var(--color-canvas)")};
   &:hover {
-    background: #0220470d;
+    background: var(--color-hover-tint);
   }
 `;
 
@@ -150,7 +150,7 @@ const AccountNumber = styled.th`
   justify-content: center;
   width: 5%;
   font-weight: bold;
-  color: #333d4b;
+  color: var(--color-ink);
   line-height: 1.45;
   font-size: 15px;
 `;
@@ -165,7 +165,7 @@ const AccountDate = styled.th`
   font-weight: 600;
   font-size: 15px;
   line-height: 1.45;
-  color: #4e5968;
+  color: var(--color-neutral);
 `;
 
 const AccountPrice = styled.th`
@@ -179,7 +179,7 @@ const AccountPrice = styled.th`
   font-weight: 600;
   font-size: 15px;
   line-height: 1.45;
-  color: #4e5968;
+  color: var(--color-neutral);
 `;
 
 const AccountChange = styled.th<{ $change: number }>`
@@ -194,5 +194,5 @@ const AccountChange = styled.th<{ $change: number }>`
   font-size: 15px;
   line-height: 1.45;
   color: ${({ $change }) =>
-    $change > 0 ? "#f04452" : $change < 0 ? "#3182f6" : "#4e5968"};
+    $change > 0 ? "var(--color-up)" : $change < 0 ? "var(--color-down)" : "var(--color-neutral)"};
 `;

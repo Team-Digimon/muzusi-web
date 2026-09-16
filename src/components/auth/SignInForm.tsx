@@ -1,4 +1,5 @@
-import styled from "styled-components";
+import styled, { css } from "styled-components";
+import { darkModeStyles } from "@/styles/darkMode";
 import MuzusiLogo from "@/assets/logo/MuzusiLogo.png";
 import { kakaoLoginUrl, naverLoginUrl } from "@/config/Url";
 import KakaoLogo from "@/assets/logo/KakaoLogo.svg?react";
@@ -44,14 +45,14 @@ const SignInFormContainer = styled.div`
   height: 450px;
   flex-shrink: 0;
   border-radius: 12px;
-  background: #fff;
+  background: var(--color-canvas);
   box-shadow: 0px 10px 60px 2px rgba(0, 0, 0, 0.1);
   margin: auto;
   padding: 80px 50px;
 `;
 
 const SignInText = styled.div`
-  color: #747474;
+  color: var(--color-ink-mute);
   font-size: 20px;
   font-style: normal;
   font-weight: 600;
@@ -69,6 +70,9 @@ const SignInFormLogoImg = styled.img`
   height: auto;
   border: none;
   background: none;
+  ${darkModeStyles(css`
+    filter: invert(1);
+  `)}
 `;
 
 const LoginBtns = styled.div`
@@ -93,7 +97,7 @@ const LoginBtn = styled.a`
 
 const KaKaoLoginBtn = styled(LoginBtn)`
   height: 60px;
-  background: #fee500;
+  background: var(--color-brand-kakao);
   padding: 0 15px;
 `;
 
@@ -112,7 +116,7 @@ const KakaoLoginText = styled(LoginText)`
 
 const NaverLoginBtn = styled(LoginBtn)`
   height: 60px;
-  background: #5ac467;
+  background: var(--color-brand-naver);
   padding: 0 20px;
 `;
 

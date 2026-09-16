@@ -1,6 +1,7 @@
 import { Outlet } from "react-router-dom";
 import AccountNavBar from "../account/AccountNavBar";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
+import { darkModeStyles } from "@/styles/darkMode";
 import useAuth from "@/contexts/useAuth";
 import MuLogo from "@/assets/logo/MuLogo.webp";
 
@@ -44,6 +45,9 @@ const ErrorContainer = styled.div`
 const Logo = styled.img`
   width: 200px;
   height: auto;
+  ${darkModeStyles(css`
+    filter: invert(1);
+  `)}
 `;
 
 const ErrorDescription = styled.div`

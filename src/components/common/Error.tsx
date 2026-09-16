@@ -1,4 +1,5 @@
-import styled from "styled-components";
+import styled, { css } from "styled-components";
+import { darkModeStyles } from "@/styles/darkMode";
 import MuLogo from "@/assets/logo/MuLogo.webp";
 
 const Error = () => {
@@ -34,6 +35,9 @@ const ErrorContainer = styled.div`
 const Logo = styled.img`
   width: 175px;
   height: auto;
+  ${darkModeStyles(css`
+    filter: invert(1);
+  `)}
 `;
 
 const TextContainer = styled.div`

@@ -80,15 +80,15 @@ const StockTrade = ({ stock, currentPrice, chartData }: StockTradeProps) => {
     {
       value: "BUY",
       korean: "매수",
-      color: "#f04452",
-      hoverColor: "#e42939",
+      color: "var(--color-up)",
+      hoverColor: "var(--color-up-hover)",
       label: "구매",
     },
     {
       value: "SELL",
       korean: "매도",
-      color: "#3182f6",
-      hoverColor: "#2272eb",
+      color: "var(--color-down)",
+      hoverColor: "var(--color-down-hover)",
       label: "판매",
     },
   ];
@@ -355,7 +355,7 @@ const TradeTitle = styled.div`
   font-weight: bold;
   line-height: 1.45;
   font-size: 14px;
-  color: #333d4b;
+  color: var(--color-ink);
 `;
 
 const TradeTypes = styled.div`
@@ -365,7 +365,7 @@ const TradeTypes = styled.div`
   justify-content: space-evenly;
   align-items: center;
   height: 32px;
-  background: #0220470d;
+  background: var(--color-hover-tint);
   position: relative;
   margin-bottom: 5px;
 `;
@@ -376,9 +376,9 @@ const TradeHighlight = styled.div<{ $index: number }>`
   left: 2px;
   width: calc(50% - 2px);
   height: calc(100% - 4px);
-  background: white;
+  background: var(--color-pill-surface);
   border-radius: 6px;
-  box-shadow: #001b370a 0px 1px 3px 0px;
+  box-shadow: var(--color-shadow-tint) 0px 1px 3px 0px;
   transition: transform 0.4s ease-in-out;
   transform: ${({ $index }) => `translateX(${100 * $index}% )`};
 `;
@@ -390,7 +390,7 @@ const TradeTypeBtn = styled.div<{ $isActive: boolean; $color: string }>`
   font-weight: 600;
   line-height: 1.45;
   font-size: 14px;
-  color: ${({ $isActive, $color }) => ($isActive ? $color : "#4e5968")};
+  color: ${({ $isActive, $color }) => ($isActive ? $color : "var(--color-neutral)")};
   width: 50%;
   height: 100%;
   cursor: pointer;
@@ -405,7 +405,7 @@ const PriceTypes = styled.div`
   justify-content: space-evenly;
   align-items: center;
   height: 32px;
-  background: #0220470d;
+  background: var(--color-hover-tint);
   position: relative;
   width: 100%;
 `;
@@ -416,9 +416,9 @@ const PriceHighlight = styled.div<{ $index: number }>`
   left: 2px;
   width: calc(50% - 2px);
   height: calc(100% - 4px);
-  background: white;
+  background: var(--color-pill-surface);
   border-radius: 6px;
-  box-shadow: #001b370a 0px 1px 3px 0px;
+  box-shadow: var(--color-shadow-tint) 0px 1px 3px 0px;
   transition: transform 0.4s ease-in-out;
   transform: ${({ $index }) => `translateX(${100 * $index}% )`};
 `;
@@ -432,7 +432,7 @@ const PriceTypeBtn = styled.div<{ $isActive: boolean }>`
   font-weight: 600;
   line-height: 1.45;
   font-size: 14px;
-  color: ${({ $isActive }) => ($isActive ? undefined : "#4e5968")};
+  color: ${({ $isActive }) => ($isActive ? undefined : "var(--color-neutral)")};
   width: 50%;
   height: 100%;
   cursor: pointer;
@@ -460,7 +460,7 @@ const OrderLabel = styled.span`
   font-size: 14px;
   line-height: 1.45;
   font-weight: 600;
-  color: #333d4b;
+  color: var(--color-ink);
 `;
 
 const OrderInput = styled.input`
@@ -471,14 +471,15 @@ const OrderInput = styled.input`
   height: 32px;
   border-radius: 8px;
   font-weight: 600;
-  color: #000c4dcc;
+  color: var(--color-ink-nav-active);
   line-height: 20px;
   font-size: 14px;
   padding: 0px 14px;
-  border: 1px solid #dddddd;
+  background: var(--color-canvas);
+  border: 1px solid var(--color-hairline);
   transition: 0.1s;
   &:hover {
-    border: 2px solid #000c4dcc;
+    border: 2px solid var(--color-ink-nav-active);
   }
   &::placeholder {
     font-size: 13px;
@@ -492,13 +493,13 @@ const OrderDisableInput = styled.div`
   width: 100%;
   height: 32px;
   border-radius: 8px;
-  color: #03183275;
+  color: var(--color-ink-nav);
   line-height: 20px;
   font-size: 13px;
   font-weight: 600;
   padding: 0px 14px;
-  background: #0220470d;
-  border: 1px solid #dddddd;
+  background: var(--color-hover-tint);
+  border: 1px solid var(--color-hairline);
 `;
 
 const OrderInfoContainer = styled.div`
@@ -506,14 +507,14 @@ const OrderInfoContainer = styled.div`
   flex-direction: column;
   padding-top: 70px;
   margin-top: 70px;
-  border-top: 2px solid #001b370a;
+  border-top: 2px solid var(--color-shadow-tint);
 `;
 
 const OrderInfo = styled.div`
   display: flex;
   justify-content: space-between;
   font-weight: bold;
-  color: #333d4b;
+  color: var(--color-ink);
   font-size: 14px;
   line-height: 1.45px;
   margin: 15px 8px;
@@ -531,8 +532,8 @@ const TradeBtn = styled.button<{ $color: string; $hoverColor: string }>`
   vertical-align: middle;
   text-decoration: none;
   border-radius: 10px;
-  background: ${({ disabled, $color }) => (disabled ? "#ccc" : $color)};
-  color: #fff;
+  background: ${({ disabled, $color }) => (disabled ? "var(--color-hairline)" : $color)};
+  color: var(--color-on-primary);
   transition: 0.2s;
   border: none;
   position: absolute;
@@ -543,7 +544,7 @@ const TradeBtn = styled.button<{ $color: string; $hoverColor: string }>`
 
   &:hover {
     background: ${({ disabled, $hoverColor }) =>
-      disabled ? "#ccc" : $hoverColor};
+      disabled ? "var(--color-hairline)" : $hoverColor};
   }
 `;
 
@@ -565,7 +566,7 @@ const ModalBackground = styled.div`
 const ModalContent = styled.div`
   display: flex;
   flex-direction: column;
-  background: #fff;
+  background: var(--color-canvas);
   border-radius: 20px;
   min-width: 300px;
   max-height: 500px;
@@ -577,7 +578,7 @@ const ModalTitle = styled.div`
   font-weight: 600;
   font-size: 18px;
   line-height: 1.45;
-  color: #333d4b;
+  color: var(--color-ink);
   margin-bottom: 10px;
 `;
 
@@ -591,14 +592,14 @@ const ModalLabel = styled.span`
   font-weight: 600;
   font-size: 14px;
   line-height: 1.45;
-  color: #333d4b;
+  color: var(--color-ink);
 `;
 
 const ModalInfo = styled.span`
   font-weight: 500;
   font-size: 14px;
   line-height: 1.45;
-  color: #6b7684;
+  color: var(--color-ink-mute);
 `;
 
 const ModalBtn = styled.div`
@@ -607,21 +608,21 @@ const ModalBtn = styled.div`
   justify-content: center;
   width: 100%;
   border-radius: 20px;
-  background: #000;
-  color: #fff;
+  background: var(--color-primary);
+  color: var(--color-on-primary);
   font-weight: 600;
   line-height: 1.45;
   font-size: 14px;
   padding: 5px;
   margin-top: 15px;
-  border: 1px solid #000;
+  border: 1px solid var(--color-primary);
   cursor: pointer;
 `;
 
 const ErrorContainer = styled.div`
   display: flex;
   flex-direction: column;
-  background: #fff;
+  background: var(--color-on-primary);
   border-radius: 20px;
   min-width: 300px;
   max-height: 500px;
@@ -636,7 +637,7 @@ const ErrorTitle = styled.div`
   font-weight: 600;
   font-size: 18px;
   line-height: 1.45;
-  color: #000;
+  color: var(--color-primary);
 `;
 
 const ErrorDescription = styled.div`
@@ -645,5 +646,5 @@ const ErrorDescription = styled.div`
   font-weight: 600;
   font-size: 16px;
   line-height: 1.45;
-  color: #333d4b;
+  color: var(--color-ink);
 `;
