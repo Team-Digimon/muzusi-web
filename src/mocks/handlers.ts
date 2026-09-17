@@ -2,7 +2,7 @@ import { http, HttpResponse } from 'msw'
 import { baseUrl } from '@/config/Env'
 import type { ApiEnvelope } from '@/types/api'
 import type { CurrentAccountData, Transaction } from '@/types/account'
-import type { ChartDataItem, Holding, Stock } from '@/types/stock'
+import type { ChartDataItem, Holding, Stock, StockInfo } from '@/types/stock'
 
 // MSW는 요청 URL을 절대 경로로 매칭한다. axios가 baseUrl(테스트 환경에선
 // vite.config.js의 test.env로 고정한 값) + 상대 경로를 합쳐서 요청을
@@ -49,6 +49,12 @@ const mockStock: Stock = {
   stockName: '무주시전자',
 }
 
+const mockStockInfo: StockInfo = {
+  stockCode: '005930',
+  stockName: '무주시전자',
+  marketType: 'KOSPI',
+}
+
 const mockChartData: ChartDataItem[] = [
   {
     dateTime: '2026-09-01T09:00:00',
@@ -93,10 +99,9 @@ export const handlers = [
     })
   }),
 
-  // Stocks.tsx가 location.state 없이(새로고침·URL 직접 접속) stockcode
-  // 파라미터로 종목을 다시 조회할 때 부르는 API. 실제 검색어 매칭 로직은
+  // 헤더 검색창에서 쓰는 키워드 자동완성. 실제 검색어 매칭 로직은
   // 검증 대상이 아니라, 키워드와 무관하게 mockStock 하나만 돌려준다.
-  http.get(url('stocks'), () => {
+  http.get(url('stocks/search'), () => {
     return HttpResponse.json<ApiEnvelope<Stock[]>>({
       code: 200,
       message: 'OK',
@@ -104,9 +109,19 @@ export const handlers = [
     })
   }),
 
+  // Stocks.tsx가 location.state 없이(새로고침·URL 직접 접속) stockcode
+  // 파라미터로 종목 기본 정보(코드·이름·시장구분)를 다시 조회할 때 부르는 API.
+  http.get(url('stocks/:stockCode'), () => {
+    return HttpResponse.json<ApiEnvelope<StockInfo>>({
+      code: 200,
+      message: 'OK',
+      data: mockStockInfo,
+    })
+  }),
+
   // 어제 시세(DAILY)/차트(MINUTES 등) 조회에 공통으로 쓰인다.
   // period별로 다른 데이터를 구분할 필요가 없어 하나의 핸들러로 커버.
-  http.get(url('stocks/:stockCode'), () => {
+  http.get(url('stocks/:stockCode/chart'), () => {
     return HttpResponse.json<ApiEnvelope<ChartDataItem[]>>({
       code: 200,
       message: 'OK',

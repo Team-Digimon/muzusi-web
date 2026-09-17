@@ -99,7 +99,7 @@ describe("Stocks 페이지 — 새로고침/URL 직접 접속 회귀 테스트",
     createChartMock.mockReturnValue(buildMockChart());
 
     // location.state로 종목 정보를 바로 넘겨받는, 원래 의도된 정상
-    // 진입 경로 — API 재조회(getStocksSearch) 없이 바로 렌더링돼야 한다.
+    // 진입 경로 — API 재조회(getStockInfo) 없이 바로 렌더링돼야 한다.
     const stateStock: Stock = { stockCode: "005930", stockName: "무주시전자" };
     const { unmount } = renderStocksPage({
       pathname: "/stocks/005930",
