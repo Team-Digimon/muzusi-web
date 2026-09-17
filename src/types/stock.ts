@@ -20,6 +20,12 @@ export interface StockRankItem {
   avrgVol: number;
 }
 
+export interface StockInfo {
+  stockCode: string;
+  stockName: string;
+  marketType: string;
+}
+
 export interface StocksRankData {
   rank: StockRankItem[];
   time: string;
