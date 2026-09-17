@@ -18,7 +18,7 @@ const getStocksChart = async ({
 }: GetStocksChartParams): Promise<ApiEnvelope<ChartDataItem[]>> => {
   try {
     const response = await authApi.get<ApiEnvelope<ChartDataItem[]>>(
-      `stocks/${stockCode}?period=${period}`
+      `stocks/${stockCode}/chart?period=${period}`
     );
 
     return response.data;

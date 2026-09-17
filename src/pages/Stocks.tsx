@@ -1,5 +1,5 @@
 import getStocksChart from "@/api/stocks/getStockChart";
-import getStocksSearch from "@/api/stocks/getStocksSearch";
+import getStockInfo from "@/api/stocks/getStockInfo";
 import Error from "@/components/common/Error";
 import Loading from "@/components/common/Loading";
 import LiveStockPrice from "@/components/stocks/LiveStockPrice";
@@ -57,7 +57,9 @@ const Stocks = () => {
   );
 
   // location.state로 종목 정보가 없을 때(새로고침, URL 직접 접속, 외부 링크)
-  // stockcode 파라미터로 종목 정보를 다시 조회한다.
+  // stockcode 파라미터로 종목 정보를 다시 조회한다. 종목 코드 단건 조회
+  // 전용 API라 존재하지 않는 코드는 서버가 404로 응답하고, 그대로
+  // catch에서 처리된다(예전처럼 검색 결과를 client에서 필터링할 필요 없음).
   useEffect(() => {
     if (stock) return;
 
@@ -65,21 +67,9 @@ const Stocks = () => {
 
     const resolveStock = async () => {
       try {
-        const response = await getStocksSearch({ keyword: stockcode ?? "" });
-        const matched = response.data?.find((el) => el.stockCode === stockcode);
+        const response = await getStockInfo({ stockCode: stockcode ?? "" });
         if (cancelled) return;
-
-        if (matched) {
-          setStock(matched);
-        } else {
-          // 이 파일에서 Error는 위에서 import한 공용 에러 컴포넌트를 가리켜
-          // 전역 Error 생성자를 가린다. 화살표 함수 컴포넌트라 new로 호출하면
-          // TypeError가 나고(바로 아래 catch로 떨어져 결과적으로 에러 화면은
-          // 뜨긴 했지만, 콘솔에는 의도한 메시지 대신 "is not a constructor"가
-          // 찍히고 있었다), globalThis.Error로 명시해서 고친다.
-          setError(new globalThis.Error("존재하지 않는 종목입니다."));
-          setIsLoading(false);
-        }
+        setStock(response.data);
       } catch (error) {
         if (cancelled) return;
         console.error(
