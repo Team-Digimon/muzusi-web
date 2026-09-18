@@ -7,6 +7,7 @@ interface ImportMetaEnv {
   readonly VITE_NAVER_REDIRECT_URI: string;
   readonly VITE_SERVER_BASE_URL: string;
   readonly VITE_WEB_SOCKET_URL: string;
+  readonly VITE_SENTRY_DSN: string;
 }
 
 interface ImportMeta {
