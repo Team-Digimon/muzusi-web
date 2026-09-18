@@ -1,4 +1,5 @@
 import axios from "axios";
+import * as Sentry from "@sentry/react";
 import { isApiErrorPayload } from "@/types/api";
 
 /**
@@ -11,6 +12,26 @@ import { isApiErrorPayload } from "@/types/api";
 
 const logApiError = (error: unknown): void => {
   console.error("API 요청 중 오류 발생", error);
+
+  // 404(존재하지 않는 종목 코드 등) 같은 4xx는 클라이언트가 이미
+  // 정상 흐름으로 처리하는 "예상된" 실패라 Sentry에 보내면 노이즈만 된다.
+  // 서버 장애(5xx)만 보낸다.
+  if (axios.isAxiosError(error) && error.response && error.response.status < 500) {
+    return;
+  }
+
+  // 어떤 엔드포인트가, 어떤 상태 코드로 실패했는지가 스택트레이스만으론
+  // 안 보이므로 axios 에러일 때는 요청/응답 정보를 extra로 같이 보낸다.
+  Sentry.captureException(error, {
+    extra: axios.isAxiosError(error)
+      ? {
+          url: error.config?.url,
+          method: error.config?.method,
+          status: error.response?.status,
+          responseData: error.response?.data,
+        }
+      : undefined,
+  });
 };
 
 /** 서버 에러 페이로드 대신 일반화된 Error를 던진다. */
