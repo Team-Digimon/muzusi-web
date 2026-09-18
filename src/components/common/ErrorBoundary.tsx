@@ -1,5 +1,6 @@
 import { Component } from "react";
 import type { ErrorInfo, ReactNode } from "react";
+import * as Sentry from "@sentry/react";
 import styled, { css } from "styled-components";
 import { darkModeStyles } from "@/styles/darkMode";
 import MuLogo from "@/assets/logo/MuLogo.webp";
@@ -27,6 +28,9 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
     console.error("렌더링 중 예상치 못한 오류가 발생했습니다:", error, errorInfo);
+    Sentry.captureException(error, {
+      extra: { componentStack: errorInfo.componentStack },
+    });
   }
 
   handleReload = (): void => {
