@@ -5,7 +5,7 @@ import type { Stock } from "@/types/stock";
 
 /** 키워드(종목명)로 종목을 검색한다. 헤더 검색창 자동완성용. */
 const getStocksSearch = async ({
-  keyword,
+  keyword
 }: {
   keyword: string;
 }): Promise<ApiEnvelope<Stock[]>> => {

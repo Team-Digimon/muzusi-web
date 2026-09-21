@@ -13,7 +13,7 @@ import Stocks from "@/pages/Stocks";
 // 일어나지 않는다 — 그래서 이 페이지 테스트에서는 @stomp/stompjs나
 // sockjs-client를 따로 mock할 필요가 없다.
 vi.mock("@/utils/isTradingTime", () => ({
-  default: () => false,
+  default: () => false
 }));
 
 // jsdom엔 canvas 렌더링 엔진이 없어 StockChart 내부의 lightweight-charts
@@ -21,14 +21,14 @@ vi.mock("@/utils/isTradingTime", () => ({
 // 검증하려는 게 아니라(그건 StockChart.test.tsx의 몫) 페이지 전체가
 // 크래시 없이 렌더링되는지만 확인하면 되므로, 최소한의 무해한 mock만 둔다.
 const { createChartMock } = vi.hoisted(() => ({
-  createChartMock: vi.fn(),
+  createChartMock: vi.fn()
 }));
 
 vi.mock("lightweight-charts", () => ({
   createChart: createChartMock,
   CandlestickSeries: "CandlestickSeries",
   HistogramSeries: "HistogramSeries",
-  ColorType: { Solid: "solid" },
+  ColorType: { Solid: "solid" }
 }));
 
 const buildMockChart = () => ({
@@ -40,11 +40,11 @@ const buildMockChart = () => ({
     fitContent: vi.fn(),
     setVisibleRange: vi.fn(),
     getVisibleLogicalRange: vi.fn().mockReturnValue(null),
-    setVisibleLogicalRange: vi.fn(),
+    setVisibleLogicalRange: vi.fn()
   }),
   subscribeCrosshairMove: vi.fn(),
   resize: vi.fn(),
-  remove: vi.fn(),
+  remove: vi.fn()
 });
 
 // Holdings.test.tsx의 renderWithProviders와 달리, 이 페이지는 실제
@@ -55,7 +55,7 @@ const buildMockChart = () => ({
 // 않기 위해서다.
 const renderStocksPage = (initialEntry: InitialEntry) => {
   const queryClient = new QueryClient({
-    defaultOptions: { queries: { retry: false } },
+    defaultOptions: { queries: { retry: false } }
   });
 
   return render(
@@ -103,7 +103,7 @@ describe("Stocks 페이지 — 새로고침/URL 직접 접속 회귀 테스트",
     const stateStock: Stock = { stockCode: "005930", stockName: "무주시전자" };
     const { unmount } = renderStocksPage({
       pathname: "/stocks/005930",
-      state: { stock: stateStock },
+      state: { stock: stateStock }
     });
 
     await waitFor(() => {

@@ -6,14 +6,19 @@ import AccountChart from "@/components/account/AccountChart";
 // jsdom엔 canvas 렌더링 엔진이 없어 lightweight-charts를 실제로 실행할
 // 수 없다. "차트가 예쁘게 그려지는가"가 아니라 "우리 코드가 라이브러리를
 // 올바른 인자로 호출하는가"만 검증하면 되므로 라이브러리 자체를 mock.
-const { createChartMock, addSeriesMock, setDataMock, fitContentMock, removeMock } =
-  vi.hoisted(() => ({
-    createChartMock: vi.fn(),
-    addSeriesMock: vi.fn(),
-    setDataMock: vi.fn(),
-    fitContentMock: vi.fn(),
-    removeMock: vi.fn(),
-  }));
+const {
+  createChartMock,
+  addSeriesMock,
+  setDataMock,
+  fitContentMock,
+  removeMock
+} = vi.hoisted(() => ({
+  createChartMock: vi.fn(),
+  addSeriesMock: vi.fn(),
+  setDataMock: vi.fn(),
+  fitContentMock: vi.fn(),
+  removeMock: vi.fn()
+}));
 
 vi.mock("lightweight-charts", () => ({
   createChart: createChartMock,
@@ -21,7 +26,7 @@ vi.mock("lightweight-charts", () => ({
   // 만들어라"고 알려주는 식별자일 뿐, 우리 코드는 그 값을 그대로
   // addSeries에 전달하기만 한다. 어떤 값이든 상관없어 문자열로 대체.
   LineSeries: "LineSeries",
-  ColorType: { Solid: "solid" },
+  ColorType: { Solid: "solid" }
 }));
 
 describe("AccountChart", () => {
@@ -40,14 +45,14 @@ describe("AccountChart", () => {
     const mockChart = {
       addSeries: addSeriesMock.mockReturnValue(mockSeries),
       timeScale: () => ({ fitContent: fitContentMock }),
-      remove: removeMock,
+      remove: removeMock
     };
     createChartMock.mockReturnValue(mockChart);
 
     // API가 최신순으로 내려주는 걸 그대로 흉내: createdAt이 뒤로 갈수록 최신.
     const chartData: AccountProfit[] = [
       { createdAt: "2026-09-02", totalBalance: 5_200_000 },
-      { createdAt: "2026-09-01", totalBalance: 5_000_000 },
+      { createdAt: "2026-09-01", totalBalance: 5_000_000 }
     ];
 
     const { unmount } = render(<AccountChart chartData={chartData} />);
@@ -59,7 +64,7 @@ describe("AccountChart", () => {
     // 회귀를 방지한다.
     expect(options.layout.background).toEqual({
       type: "solid",
-      color: "#ffffff",
+      color: "#ffffff"
     });
 
     expect(addSeriesMock).toHaveBeenCalledWith(
@@ -71,7 +76,7 @@ describe("AccountChart", () => {
     // 가장 오래된 데이터가 먼저 오는 순서로 setData에 전달돼야 한다.
     expect(setDataMock).toHaveBeenCalledWith([
       { time: "2026-09-01", value: 5_000_000 },
-      { time: "2026-09-02", value: 5_200_000 },
+      { time: "2026-09-02", value: 5_200_000 }
     ]);
 
     expect(fitContentMock).toHaveBeenCalledTimes(1);
@@ -86,12 +91,12 @@ describe("AccountChart", () => {
     const mockChart = {
       addSeries: vi.fn().mockReturnValue({ setData: vi.fn() }),
       timeScale: () => ({ fitContent: vi.fn() }),
-      remove: removeMock,
+      remove: removeMock
     };
     createChartMock.mockReturnValue(mockChart);
 
     const chartData: AccountProfit[] = [
-      { createdAt: "2026-09-01", totalBalance: 5_000_000 },
+      { createdAt: "2026-09-01", totalBalance: 5_000_000 }
     ];
     const { unmount } = render(<AccountChart chartData={chartData} />);
 

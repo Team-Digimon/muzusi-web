@@ -1,7 +1,7 @@
 import axios, {
   type AxiosInstance,
   type AxiosError,
-  type InternalAxiosRequestConfig,
+  type InternalAxiosRequestConfig
 } from "axios";
 import { baseUrl } from "@/config/Env";
 import noAuthapi from "./noAuthApi";
@@ -19,7 +19,7 @@ interface RetriableRequestConfig extends InternalAxiosRequestConfig {
  */
 const authApi: AxiosInstance = axios.create({
   baseURL: baseUrl,
-  withCredentials: true,
+  withCredentials: true
 });
 
 /**
@@ -31,9 +31,8 @@ const reissueAccessToken = async (
   logout: () => void
 ): Promise<string | null> => {
   try {
-    const response = await noAuthapi.get<ApiEnvelope<ReissueTokenData>>(
-      "/auth/reissue"
-    );
+    const response =
+      await noAuthapi.get<ApiEnvelope<ReissueTokenData>>("/auth/reissue");
     if (response.data.code === 200) {
       const { accessToken } = response.data.data;
       sessionStorage.setItem("accessToken", accessToken);
@@ -86,8 +85,7 @@ export const setUpInterceptors = (logout: () => void): void => {
     (response) => response,
     async (error: AxiosError<ApiErrorPayload>) => {
       const originalRequest = error.config as
-        | RetriableRequestConfig
-        | undefined;
+        RetriableRequestConfig | undefined;
 
       if (
         error.response?.data.code === "0004" &&
@@ -97,9 +95,8 @@ export const setUpInterceptors = (logout: () => void): void => {
         originalRequest._retry = true;
         try {
           const newAccessToken = await reissueAccessToken(logout);
-          authApi.defaults.headers.common[
-            "Authorization"
-          ] = `Bearer ${newAccessToken}`;
+          authApi.defaults.headers.common["Authorization"] =
+            `Bearer ${newAccessToken}`;
           return authApi(originalRequest);
         } catch (retryError) {
           console.error("토큰 재발급 실패", retryError);

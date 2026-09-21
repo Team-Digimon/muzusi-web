@@ -169,7 +169,8 @@ const NicknameInput = styled.input<{ $hasError: boolean }>`
   padding: 8px 12px;
   background: var(--color-canvas);
   color: var(--color-ink);
-  border: 2px solid ${({ $hasError }) => ($hasError ? "var(--color-danger-outlier)" : "var(--color-ink-heading)")};
+  border: 2px solid
+    ${({ $hasError }) => ($hasError ? "var(--color-danger-outlier)" : "var(--color-ink-heading)")};
   border-radius: 8px;
   font-size: 20px;
   font-weight: 600;

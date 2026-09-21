@@ -26,7 +26,7 @@ const Rank = ({
   types,
   time,
   setRankPage,
-  setType,
+  setType
 }: RankProps) => {
   const navigate = useNavigate();
 
@@ -261,7 +261,11 @@ const StockCtrt = styled.th<{ $prdyVrss: number }>`
   font-size: 15px;
   line-height: 1.45;
   color: ${({ $prdyVrss }) =>
-    $prdyVrss > 0 ? "var(--color-up)" : $prdyVrss < 0 ? "var(--color-down)" : "var(--color-neutral)"};
+    $prdyVrss > 0
+      ? "var(--color-up)"
+      : $prdyVrss < 0
+        ? "var(--color-down)"
+        : "var(--color-neutral)"};
 `;
 
 const StockAvrgVol = styled.th`

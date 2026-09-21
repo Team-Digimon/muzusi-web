@@ -10,28 +10,28 @@ const {
   activateMock,
   deactivateMock,
   clientUnsubscribeMock,
-  subscribeMock,
+  subscribeMock
 } = vi.hoisted(() => ({
   ClientMock: vi.fn(),
   activateMock: vi.fn(),
   deactivateMock: vi.fn(),
   clientUnsubscribeMock: vi.fn(),
-  subscribeMock: vi.fn(),
+  subscribeMock: vi.fn()
 }));
 
 // 실제 웹소켓 연결을 시도하지 않도록 sockjs-client/stompjs를 통째로 대체.
 vi.mock("sockjs-client", () => ({
-  default: vi.fn().mockImplementation(() => ({})),
+  default: vi.fn().mockImplementation(() => ({}))
 }));
 
 vi.mock("@stomp/stompjs", () => ({
-  Client: ClientMock,
+  Client: ClientMock
 }));
 
 // isTradingTime이 실제 "지금" 시각을 봐서, 테스트를 언제 돌리느냐에 따라
 // 훅이 아예 연결을 시도 안 할 수도 있다. 항상 true로 고정.
 vi.mock("@/utils/isTradingTime", () => ({
-  default: () => true,
+  default: () => true
 }));
 
 // 위 vi.mock들이 적용된 뒤에 import해야 훅 내부에서 mock된 모듈을 쓴다.
@@ -44,7 +44,7 @@ const mockClientInstance = {
   deactivate: deactivateMock,
   unsubscribe: clientUnsubscribeMock,
   subscribe: subscribeMock,
-  connected: true,
+  connected: true
 };
 
 describe("useStockSocket", () => {
@@ -89,7 +89,7 @@ describe("useStockSocket", () => {
       accumulatedVolume: 123_456,
       tradeType: "BUY",
       changeRate: 1.5,
-      time: "2026-09-03T10:00:00",
+      time: "2026-09-03T10:00:00"
     };
     act(() => {
       messageHandler({ body: JSON.stringify(fakeMessage) });
@@ -117,7 +117,7 @@ describe("useStockSocket", () => {
     unmount();
 
     expect(clientUnsubscribeMock).toHaveBeenCalledWith("sub-0", {
-      stockCode: STOCK_CODE,
+      stockCode: STOCK_CODE
     });
     expect(deactivateMock).toHaveBeenCalledTimes(1);
   });

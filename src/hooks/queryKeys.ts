@@ -7,5 +7,5 @@ export const accountQueryKeys = {
   current: ["currentAccount"] as const,
   holdings: ["accountHoldings"] as const,
   transactions: (accountId: string | undefined) =>
-    ["accountTransactions", accountId] as const,
+    ["accountTransactions", accountId] as const
 };

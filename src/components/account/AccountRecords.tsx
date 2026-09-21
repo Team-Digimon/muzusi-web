@@ -194,5 +194,9 @@ const AccountChange = styled.th<{ $change: number }>`
   font-size: 15px;
   line-height: 1.45;
   color: ${({ $change }) =>
-    $change > 0 ? "var(--color-up)" : $change < 0 ? "var(--color-down)" : "var(--color-neutral)"};
+    $change > 0
+      ? "var(--color-up)"
+      : $change < 0
+        ? "var(--color-down)"
+        : "var(--color-neutral)"};
 `;

@@ -15,13 +15,13 @@ const AccountTransactions = () => {
   const {
     data: currentAccount,
     isPending: isCurrentAccountPending,
-    error: currentAccountError,
+    error: currentAccountError
   } = useCurrentAccount();
 
   const {
     data: transactions,
     isPending: isTransactionsPending,
-    error: transactionsError,
+    error: transactionsError
   } = useQuery({
     queryKey: accountQueryKeys.transactions(currentAccount?.id),
     queryFn: async () => {
@@ -31,7 +31,7 @@ const AccountTransactions = () => {
       return [...response.data].reverse();
     },
     // currentAccount.id가 아직 없으면(로딩 중이거나 실패) 요청을 보내지 않는다.
-    enabled: !!currentAccount?.id,
+    enabled: !!currentAccount?.id
   });
 
   // 원래 "선택된 거래 없음"을 {}(빈 객체)로 표현했는데, 그 상태에서도
@@ -148,7 +148,9 @@ const AccountTransactions = () => {
               <DetailLabel>구매 수량</DetailLabel>
               <DetailInfo>{transactionDetail.stockCount}주</DetailInfo>
             </DetailLine>
-            <DetailLine style={{ borderTop: "1px solid var(--color-hairline)" }}>
+            <DetailLine
+              style={{ borderTop: "1px solid var(--color-hairline)" }}
+            >
               <DetailLabel>총 구매 금액</DetailLabel>
               <DetailInfo>
                 {(

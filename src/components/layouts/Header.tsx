@@ -98,7 +98,7 @@ const Header = ({ sideCategory }: HeaderProps) => {
 
   const HighlightedText = ({
     text,
-    highlight,
+    highlight
   }: {
     text: string;
     highlight: string;
@@ -129,31 +129,31 @@ const Header = ({ sideCategory }: HeaderProps) => {
   return (
     <GlobalNavBar $sideCategory={sideCategory}>
       <NavBar>
-        <NavLogo href='/'>
+        <NavLogo href="/">
           <LogoImg
-            alt='무주시'
-            loading='lazy'
-            decoding='async'
+            alt="무주시"
+            loading="lazy"
+            decoding="async"
             src={MuzusiLogo}
           />
         </NavLogo>
         <NavCenter>
           <GNBControl>
             <GNBBtn>
-              <GNBAnchor to='/' $isActive={currentPath === "/"}>
+              <GNBAnchor to="/" $isActive={currentPath === "/"}>
                 홈
               </GNBAnchor>
             </GNBBtn>
             <GNBBtn>
               <GNBAnchor
-                to='/account/asset'
+                to="/account/asset"
                 $isActive={currentPath.startsWith("/account")}
               >
                 내 계좌
               </GNBAnchor>
             </GNBBtn>
             <SearchBtn onClick={openSearchModal}>
-              <SearchIconBox role='presentation'>
+              <SearchIconBox role="presentation">
                 <SearchIcon />
               </SearchIconBox>
               <SearchText>
@@ -169,14 +169,14 @@ const Header = ({ sideCategory }: HeaderProps) => {
                 반갑습니다,
                 <Nickname>{user?.nickname}</Nickname>님!
               </LoginText>
-              <LoginBtn type='button' onClick={handleLogout}>
+              <LoginBtn type="button" onClick={handleLogout}>
                 로그아웃
               </LoginBtn>
             </>
           ) : (
             <>
               <LoginText>로그인하고 투자하기</LoginText>
-              <LoginBtn type='button' href='/signin'>
+              <LoginBtn type="button" href="/signin">
                 로그인
               </LoginBtn>
             </>
@@ -187,11 +187,11 @@ const Header = ({ sideCategory }: HeaderProps) => {
         <ModalBackground onClick={closeSearchModal}>
           <ModalContent onClick={(e) => e.stopPropagation()}>
             <ModalSearchBox>
-              <SearchIconBox role='presentation'>
+              <SearchIconBox role="presentation">
                 <SearchIcon />
               </SearchIconBox>
               <ModalSearchText
-                placeholder='검색어를 입력해주세요'
+                placeholder="검색어를 입력해주세요"
                 value={searchText}
                 onChange={handleInputChange}
                 autoFocus

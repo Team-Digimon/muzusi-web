@@ -17,7 +17,7 @@ const useCurrentAccount = (options?: { enabled?: boolean }) => {
       const response = await getCurrentAccount();
       return response.data;
     },
-    enabled: options?.enabled,
+    enabled: options?.enabled
   });
 };
 

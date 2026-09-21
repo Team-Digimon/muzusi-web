@@ -59,13 +59,13 @@ const useStockSocket = (
             setCurrentPrice(parsedMessage.price);
           },
           {
-            stockCode,
+            stockCode
           }
         );
       },
       onStompError: (frame) => {
         console.error("STOMP Error 발생:", frame);
-      },
+      }
     });
 
     client.activate();
@@ -74,7 +74,7 @@ const useStockSocket = (
     const unsubscribeAndDisconnect = () => {
       if (subscriptionRef.current && clientRef.current) {
         clientRef.current.unsubscribe(subscriptionRef.current.id, {
-          stockCode,
+          stockCode
         });
         subscriptionRef.current = null;
       }

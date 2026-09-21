@@ -9,7 +9,7 @@ import type { CreateTradeData } from "@/types/stock";
  * 취소할 수 있다.
  */
 const createTrade = async ({
-  data,
+  data
 }: {
   data: CreateTradeData;
 }): Promise<ApiEnvelope<null>> => {

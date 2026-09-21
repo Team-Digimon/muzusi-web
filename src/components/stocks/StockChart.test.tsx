@@ -16,7 +16,7 @@ const {
   timeScaleApplyOptionsMock,
   fitContentMock,
   setVisibleRangeMock,
-  chartRemoveMock,
+  chartRemoveMock
 } = vi.hoisted(() => ({
   createChartMock: vi.fn(),
   addSeriesMock: vi.fn(),
@@ -26,7 +26,7 @@ const {
   timeScaleApplyOptionsMock: vi.fn(),
   fitContentMock: vi.fn(),
   setVisibleRangeMock: vi.fn(),
-  chartRemoveMock: vi.fn(),
+  chartRemoveMock: vi.fn()
 }));
 
 vi.mock("lightweight-charts", () => ({
@@ -35,7 +35,7 @@ vi.mock("lightweight-charts", () => ({
   // 실제 컴포넌트 코드가 어떤 식별자를 넘기는지 구분하는 용도로만 쓴다.
   CandlestickSeries: "CandlestickSeries",
   HistogramSeries: "HistogramSeries",
-  ColorType: { Solid: "solid" },
+  ColorType: { Solid: "solid" }
 }));
 
 const candleSeries = { setData: candleSetDataMock };
@@ -50,11 +50,11 @@ const buildMockChart = () => ({
     fitContent: fitContentMock,
     setVisibleRange: setVisibleRangeMock,
     getVisibleLogicalRange: vi.fn().mockReturnValue(null),
-    setVisibleLogicalRange: vi.fn(),
+    setVisibleLogicalRange: vi.fn()
   }),
   subscribeCrosshairMove: vi.fn(),
   resize: vi.fn(),
-  remove: chartRemoveMock,
+  remove: chartRemoveMock
 });
 
 const toUnixSeconds = (dateString: string) =>
@@ -67,7 +67,7 @@ const chartData: StockChartPoint[] = [
     high: 110,
     low: 90,
     close: 105,
-    value: 1_000,
+    value: 1_000
   },
   {
     time: "2026-09-01T09:01:00",
@@ -75,8 +75,8 @@ const chartData: StockChartPoint[] = [
     high: 115,
     low: 95,
     close: 102,
-    value: 1_200,
-  },
+    value: 1_200
+  }
 ];
 
 describe("StockChart", () => {
@@ -113,7 +113,7 @@ describe("StockChart", () => {
     // 전환 때 고친 버그)이 유지되는지 확인해 회귀를 방지한다.
     expect(options.layout.background).toEqual({
       type: "solid",
-      color: "#ffffff",
+      color: "#ffffff"
     });
 
     expect(addSeriesMock).toHaveBeenCalledWith(
@@ -131,15 +131,15 @@ describe("StockChart", () => {
         open: 100,
         high: 110,
         low: 90,
-        close: 105,
+        close: 105
       },
       {
         time: toUnixSeconds(chartData[1].time),
         open: 105,
         high: 115,
         low: 95,
-        close: 102,
-      },
+        close: 102
+      }
     ]);
 
     // open < close면 상승(빨강), 아니면 하락(파랑) 색으로 거래량 막대를 칠한다.
@@ -147,13 +147,13 @@ describe("StockChart", () => {
       {
         time: toUnixSeconds(chartData[0].time),
         value: 1_000,
-        color: "#f04452", // 100 < 105, 상승
+        color: "#f04452" // 100 < 105, 상승
       },
       {
         time: toUnixSeconds(chartData[1].time),
         value: 1_200,
-        color: "#3182f6", // 105 < 102 아님(하락)
-      },
+        color: "#3182f6" // 105 < 102 아님(하락)
+      }
     ]);
 
     unmount();
@@ -179,8 +179,8 @@ describe("StockChart", () => {
         high: 108,
         low: 100,
         close: 106,
-        value: 900,
-      },
+        value: 900
+      }
     ];
     rerender(<StockChart chartData={nextChartData} period="DAILY" />);
 
@@ -190,7 +190,7 @@ describe("StockChart", () => {
     // 대신 setData는 새 데이터로 다시 호출돼야 한다.
     expect(candleSetDataMock).toHaveBeenCalledTimes(2);
     expect(timeScaleApplyOptionsMock).toHaveBeenLastCalledWith({
-      timeVisible: false, // period가 DAILY로 바뀌었으므로
+      timeVisible: false // period가 DAILY로 바뀌었으므로
     });
 
     unmount();

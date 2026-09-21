@@ -15,7 +15,11 @@ export default SignIn;
 
 const Container = styled.div`
   display: flex;
-  background: linear-gradient(to bottom, var(--color-hairline), var(--color-canvas));
+  background: linear-gradient(
+    to bottom,
+    var(--color-hairline),
+    var(--color-canvas)
+  );
   height: 50vh;
   width: 100%;
 `;

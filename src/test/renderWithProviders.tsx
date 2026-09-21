@@ -10,8 +10,8 @@ import { MemoryRouter } from "react-router-dom";
 const createTestQueryClient = () =>
   new QueryClient({
     defaultOptions: {
-      queries: { retry: false },
-    },
+      queries: { retry: false }
+    }
   });
 
 // 컴포넌트 테스트에서 반복될 "TanStack Query + React Router로 감싸기"를

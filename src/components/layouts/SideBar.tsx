@@ -61,7 +61,13 @@ const SideBar = ({ sideCategory, setSideCategory }: SideBarProps) => {
                   strokeWidth="1.5"
                   strokeLinecap="round"
                 />
-                <circle cx="10" cy="10" r="4" stroke="currentColor" strokeWidth="1.5" />
+                <circle
+                  cx="10"
+                  cy="10"
+                  r="4"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                />
               </svg>
             ) : (
               <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">

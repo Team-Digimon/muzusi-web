@@ -21,7 +21,7 @@ const StockChartContainer = ({
   periods,
   handlePeriod,
   chartData,
-  isLoading,
+  isLoading
 }: StockChartContainerProps) => {
   return (
     <StockContainer>
@@ -41,7 +41,11 @@ const StockChartContainer = ({
             })}
           </ChartPeriods>
         </ChartHeader>
-        <StockChart chartData={chartData} period={period} isLoading={isLoading} />
+        <StockChart
+          chartData={chartData}
+          period={period}
+          isLoading={isLoading}
+        />
       </ChartContainer>
     </StockContainer>
   );

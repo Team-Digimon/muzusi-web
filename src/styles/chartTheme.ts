@@ -15,7 +15,7 @@ const getCssVar = (name: string): string =>
 export const getChartThemeColors = (): ChartThemeColors => ({
   background: getCssVar("--color-canvas") || "#ffffff",
   textColor: getCssVar("--color-ink-heading") || "#000000",
-  gridColor: getCssVar("--color-hairline") || "#e1e1e1",
+  gridColor: getCssVar("--color-hairline") || "#e1e1e1"
 });
 
 /**
@@ -33,7 +33,7 @@ export const subscribeToChartTheme = (
   const observer = new MutationObserver(handleChange);
   observer.observe(document.documentElement, {
     attributes: true,
-    attributeFilter: ["data-theme"],
+    attributeFilter: ["data-theme"]
   });
 
   // jsdom 등 일부 환경엔 matchMedia 자체가 없다.
