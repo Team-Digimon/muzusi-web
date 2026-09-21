@@ -16,7 +16,11 @@ const logApiError = (error: unknown): void => {
   // 404(존재하지 않는 종목 코드 등) 같은 4xx는 클라이언트가 이미
   // 정상 흐름으로 처리하는 "예상된" 실패라 Sentry에 보내면 노이즈만 된다.
   // 서버 장애(5xx)만 보낸다.
-  if (axios.isAxiosError(error) && error.response && error.response.status < 500) {
+  if (
+    axios.isAxiosError(error) &&
+    error.response &&
+    error.response.status < 500
+  ) {
     return;
   }
 
@@ -28,9 +32,9 @@ const logApiError = (error: unknown): void => {
           url: error.config?.url,
           method: error.config?.method,
           status: error.response?.status,
-          responseData: error.response?.data,
+          responseData: error.response?.data
         }
-      : undefined,
+      : undefined
   });
 };
 

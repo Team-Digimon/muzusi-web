@@ -6,7 +6,7 @@ import {
   getStoredToken,
   saveUserAndToken,
   clearStorage,
-  getNicknameFromToken,
+  getNicknameFromToken
 } from "@/contexts/AuthUtil";
 import type { User } from "@/types/auth";
 

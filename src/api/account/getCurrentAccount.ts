@@ -12,9 +12,8 @@ const getCurrentAccount = async (): Promise<
   ApiEnvelope<CurrentAccountData>
 > => {
   try {
-    const response = await authApi.get<ApiEnvelope<CurrentAccountData>>(
-      `accounts/current`
-    );
+    const response =
+      await authApi.get<ApiEnvelope<CurrentAccountData>>(`accounts/current`);
     return response.data;
   } catch (error) {
     return handleApiError(error);

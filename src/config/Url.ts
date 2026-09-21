@@ -2,7 +2,7 @@ import {
   kakaoClientId,
   kakaoRedirectUri,
   naverClientId,
-  naverRedirectUri,
+  naverRedirectUri
 } from "@/config/Env";
 
 export const kakaoLoginUrl: string = `https://kauth.kakao.com/oauth/authorize?client_id=${kakaoClientId}&redirect_uri=${kakaoRedirectUri}&response_type=code`;

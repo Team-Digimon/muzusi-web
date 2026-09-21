@@ -9,6 +9,6 @@ export const initSentry = (): void => {
   Sentry.init({
     dsn: sentryDsn,
     environment: import.meta.env.MODE,
-    tracesSampleRate: 0.1,
+    tracesSampleRate: 0.1
   });
 };

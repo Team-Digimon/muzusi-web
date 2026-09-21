@@ -8,7 +8,7 @@ import type {
   CreateTradeData,
   Stock,
   StockChartPoint,
-  TradeType,
+  TradeType
 } from "@/types/stock";
 import { useQueryClient } from "@tanstack/react-query";
 import useCurrentAccount from "@/hooks/useCurrentAccount";
@@ -82,15 +82,15 @@ const StockTrade = ({ stock, currentPrice, chartData }: StockTradeProps) => {
       korean: "매수",
       color: "var(--color-up)",
       hoverColor: "var(--color-up-hover)",
-      label: "구매",
+      label: "구매"
     },
     {
       value: "SELL",
       korean: "매도",
       color: "var(--color-down)",
       hoverColor: "var(--color-down-hover)",
-      label: "판매",
-    },
+      label: "판매"
+    }
   ];
 
   const priceTypes: PriceType[] = ["지정가", "시장가"];
@@ -155,7 +155,9 @@ const StockTrade = ({ stock, currentPrice, chartData }: StockTradeProps) => {
       }
     } catch (error) {
       const message =
-        error instanceof Error ? error.message : "주문 처리 중 오류가 발생했습니다.";
+        error instanceof Error
+          ? error.message
+          : "주문 처리 중 오류가 발생했습니다.";
       console.error("주문 실패: ", message);
       setTrade(null);
       setModalTitle("주문 실패");
@@ -187,7 +189,7 @@ const StockTrade = ({ stock, currentPrice, chartData }: StockTradeProps) => {
       stockCount: Number(inputCount),
       stockName: stock.stockName,
       stockCode: stock.stockCode,
-      tradeType: tradeType,
+      tradeType: tradeType
     });
 
     setTrade({
@@ -196,7 +198,7 @@ const StockTrade = ({ stock, currentPrice, chartData }: StockTradeProps) => {
       "종목 코드": stock.stockCode,
       "1 주당 가격": `${tradePrice.toLocaleString()}원`,
       "주문 개수": `${inputCount.toLocaleString()}주`,
-      "총 주문 가격": `${(tradePrice * Number(inputCount)).toLocaleString()}원`,
+      "총 주문 가격": `${(tradePrice * Number(inputCount)).toLocaleString()}원`
     });
     openModal();
   };
@@ -301,13 +303,13 @@ const StockTrade = ({ stock, currentPrice, chartData }: StockTradeProps) => {
           {chartData.length <= 0
             ? "거래 불가능한 종목입니다."
             : !user
-            ? `로그인하고 ${tradeTypes[activeTradeIndex].label}하기`
-            : !isTradingTime()
-            ? `주문 가능 시간(9:00 ~ 15:30)`
-            : tradeTypes[activeTradeIndex].label === "판매" &&
-              holdingCount === 0
-            ? "보유하지 않은 종목입니다."
-            : `${tradeTypes[activeTradeIndex].label} 예약하기`}
+              ? `로그인하고 ${tradeTypes[activeTradeIndex].label}하기`
+              : !isTradingTime()
+                ? `주문 가능 시간(9:00 ~ 15:30)`
+                : tradeTypes[activeTradeIndex].label === "판매" &&
+                    holdingCount === 0
+                  ? "보유하지 않은 종목입니다."
+                  : `${tradeTypes[activeTradeIndex].label} 예약하기`}
         </TradeBtn>
       </TradeOrderForm>
       {isModalOpen && (

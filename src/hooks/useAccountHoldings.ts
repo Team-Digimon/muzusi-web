@@ -17,7 +17,7 @@ const useAccountHoldings = (options?: { enabled?: boolean }) => {
       const response = await getAccountHoldings();
       return response.data;
     },
-    enabled: options?.enabled,
+    enabled: options?.enabled
   });
 };
 

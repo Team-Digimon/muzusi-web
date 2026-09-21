@@ -20,7 +20,7 @@ const News = ({
   keywords,
   setNewsPage,
   setKeyword,
-  isNewsLoading,
+  isNewsLoading
 }: NewsProps) => {
   const [animatingOut, setAnimatingOut] = useState(false);
   const [animatingIn, setAnimatingIn] = useState(false);

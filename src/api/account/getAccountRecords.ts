@@ -9,9 +9,8 @@ import type { AccountRecord } from "@/types/account";
  */
 const getAccountRecords = async (): Promise<ApiEnvelope<AccountRecord[]>> => {
   try {
-    const response = await authApi.get<ApiEnvelope<AccountRecord[]>>(
-      `accounts`
-    );
+    const response =
+      await authApi.get<ApiEnvelope<AccountRecord[]>>(`accounts`);
 
     return response.data;
   } catch (error) {

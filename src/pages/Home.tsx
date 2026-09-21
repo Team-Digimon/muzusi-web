@@ -19,7 +19,7 @@ const types: {
 }[] = [
   { value: "VOLUME", korean: "거래량" },
   { value: "RISING", korean: "급상승" },
-  { value: "FALLING", korean: "급하락" },
+  { value: "FALLING", korean: "급하락" }
 ];
 
 const Home = () => {
@@ -47,25 +47,25 @@ const Home = () => {
         getNews({
           page: 0,
           size: 50,
-          sort: "pubDate,desc",
+          sort: "pubDate,desc"
         }),
         getNewsByKeyword({
           page: 0,
           size: 50,
           sort: "pubDate,desc",
-          keyword: "코스닥",
+          keyword: "코스닥"
         }),
         getNewsByKeyword({
           page: 0,
           size: 50,
           sort: "pubDate,desc",
-          keyword: "코스피",
-        }),
+          keyword: "코스피"
+        })
       ]);
       setNewsByKeyword({
         전체: all.data.content,
         코스닥: kosdaq.data.content,
-        코스피: kospi.data.content,
+        코스피: kospi.data.content
       });
     } catch (error) {
       console.error(
@@ -81,7 +81,7 @@ const Home = () => {
   const fetchRank = useCallback(async () => {
     try {
       const response = await getStocksRank({
-        type: type,
+        type: type
       });
       setRank(response.data.rank);
       setTime(response.data.time);

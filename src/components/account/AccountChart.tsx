@@ -1,7 +1,10 @@
 import { createChart, LineSeries, ColorType } from "lightweight-charts";
 import { useEffect, useRef } from "react";
 import styled from "styled-components";
-import { getChartThemeColors, subscribeToChartTheme } from "@/styles/chartTheme";
+import {
+  getChartThemeColors,
+  subscribeToChartTheme
+} from "@/styles/chartTheme";
 import type { AccountProfit } from "@/types/account";
 
 interface AccountChartProps {
@@ -24,28 +27,28 @@ const AccountChart = ({ chartData }: AccountChartProps) => {
         // 객체로 바뀌었다. 예전 backgroundColor 플랫 필드는 라이브러리가
         // 조용히 무시해서, 지금까지 이 옵션은 적용된 적이 없었다.
         background: { type: ColorType.Solid, color: initialTheme.background },
-        textColor: initialTheme.textColor,
+        textColor: initialTheme.textColor
       },
       grid: {
         vertLines: { visible: false },
-        horzLines: { visible: false },
+        horzLines: { visible: false }
       },
       timeScale: {
-        borderVisible: false,
+        borderVisible: false
       },
       rightPriceScale: {
-        visible: false,
-      },
+        visible: false
+      }
     });
 
     const lineSeries = chart.addSeries(LineSeries, {
       color: "#E75151",
-      lineWidth: 2,
+      lineWidth: 2
     });
 
     const formattedData = chartData.reverse().map((item) => ({
       time: item.createdAt,
-      value: item.totalBalance,
+      value: item.totalBalance
     }));
 
     lineSeries.setData(formattedData);
@@ -55,8 +58,8 @@ const AccountChart = ({ chartData }: AccountChartProps) => {
       chart.applyOptions({
         layout: {
           background: { type: ColorType.Solid, color: colors.background },
-          textColor: colors.textColor,
-        },
+          textColor: colors.textColor
+        }
       });
     });
 

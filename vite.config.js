@@ -8,15 +8,15 @@ export default defineConfig({
   plugins: [react(), svgr()],
   server: {
     host: true,
-    port: 5173,
+    port: 5173
   },
   resolve: {
     alias: {
-      "@": "/src",
-    },
+      "@": "/src"
+    }
   },
   define: {
-    global: "window",
+    global: "window"
   },
   test: {
     environment: "jsdom",
@@ -27,7 +27,7 @@ export default defineConfig({
     // 봐도 명확한 .test 도메인으로 테스트 전용 값을 지정한다.
     env: {
       VITE_SERVER_BASE_URL: "http://mock-api.test/",
-      VITE_WEB_SOCKET_URL: "ws://mock-ws.test/stomp",
+      VITE_WEB_SOCKET_URL: "ws://mock-ws.test/stomp"
     },
     coverage: {
       provider: "v8",
@@ -45,8 +45,8 @@ export default defineConfig({
         "src/test/**",
         "dist/**",
         "*.config.js",
-        "**/*.d.ts",
-      ],
-    },
-  },
+        "**/*.d.ts"
+      ]
+    }
+  }
 });

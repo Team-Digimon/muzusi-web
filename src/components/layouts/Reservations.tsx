@@ -50,7 +50,7 @@ const Reservations = ({ isModalOpen, setIsModalOpen }: ReservationsProps) => {
       "주문 개수": `${reservationData.stockCount.toLocaleString()}주`,
       "총 주문 가격": `${(
         reservationData.inputPrice * reservationData.stockCount
-      ).toLocaleString()}원`,
+      ).toLocaleString()}원`
     });
   };
 
@@ -87,7 +87,7 @@ const Reservations = ({ isModalOpen, setIsModalOpen }: ReservationsProps) => {
 
     try {
       const response = await deleteReservation({
-        tradeReservationId: reservation.id,
+        tradeReservationId: reservation.id
       });
       if (response.code === 200) {
         setIsDelete(true);

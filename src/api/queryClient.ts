@@ -16,9 +16,9 @@ const queryClient = new QueryClient({
       // 바뀌는 경우는 invalidateQueries로 staleTime과 무관하게 즉시
       // 갱신되므로, 이 값은 "남이 바꾼 걸 내가 놓치는 시간"의 상한이다.)
       staleTime: 5 * 1000,
-      retry: 1,
-    },
-  },
+      retry: 1
+    }
+  }
 });
 
 export default queryClient;

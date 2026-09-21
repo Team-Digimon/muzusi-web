@@ -27,9 +27,13 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
-    console.error("렌더링 중 예상치 못한 오류가 발생했습니다:", error, errorInfo);
+    console.error(
+      "렌더링 중 예상치 못한 오류가 발생했습니다:",
+      error,
+      errorInfo
+    );
     Sentry.captureException(error, {
-      extra: { componentStack: errorInfo.componentStack },
+      extra: { componentStack: errorInfo.componentStack }
     });
   }
 

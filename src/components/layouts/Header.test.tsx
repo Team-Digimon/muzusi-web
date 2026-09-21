@@ -7,14 +7,14 @@ import AuthProvider from "@/contexts/AuthProvider";
 
 const renderHeader = () => {
   const queryClient = new QueryClient({
-    defaultOptions: { queries: { retry: false } },
+    defaultOptions: { queries: { retry: false } }
   });
 
   return render(
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <MemoryRouter>
-          <Header sideCategory='' />
+          <Header sideCategory="" />
         </MemoryRouter>
       </AuthProvider>
     </QueryClientProvider>

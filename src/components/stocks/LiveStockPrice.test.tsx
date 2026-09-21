@@ -6,11 +6,11 @@ import LiveStockPrice from "@/components/stocks/LiveStockPrice";
 // isTradingTime이 실제 "지금" 시각을 보므로, 테스트마다 원하는 분기를
 // 강제하기 위해 모듈 자체를 mock한다.
 const { isTradingTimeMock } = vi.hoisted(() => ({
-  isTradingTimeMock: vi.fn(),
+  isTradingTimeMock: vi.fn()
 }));
 
 vi.mock("@/utils/isTradingTime", () => ({
-  default: isTradingTimeMock,
+  default: isTradingTimeMock
 }));
 
 const buildMessage = (
@@ -22,7 +22,7 @@ const buildMessage = (
   tradeType: "BUY",
   changeRate: 1.5,
   time: "10:00:00",
-  ...overrides,
+  ...overrides
 });
 
 describe("LiveStockPrice", () => {
@@ -50,7 +50,10 @@ describe("LiveStockPrice", () => {
 
     render(
       <LiveStockPrice
-        messages={[buildMessage({ price: 71_000 }), buildMessage({ price: 70_500, tradeType: "SELL" })]}
+        messages={[
+          buildMessage({ price: 71_000 }),
+          buildMessage({ price: 70_500, tradeType: "SELL" })
+        ]}
       />
     );
 

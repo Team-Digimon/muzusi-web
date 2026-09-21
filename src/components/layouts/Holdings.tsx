@@ -109,7 +109,11 @@ const RateOfReturn = styled.span<{ $profit: number }>`
   line-height: 1.45;
   font-size: 12px;
   color: ${({ $profit }) =>
-    $profit > 0 ? "var(--color-up)" : $profit < 0 ? "var(--color-down)" : "var(--color-neutral)"};
+    $profit > 0
+      ? "var(--color-up)"
+      : $profit < 0
+        ? "var(--color-down)"
+        : "var(--color-neutral)"};
 `;
 
 const NoticeContainer = styled.div`

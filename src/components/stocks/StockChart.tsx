@@ -9,11 +9,14 @@ import {
   type CandlestickData,
   type HistogramData,
   type Time,
-  type UTCTimestamp,
+  type UTCTimestamp
 } from "lightweight-charts";
 import styled, { css, keyframes } from "styled-components";
 import { darkModeStyles } from "@/styles/darkMode";
-import { getChartThemeColors, subscribeToChartTheme } from "@/styles/chartTheme";
+import {
+  getChartThemeColors,
+  subscribeToChartTheme
+} from "@/styles/chartTheme";
 import MuLogo from "@/assets/logo/MuLogo.webp";
 import type { ChartPeriod, StockChartPoint } from "@/types/stock";
 
@@ -42,7 +45,11 @@ interface TooltipData {
   volumeChange: string | null;
 }
 
-const StockChart = ({ chartData, period, isLoading = false }: StockChartProps) => {
+const StockChart = ({
+  chartData,
+  period,
+  isLoading = false
+}: StockChartProps) => {
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
   const candleSeriesRef = useRef<ISeriesApi<"Candlestick"> | null>(null);
@@ -61,32 +68,32 @@ const StockChart = ({ chartData, period, isLoading = false }: StockChartProps) =
       title: "시가",
       value: "open",
       price: tooltipData?.open,
-      change: tooltipData?.openChange,
+      change: tooltipData?.openChange
     },
     {
       title: "고가",
       value: "high",
       price: tooltipData?.high,
-      change: tooltipData?.highChange,
+      change: tooltipData?.highChange
     },
     {
       title: "저가",
       value: "low",
       price: tooltipData?.low,
-      change: tooltipData?.lowChange,
+      change: tooltipData?.lowChange
     },
     {
       title: "종가",
       value: "close",
       price: tooltipData?.close,
-      change: tooltipData?.closeChange,
+      change: tooltipData?.closeChange
     },
     {
       title: "거래량",
       value: "volume",
       price: tooltipData?.volume,
-      change: tooltipData?.volumeChange,
-    },
+      change: tooltipData?.volumeChange
+    }
   ];
 
   // ① 마운트 시 딱 한 번: 차트 인스턴스와 시리즈를 만들고 이벤트를 구독한다.
@@ -109,23 +116,23 @@ const StockChart = ({ chartData, period, isLoading = false }: StockChartProps) =
         // 조용히 무시해서, 지금까지 이 옵션은 적용된 적이 없었다
         // (AccountChart.tsx 전환 때(4-2차) 발견한 것과 동일한 패턴).
         background: { type: ColorType.Solid, color: initialTheme.background },
-        textColor: initialTheme.textColor,
+        textColor: initialTheme.textColor
       },
       grid: {
         vertLines: { color: initialTheme.gridColor },
-        horzLines: { color: initialTheme.gridColor },
+        horzLines: { color: initialTheme.gridColor }
       },
       timeScale: {
         visible: true,
         borderVisible: false,
         // 마운트 시점 period 기준. period가 바뀔 때의 갱신은 아래 ②
         // effect에서 chart.timeScale().applyOptions(...)로 반영한다.
-        timeVisible: periodRef.current === "MINUTES",
+        timeVisible: periodRef.current === "MINUTES"
       },
       rightPriceScale: {
         visible: true,
-        borderVisible: false,
-      },
+        borderVisible: false
+      }
     });
 
     chartRef.current = chart;
@@ -140,25 +147,25 @@ const StockChart = ({ chartData, period, isLoading = false }: StockChartProps) =
       priceFormat: {
         type: "custom",
         minMove: 1,
-        formatter: (price: number) => price.toLocaleString("en-US"),
+        formatter: (price: number) => price.toLocaleString("en-US")
       },
-      priceScaleId: "right",
+      priceScaleId: "right"
     });
 
     const volumeSeries = chart.addSeries(HistogramSeries, {
       color: "#26a69a",
       priceFormat: { type: "volume" },
-      priceScaleId: "volume",
+      priceScaleId: "volume"
     });
 
     candleSeriesRef.current = candleSeries;
     volumeSeriesRef.current = volumeSeries;
 
     chart.priceScale("right").applyOptions({
-      scaleMargins: { top: 0.1, bottom: 0.3 },
+      scaleMargins: { top: 0.1, bottom: 0.3 }
     });
     chart.priceScale("volume").applyOptions({
-      scaleMargins: { top: 0.8, bottom: 0 },
+      scaleMargins: { top: 0.8, bottom: 0 }
     });
 
     const handleResize = () => {
@@ -225,11 +232,9 @@ const StockChart = ({ chartData, period, isLoading = false }: StockChartProps) =
       // param.seriesData.get()은 시리즈 종류에 관계없이 공용 유니언 타입을
       // 반환하므로, 이 차트에서 실제로 넣은 형태(캔들/히스토그램)로 단언한다.
       const candleData = param.seriesData.get(candleSeries) as
-        | CandlestickData<Time>
-        | undefined;
+        CandlestickData<Time> | undefined;
       const volumeData = param.seriesData.get(volumeSeries) as
-        | HistogramData<Time>
-        | undefined;
+        HistogramData<Time> | undefined;
       if (!candleData || !volumeData) {
         setTooltipData(null);
         return;
@@ -266,7 +271,7 @@ const StockChart = ({ chartData, period, isLoading = false }: StockChartProps) =
           hour: "2-digit",
           minute: "2-digit",
           hour12: false,
-          timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+          timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
         }).format(new Date(timestamp * 1000));
       };
 
@@ -284,7 +289,7 @@ const StockChart = ({ chartData, period, isLoading = false }: StockChartProps) =
         highChange: prevData ? calculateChange(high, prevData.high) : null,
         lowChange: prevData ? calculateChange(low, prevData.low) : null,
         closeChange: prevData ? calculateChange(close, prevData.close) : null,
-        volumeChange: prevData ? calculateChange(volume, prevData.value) : null,
+        volumeChange: prevData ? calculateChange(volume, prevData.value) : null
       });
     });
 
@@ -292,12 +297,12 @@ const StockChart = ({ chartData, period, isLoading = false }: StockChartProps) =
       chart.applyOptions({
         layout: {
           background: { type: ColorType.Solid, color: colors.background },
-          textColor: colors.textColor,
+          textColor: colors.textColor
         },
         grid: {
           vertLines: { color: colors.gridColor },
-          horzLines: { color: colors.gridColor },
-        },
+          horzLines: { color: colors.gridColor }
+        }
       });
     });
 
@@ -330,7 +335,7 @@ const StockChart = ({ chartData, period, isLoading = false }: StockChartProps) =
         open: el.open,
         high: el.high,
         low: el.low,
-        close: el.close,
+        close: el.close
       }))
     );
 
@@ -338,7 +343,7 @@ const StockChart = ({ chartData, period, isLoading = false }: StockChartProps) =
       chartData.map((el) => ({
         time: toUnixSeconds(el.time),
         value: el.value,
-        color: el.open < el.close ? "#f04452" : "#3182f6",
+        color: el.open < el.close ? "#f04452" : "#3182f6"
       }))
     );
 
@@ -349,7 +354,7 @@ const StockChart = ({ chartData, period, isLoading = false }: StockChartProps) =
     if (totalDataPoints > 75) {
       chart.timeScale().setVisibleRange({
         from: toUnixSeconds(chartData[totalDataPoints - 75].time),
-        to: toUnixSeconds(chartData[totalDataPoints - 1].time),
+        to: toUnixSeconds(chartData[totalDataPoints - 1].time)
       });
     } else {
       // 데이터가 75개 이하일 때는 항상 전체 범위가 보이도록 맞춘다.
@@ -452,8 +457,8 @@ const TooltipChange = styled.span<{ $change: number | null }>`
     $change !== null && $change > 0
       ? "var(--color-up)"
       : $change !== null && $change < 0
-      ? "var(--color-down)"
-      : "var(--color-neutral)"};
+        ? "var(--color-down)"
+        : "var(--color-neutral)"};
 `;
 
 const LoadingChart = styled.div`

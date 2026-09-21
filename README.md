@@ -52,15 +52,15 @@
 
 ## Tech Stack
 
-| 구분 | 스택 |
-|---|---|
-| Core | ![React](https://img.shields.io/badge/React_18-61DAFB?style=flat-square&logo=react&logoColor=white) ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white) ![Vite](https://img.shields.io/badge/Vite-B73BFE?style=flat-square&logo=vite&logoColor=white) |
-| 상태 관리 | ![TanStack Query](https://img.shields.io/badge/TanStack_Query-FF4154?style=flat-square&logo=reactquery&logoColor=white) React Context (인증) |
-| 스타일 | ![styled-components](https://img.shields.io/badge/styled--components-DB7093?style=flat-square&logo=styledcomponents&logoColor=white) |
-| 차트 | lightweight-charts |
-| 실시간 통신 | STOMP over SockJS |
-| 테스트 | ![Vitest](https://img.shields.io/badge/Vitest-6E9F18?style=flat-square&logo=vitest&logoColor=white) Testing Library, MSW |
-| CI/CD | GitHub Actions, Azure VM + Nginx |
+| 구분        | 스택                                                                                                                                                                                                                                                                                                              |
+| ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Core        | ![React](https://img.shields.io/badge/React_18-61DAFB?style=flat-square&logo=react&logoColor=white) ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white) ![Vite](https://img.shields.io/badge/Vite-B73BFE?style=flat-square&logo=vite&logoColor=white) |
+| 상태 관리   | ![TanStack Query](https://img.shields.io/badge/TanStack_Query-FF4154?style=flat-square&logo=reactquery&logoColor=white) React Context (인증)                                                                                                                                                                      |
+| 스타일      | ![styled-components](https://img.shields.io/badge/styled--components-DB7093?style=flat-square&logo=styledcomponents&logoColor=white)                                                                                                                                                                              |
+| 차트        | lightweight-charts                                                                                                                                                                                                                                                                                                |
+| 실시간 통신 | STOMP over SockJS                                                                                                                                                                                                                                                                                                 |
+| 테스트      | ![Vitest](https://img.shields.io/badge/Vitest-6E9F18?style=flat-square&logo=vitest&logoColor=white) Testing Library, MSW                                                                                                                                                                                          |
+| CI/CD       | GitHub Actions, Azure VM + Nginx                                                                                                                                                                                                                                                                                  |
 
 ## 폴더 구조
 
@@ -82,11 +82,11 @@ src/
 
 mock 데이터 기반 A/B 비교로 적용 전/후를 동일 조건에서 실측했습니다.
 
-| 항목 | 적용 전 | 적용 후 | 개선 |
-|---|---|---|---|
-| 초기 번들 사이즈 (gzip) | 206.80 kB | 121.58 kB | **-41.2%** |
-| 차트 리렌더 비용 (2,000개 데이터 기준) | 14.45ms | 9.3ms | **-35.6%** |
-| 계좌 정보 중복 API 요청 | 2회 | 1회 | **-50%** |
+| 항목                                   | 적용 전   | 적용 후   | 개선       |
+| -------------------------------------- | --------- | --------- | ---------- |
+| 초기 번들 사이즈 (gzip)                | 206.80 kB | 121.58 kB | **-41.2%** |
+| 차트 리렌더 비용 (2,000개 데이터 기준) | 14.45ms   | 9.3ms     | **-35.6%** |
+| 계좌 정보 중복 API 요청                | 2회       | 1회       | **-50%**   |
 
 - **라우트 단위 code splitting**: 페이지별 `React.lazy` + `Suspense` 적용, `lightweight-charts`(153kB)가 `/stocks/:code` 진입 시에만 로드되도록 분리
 - **차트 리렌더 최적화**: `StockChart`가 데이터 변경마다 destroy 후 재생성하던 걸 `series.setData()` 기반 갱신으로 전환

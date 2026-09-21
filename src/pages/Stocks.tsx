@@ -14,7 +14,7 @@ import type {
   ChartDataItem,
   ChartPeriod,
   Stock as StockType,
-  StockChartPoint,
+  StockChartPoint
 } from "@/types/stock";
 
 // 컴포넌트 안에 두면 렌더될 때마다 새 배열이 만들어져서, StockChartContainer를
@@ -25,7 +25,7 @@ const periods: { value: ChartPeriod; korean: string }[] = [
   { value: "DAILY", korean: "일" },
   { value: "WEEKLY", korean: "주" },
   { value: "MONTHLY", korean: "월" },
-  { value: "YEARLY", korean: "년" },
+  { value: "YEARLY", korean: "년" }
 ];
 
 const Stocks = () => {
@@ -95,7 +95,7 @@ const Stocks = () => {
       try {
         const response = await getStocksChart({
           stockCode: stock.stockCode,
-          period: "DAILY",
+          period: "DAILY"
         });
         if (response.data.length >= 2) {
           setYesterdayData(response.data[response.data.length - 2]);
@@ -135,7 +135,7 @@ const Stocks = () => {
         // 동일하게 단일 요청으로 통일.
         const response = await getStocksChart({
           stockCode: stock.stockCode,
-          period,
+          period
         });
         const transformedData: StockChartPoint[] =
           response?.data.map((el) => ({
@@ -144,7 +144,7 @@ const Stocks = () => {
             high: el.high,
             low: el.low,
             close: el.close,
-            value: el.volume,
+            value: el.volume
           })) || [];
         setChartData(transformedData);
       } catch (error) {

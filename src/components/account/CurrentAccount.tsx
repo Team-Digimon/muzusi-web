@@ -35,7 +35,7 @@ const CurrentAccount = () => {
       new Intl.DateTimeFormat("en-US", {
         timeZone: "Asia/Seoul",
         hour: "numeric",
-        hour12: false,
+        hour12: false
       }).format(now)
     );
 
@@ -58,8 +58,8 @@ const CurrentAccount = () => {
       const message = isApiErrorPayload(error)
         ? error.message
         : error instanceof globalThis.Error
-        ? error.message
-        : "계좌 생성 중 오류가 발생했습니다.";
+          ? error.message
+          : "계좌 생성 중 오류가 발생했습니다.";
 
       if (isApiErrorPayload(error) && error.code === "4003") {
         alert(message);
@@ -84,9 +84,9 @@ const CurrentAccount = () => {
       ? [
           {
             ...accountProfits[0],
-            totalBalance: currentTotalBalance,
+            totalBalance: currentTotalBalance
           },
-          ...accountProfits.slice(1),
+          ...accountProfits.slice(1)
         ]
       : [];
 
@@ -221,7 +221,11 @@ const BalanceChange = styled.div`
 
 const BalanceChangeRate = styled.span<{ $change: number }>`
   color: ${({ $change }) =>
-    $change > 0 ? "var(--color-up)" : $change < 0 ? "var(--color-down)" : "var(--color-neutral)"};
+    $change > 0
+      ? "var(--color-up)"
+      : $change < 0
+        ? "var(--color-down)"
+        : "var(--color-neutral)"};
 `;
 
 const AssetsContainer = styled.div`
@@ -255,7 +259,11 @@ const Return = styled.div<{ $return: number }>`
   line-height: 1.45;
   font-size: 14px;
   color: ${({ $return }) =>
-    $return > 0 ? "var(--color-up)" : $return < 0 ? "var(--color-down)" : "var(--color-neutral)"};
+    $return > 0
+      ? "var(--color-up)"
+      : $return < 0
+        ? "var(--color-down)"
+        : "var(--color-neutral)"};
 `;
 
 const ModalBackground = styled.div`

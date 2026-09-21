@@ -9,7 +9,11 @@ interface StockHeaderProps {
   yesterdayData: Partial<ChartDataItem>;
 }
 
-const StockHeader = ({ stock, currentPrice, yesterdayData }: StockHeaderProps) => {
+const StockHeader = ({
+  stock,
+  currentPrice,
+  yesterdayData
+}: StockHeaderProps) => {
   const [change, setChange] = useState(0);
   const [changeRate, setChangeRate] = useState(0);
   const [yesterdayPrice, setYesterdayPrice] = useState(0);
@@ -103,7 +107,11 @@ const PriceText = styled.span<{ $change: number }>`
   font-weight: 500;
   font-size: 14px;
   color: ${({ $change }) =>
-    $change > 0 ? "var(--color-up)" : $change < 0 ? "var(--color-down)" : "var(--color-neutral)"};
+    $change > 0
+      ? "var(--color-up)"
+      : $change < 0
+        ? "var(--color-down)"
+        : "var(--color-neutral)"};
   margin-right: 6px;
 `;
 
@@ -111,5 +119,9 @@ const PriceChange = styled.span<{ $change: number }>`
   font-weight: 500;
   font-size: 14px;
   color: ${({ $change }) =>
-    $change > 0 ? "var(--color-up)" : $change < 0 ? "var(--color-down)" : "var(--color-neutral)"};
+    $change > 0
+      ? "var(--color-up)"
+      : $change < 0
+        ? "var(--color-down)"
+        : "var(--color-neutral)"};
 `;

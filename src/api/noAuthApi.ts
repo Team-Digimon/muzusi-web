@@ -8,7 +8,7 @@ import { baseUrl } from "@/config/Env";
  */
 const noAuthApi: AxiosInstance = axios.create({
   baseURL: baseUrl,
-  withCredentials: true,
+  withCredentials: true
 });
 
 export default noAuthApi;

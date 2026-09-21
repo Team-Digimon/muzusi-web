@@ -9,7 +9,7 @@ interface GetStocksInfoParams {
 
 /** 종목 코드로 종목코드/종목명/시장구분 등 기본 정보를 조회한다. */
 const getStockInfo = async ({
-  stockCode,
+  stockCode
 }: GetStocksInfoParams): Promise<ApiEnvelope<StockInfo>> => {
   try {
     const response = await authApi.get<ApiEnvelope<StockInfo>>(
