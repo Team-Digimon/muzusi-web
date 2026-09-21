@@ -179,16 +179,38 @@ const StockChart = ({ chartData, period, isLoading = false }: StockChartProps) =
       // 최신 범위를 기준으로 제한한다.
       const minLogicalIndex = 0;
       const maxLogicalIndex = chartDataRef.current.length - 1;
-      const adjustedRange = {
-        from: Math.max(logicalRange.from, minLogicalIndex),
-        to: Math.min(logicalRange.to, maxLogicalIndex),
-      };
 
-      if (
-        logicalRange.from < minLogicalIndex ||
-        logicalRange.to > maxLogicalIndex
-      ) {
-        timeScale.setVisibleLogicalRange(adjustedRange);
+      // from/to를 각자 따로 clamp하면 경계를 넘은 쪽만 깎여서 범위 폭(줌
+      // 레벨)이 줄어든다 — 차트 끝에서 계속 드래그하면 당길 때마다 폭이
+      // 계속 줄어들어 확대되는 것처럼 보이는 버그의 원인이었다. 폭은
+      // 유지한 채 범위 전체를 안쪽으로 밀어넣어야, 마우스 휠 줌이 아닌
+      // 경계 보정만으로는 확대/축소가 일어나지 않는다.
+      const rangeWidth = logicalRange.to - logicalRange.from;
+      // Logical은 lightweight-charts가 number에 브랜드를 씌운 타입이라,
+      // 아래에서 minLogicalIndex/maxLogicalIndex(순수 number)를 다시
+      // 대입하려면 여기서 number로 명시해 브랜드를 벗겨야 한다.
+      let from: number = logicalRange.from;
+      let to: number = logicalRange.to;
+
+      if (from < minLogicalIndex) {
+        from = minLogicalIndex;
+        to = from + rangeWidth;
+      }
+      if (to > maxLogicalIndex) {
+        to = maxLogicalIndex;
+        from = to - rangeWidth;
+      }
+
+      // 위 보정으로도 반대쪽 경계를 넘었다면(폭 자체가 전체 데이터보다
+      // 넓은 경우, 예: 기간 전환으로 데이터가 확 줄어든 직후) 전체 범위를
+      // 그대로 보여준다.
+      if (from < minLogicalIndex || to > maxLogicalIndex) {
+        from = minLogicalIndex;
+        to = maxLogicalIndex;
+      }
+
+      if (from !== logicalRange.from || to !== logicalRange.to) {
+        timeScale.setVisibleLogicalRange({ from, to });
       }
     };
 
