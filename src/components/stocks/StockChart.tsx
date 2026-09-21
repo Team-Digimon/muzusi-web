@@ -188,6 +188,13 @@ const StockChart = ({ chartData, period, isLoading = false }: StockChartProps) =
         logicalRange.from < minLogicalIndex ||
         logicalRange.to > maxLogicalIndex
       ) {
+        // 기간 전환으로 데이터가 확 줄어들면(예: 10분→년) clamp된 from이
+        // to보다 뒤에 오는 뒤집힌 범위가 나올 수 있다. lightweight-charts가
+        // 이 경우 예외를 던지므로, 뒤집혔으면 전체 범위를 보여준다.
+        if (adjustedRange.from > adjustedRange.to) {
+          adjustedRange.from = minLogicalIndex;
+          adjustedRange.to = maxLogicalIndex;
+        }
         timeScale.setVisibleLogicalRange(adjustedRange);
       }
     };
