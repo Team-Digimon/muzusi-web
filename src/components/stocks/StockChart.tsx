@@ -244,7 +244,13 @@ const StockChart = ({
         chartContainerRef.current.clientHeight
       );
     };
-    window.addEventListener("resize", handleResize);
+    // 브라우저 창 자체의 resize 이벤트만으로는, 사이드패널이 열려
+    // ContentContainer의 width가 CSS로 줄어드는 것처럼 "창 크기는
+    // 그대로인데 컨테이너 크기만 바뀌는" 경우를 못 잡는다.
+    // ResizeObserver는 관찰 대상 엘리먼트 자체의 박스 크기 변화를
+    // 원인 상관없이 감지하므로 window 이벤트 대신 이걸 쓴다.
+    const resizeObserver = new ResizeObserver(handleResize);
+    resizeObserver.observe(chartContainerRef.current);
 
     const restrictNavigation = () => {
       const timeScale = chart.timeScale();
@@ -376,7 +382,7 @@ const StockChart = ({
     });
 
     return () => {
-      window.removeEventListener("resize", handleResize);
+      resizeObserver.disconnect();
       unsubscribeChartTheme();
       chart.remove();
       chartRef.current = null;
