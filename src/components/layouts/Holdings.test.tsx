@@ -34,7 +34,7 @@ describe("Holdings", () => {
     renderWithProviders(<Holdings />);
 
     await waitFor(() => {
-      expect(screen.getByText("예약된 주문이 없습니다.")).toBeInTheDocument();
+      expect(screen.getByText("보유 종목이 없습니다.")).toBeInTheDocument();
     });
   });
 

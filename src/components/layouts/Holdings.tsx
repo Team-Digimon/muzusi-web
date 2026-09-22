@@ -52,7 +52,7 @@ const Holdings = () => {
   ) : (
     <NoticeContainer>
       <Logo src={MuLogo} alt="MuLogo" />
-      <NoticeDescription>예약된 주문이 없습니다.</NoticeDescription>
+      <NoticeDescription>보유 종목이 없습니다.</NoticeDescription>
     </NoticeContainer>
   );
 };
