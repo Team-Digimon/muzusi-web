@@ -5,6 +5,18 @@ import { afterAll, afterEach, beforeAll } from "vitest";
 import { cleanup } from "@testing-library/react";
 import { server } from "@/mocks/server";
 
+// jsdom은 ResizeObserver를 구현하지 않는다(StockChart.tsx가 차트 컨테이너
+// 크기 변화를 감지하는 데 사용). 테스트 환경에선 아무 동작도 안 하는
+// stub이면 충분하다 — 실제 리사이즈 로직 자체는 이 클래스가 아니라
+// handleResize 콜백에 있고, 그 콜백이 호출되는지는 개별 테스트가 직접
+// 검증하지 않기 때문이다.
+class ResizeObserverStub {
+  observe(): void {}
+  unobserve(): void {}
+  disconnect(): void {}
+}
+globalThis.ResizeObserver = ResizeObserverStub;
+
 // @testing-library/react는 전역 afterEach가 있으면 자동으로 매 테스트 후
 // cleanup(렌더된 컴포넌트 언마운트)을 등록하는데, vite.config.js에서
 // test.globals를 켜지 않아 afterEach가 전역으로 노출되지 않는다. 그래서
