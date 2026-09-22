@@ -4,6 +4,7 @@ import {
   CandlestickSeries,
   HistogramSeries,
   ColorType,
+  TickMarkType,
   type IChartApi,
   type ISeriesApi,
   type CandlestickData,
@@ -107,6 +108,73 @@ const StockChart = ({
     // chart.applyOptions()만 호출해 갱신한다.
     const initialTheme = getChartThemeColors();
 
+    // lightweight-charts는 축 눈금 라벨을 항상 UTC 기준으로 그린다.
+    // 백엔드가 내려주는 dateTime은 타임존 정보 없는 KST 시각 문자열이고,
+    // toUnixSeconds가 브라우저 로컬(KST) 기준으로 파싱해 epoch 자체는
+    // 정확하지만, 그 epoch를 축에 UTC로 그리면 자정에 가까운 시각은
+    // 하루가 밀려 보인다(예: 9월 1일 00시 KST → UTC로는 8월 31일 15시).
+    // 크로스헤어 툴팁(formatTimestampToDateTime)과 동일하게 뷰어의 로컬
+    // 타임존을 명시해 직접 포맷해서 이 어긋남을 없앤다.
+    const localTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const tickMarkFormatter = (
+      time: Time,
+      tickMarkType: TickMarkType
+    ): string => {
+      const date = new Date((time as number) * 1000);
+
+      // MONTHLY/YEARLY 기간은 캔들 하나가 이미 한 달/한 해 단위라
+      // 라이브러리가 판단하는 tickMarkType(Day/Month 등)을 그대로 쓰면
+      // "1일"/"1월"처럼 모든 틱이 같은 값으로 찍혀 의미가 없다.
+      // 선택된 기간을 기준으로 "n월"/"n년"을 고정 포맷한다.
+      if (periodRef.current === "MONTHLY") {
+        return new Intl.DateTimeFormat("ko-KR", {
+          month: "long",
+          timeZone: localTimeZone
+        }).format(date);
+      }
+      if (periodRef.current === "YEARLY") {
+        return new Intl.DateTimeFormat("ko-KR", {
+          year: "numeric",
+          timeZone: localTimeZone
+        }).format(date);
+      }
+
+      // MINUTES/DAILY/WEEKLY 기간엔 Year/Month 단위 틱이 나올 이유가 없다.
+      // 그런데 lightweight-charts가 setData() 이후에도 직전에 MONTHLY/YEARLY
+      // 뷰에서 계산해둔 tickMarkType을 맨 왼쪽 틱 하나에 한해 그대로
+      // 재사용하는 경우가 있어, 기간을 바꿔 돌아와도 그 틱만 "9월"처럼
+      // 뜬금없이 표시되는 버그가 있었다. Year/Month는 DayOfMonth로 강제
+      // 강등시켜 이 잔여값이 새어 나오지 않게 막는다.
+      const safeTickMarkType =
+        tickMarkType === TickMarkType.Year ||
+        tickMarkType === TickMarkType.Month
+          ? TickMarkType.DayOfMonth
+          : tickMarkType;
+
+      switch (safeTickMarkType) {
+        case TickMarkType.DayOfMonth:
+          return new Intl.DateTimeFormat("ko-KR", {
+            day: "numeric",
+            timeZone: localTimeZone
+          }).format(date);
+        case TickMarkType.TimeWithSeconds:
+          return new Intl.DateTimeFormat("ko-KR", {
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+            hour12: false,
+            timeZone: localTimeZone
+          }).format(date);
+        default:
+          return new Intl.DateTimeFormat("ko-KR", {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: false,
+            timeZone: localTimeZone
+          }).format(date);
+      }
+    };
+
     const chart = createChart(chartContainerRef.current, {
       width: chartContainerRef.current.clientWidth,
       height: chartContainerRef.current.clientHeight,
@@ -127,7 +195,8 @@ const StockChart = ({
         borderVisible: false,
         // 마운트 시점 period 기준. period가 바뀔 때의 갱신은 아래 ②
         // effect에서 chart.timeScale().applyOptions(...)로 반영한다.
-        timeVisible: periodRef.current === "MINUTES"
+        timeVisible: periodRef.current === "MINUTES",
+        tickMarkFormatter
       },
       rightPriceScale: {
         visible: true,
