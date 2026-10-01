@@ -6,7 +6,7 @@ import signOut from "@/api/auth/signOut";
 import useAuth from "@/contexts/useAuth";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import getStocksSearch from "@/api/stocks/getStocksSearch";
-import { debounce } from "lodash";
+import debounce from "lodash/debounce";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import type { Stock } from "@/types/stock";
 
