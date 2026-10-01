@@ -34,6 +34,11 @@ export default defineConfig({
       // text: 터미널에 바로 요약 출력. html: coverage/index.html로 파일별
       // 실행/미실행 줄까지 색깔로 보여주는 상세 리포트(브라우저로 열어봄).
       reporter: ["text", "html"],
+      // Vitest 4부터 coverage.all 옵션이 없어지고, include를 지정하지
+      // 않으면 테스트 중 import된 파일만 집계된다. 그러면 테스트가 하나도
+      // 없는 파일이 분모에서 빠져 수치가 부풀려지므로, 이전처럼 전체
+      // 소스를 기준으로 측정되게 대상 경로를 명시한다.
+      include: ["src/**/*.{js,jsx,ts,tsx}", "scripts/**/*.{js,mjs}"],
       // src/mocks, src/test는 테스트를 돕기 위한 인프라 코드지, 검증
       // 대상인 애플리케이션 로직이 아니다. dist는 npm run build로 나온
       // 컴파일된 산출물이라 로컬에 남아있으면 소스 취급돼 분모를
