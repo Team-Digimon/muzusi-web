@@ -20,8 +20,12 @@ const {
 }));
 
 // 실제 웹소켓 연결을 시도하지 않도록 sockjs-client/stompjs를 통째로 대체.
+// 훅이 `new SockJS()`/`new Client()`로 생성하므로, mock 구현은 화살표
+// 함수가 아닌 function으로 작성해야 한다(화살표 함수는 new로 호출 불가).
 vi.mock("sockjs-client", () => ({
-  default: vi.fn().mockImplementation(() => ({}))
+  default: vi.fn(function () {
+    return {};
+  })
 }));
 
 vi.mock("@stomp/stompjs", () => ({
@@ -59,7 +63,9 @@ describe("useStockSocket", () => {
   });
 
   it("연결에 성공하면 해당 종목을 구독하고, 메시지가 오면 messages/currentPrice를 갱신한다", () => {
-    ClientMock.mockImplementation(() => mockClientInstance);
+    ClientMock.mockImplementation(function () {
+      return mockClientInstance;
+    });
     subscribeMock.mockReturnValue({ id: "sub-0", unsubscribe: vi.fn() });
 
     const { result, unmount } = renderHook(() => useStockSocket(STOCK_CODE));
@@ -105,7 +111,9 @@ describe("useStockSocket", () => {
   });
 
   it("언마운트되면 구독을 해제하고 연결을 종료한다", () => {
-    ClientMock.mockImplementation(() => mockClientInstance);
+    ClientMock.mockImplementation(function () {
+      return mockClientInstance;
+    });
     subscribeMock.mockReturnValue({ id: "sub-0", unsubscribe: vi.fn() });
 
     const { unmount } = renderHook(() => useStockSocket(STOCK_CODE));
